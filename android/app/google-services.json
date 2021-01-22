@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "835517659656",
+    "firebase_url": "https://deeformity-default-rtdb.firebaseio.com",
+    "project_id": "deeformity",
+    "storage_bucket": "deeformity.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:835517659656:android:33e633bb7b5b7cec2b2fbd",
+        "android_client_info": {
+          "package_name": "com.deeformed.deeformity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "835517659656-adf7bsl0tg2pvm872ft95nlbrcdhmi9l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcAwXr_90tSaDCPtloUbn4ZIpJF8Af9dM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "835517659656-adf7bsl0tg2pvm872ft95nlbrcdhmi9l.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "835517659656-lfn8fd4o34lr8nt3dpj058gat2dq8nir.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.deeformed.deeformity"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
