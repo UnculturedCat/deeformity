@@ -23,6 +23,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
   int reps;
   String description;
   String date = UserSingleton.userSingleton.selectedDate;
+  RepeatFrequency frequency = RepeatFrequency.none;
 
   _AddExercisePageState(this._activityType) {
     if (_activityType == ActivityType.fitness) {
@@ -154,11 +155,24 @@ class _AddExercisePageState extends State<AddExercisePage> {
                 ),
                 Row(children: [
                   //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                  DropdownButton(
+                      value: frequency,
+                      dropdownColor: Colors.white,
+                      items: dropDownFrequency,
+                      onChanged: (value) {
+                        setState(() {
+                          frequency = value;
+                        });
+                      }),
+                  Text("Event"),
+                ]),
+                Row(children: [
+                  //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                   IconButton(
                       icon: Icon(Icons.image),
                       iconSize: 50,
                       onPressed: attachMedia),
-                  Text("Add media")
+                  Text("Add media"),
                 ]),
                 SizedBox(
                   height: 50,

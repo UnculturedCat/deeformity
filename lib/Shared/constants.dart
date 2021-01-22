@@ -46,6 +46,13 @@ final List<DropdownMenuItem<String>> dropDownLocations = <String>[
         ))
     .toList();
 
+final List<DropdownMenuItem<RepeatFrequency>> dropDownFrequency =
+    <RepeatFrequency>[
+  RepeatFrequency.none,
+  RepeatFrequency.daily,
+  RepeatFrequency.weekly
+].map((RepeatFrequency value) => createTextWidget(value)).toList();
+
 // final List<DropdownMenuItem<String>> dropDownLocations = <String>[
 //   "Enschede",
 //   "Utrecht"
@@ -56,6 +63,39 @@ final List<DropdownMenuItem<String>> dropDownLocations = <String>[
 //   );
 // }).toList();
 
+DropdownMenuItem<RepeatFrequency> createTextWidget(RepeatFrequency value) {
+  var receivedValue = value;
+  var child;
+  var textString;
+  switch (receivedValue) {
+    case RepeatFrequency.daily:
+      {
+        textString = "Every day";
+        child = Text(textString);
+        break;
+      }
+    case RepeatFrequency.weekly:
+      {
+        textString = "Weekly";
+        child = Text(textString);
+        break;
+      }
+    case RepeatFrequency.none:
+      {
+        textString = "One time";
+        child = Text(textString);
+        break;
+      }
+    default:
+      {
+        textString = "";
+        child = Text(textString);
+        break;
+      }
+  }
+  return DropdownMenuItem<RepeatFrequency>(value: receivedValue, child: child);
+}
+
 const List<String> locations = [
   "Enschede",
   "Utrecht",
@@ -63,10 +103,18 @@ const List<String> locations = [
   "Amsterdam"
 ];
 
+const List<String> eventFrequency = ["One time", "Daily", "Weekly"];
+
 enum ProfileType { professional, client }
 
 enum ActivityType { fitness, physio, personal }
 
 enum ScheduleCategory {
   vidoeSession,
+}
+
+enum RepeatFrequency {
+  none,
+  daily,
+  weekly,
 }

@@ -63,7 +63,8 @@ class DatabaseService {
       int reps,
       String description,
       String scheduleType,
-      String date}) async {
+      String date,
+      int frequency}) async {
     DocumentReference ref =
         await scheduleCollection.doc(uid).collection("Daily routines").add({
       "Card Id": cardId,
@@ -74,7 +75,8 @@ class DatabaseService {
       "Schedule Type": scheduleType,
       "Sets": sets,
       "Reps": reps,
-      "Description": description
+      "Description": description,
+      "Frequency": frequency
     });
     return ref.id;
   }
