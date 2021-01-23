@@ -37,7 +37,7 @@ class HomePageState extends State<HomePage> {
   }
 
   void openSchedulePage(ActivityType activityType) {
-    UserSingleton.userSingleton.selectedDate =
+    UserSingleton.userSingleton.selectedStringDate =
         DateFormat.yMMMd().format(selectedDate);
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return SchedulePage(scheduleData, activityType);
@@ -56,7 +56,7 @@ class HomePageState extends State<HomePage> {
             selectedDate = datePicked;
           })
         : selectedDate = DateTime.now();
-    UserSingleton.userSingleton.selectedDate =
+    UserSingleton.userSingleton.selectedStringDate =
         DateFormat.yMMMd().format(selectedDate);
     UserSingleton.userSingleton.dateTime =
         selectedDate; //set the selected date in the singleton

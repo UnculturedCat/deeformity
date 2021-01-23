@@ -5,6 +5,7 @@ import 'SchedulePage.dart';
 import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/DataManager/Utility.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class ScheduleCard extends StatefulWidget {
   final ActivityType activityType;
@@ -39,7 +40,14 @@ class ScheduleCardState extends State<ScheduleCard> {
   void initialCardValues(QuerySnapshot scheduleSnapShot) {
     numberOfActivities = 0;
     for (var doc in scheduleSnapShot.docs) {
-      if (doc.data()["Date"] == UserSingleton.userSingleton.selectedDate &&
+      if ((doc.data()["Date"] ==
+                  UserSingleton.userSingleton.selectedStringDate ||
+              doc.data()["Frequency"] == RepeatFrequency.daily.index ||
+              (doc.data()["Frequency"] == RepeatFrequency.weekly.index &&
+                  DateFormat.EEEE()
+                          .format(DateTime.parse(doc.data()["DateTime"])) ==
+                      DateFormat.EEEE()
+                          .format(UserSingleton.userSingleton.dateTime))) &&
           doc.data()["Category"] == category) numberOfActivities++;
     }
   }

@@ -32,11 +32,14 @@ class DatabaseService {
   String scheduleSubCollectionName = "Daily routines";
 
   UserData createUserDataFromSnapshot(DocumentSnapshot snap) {
+    UserSingleton.userSingleton.userData = UserData(
+        firstName: snap.data()["First Name"] ?? "Unknown",
+        lastName: snap.data()["Last Name"] ?? "Unknown",
+        location: snap.data()["Location"] ?? "Unknown");
     return UserData(
-            firstName: snap.data()["First Name"] ?? "Unknown ",
-            lastName: snap.data()["Last Name"] ?? "Unknown",
-            location: snap.data()["Location"]) ??
-        "Unknown";
+        firstName: snap.data()["First Name"] ?? "Unknown",
+        lastName: snap.data()["Last Name"] ?? "Unknown",
+        location: snap.data()["Location"] ?? "Unknown");
   }
 
   Future createUserData(
@@ -64,6 +67,7 @@ class DatabaseService {
       String description,
       String scheduleType,
       String date,
+      String dateTime,
       int frequency}) async {
     DocumentReference ref =
         await scheduleCollection.doc(uid).collection("Daily routines").add({
@@ -76,7 +80,8 @@ class DatabaseService {
       "Sets": sets,
       "Reps": reps,
       "Description": description,
-      "Frequency": frequency
+      "Frequency": frequency,
+      "DateTime": dateTime
     });
     return ref.id;
   }

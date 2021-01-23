@@ -28,6 +28,3 @@ class Utility {
   void addTrainer() {}
   void initialiseUser() {}
 }
-
-UserData userData;
-ScheduleData scheduleData; //= new ScheduleData(activityType, date)

@@ -22,8 +22,9 @@ class _AddExercisePageState extends State<AddExercisePage> {
   int sets;
   int reps;
   String description;
-  String date = UserSingleton.userSingleton.selectedDate;
-  RepeatFrequency frequency = RepeatFrequency.none;
+  String date = UserSingleton.userSingleton.selectedStringDate;
+  int frequency = RepeatFrequency.none.index;
+  DateTime dateTime = UserSingleton.userSingleton.dateTime;
 
   _AddExercisePageState(this._activityType) {
     if (_activityType == ActivityType.fitness) {
@@ -47,7 +48,9 @@ class _AddExercisePageState extends State<AddExercisePage> {
               sets: sets,
               reps: reps,
               description: description,
-              date: date);
+              date: date,
+              dateTime: dateTime.toString(),
+              frequency: frequency);
       cardDocId.isNotEmpty
           ? updateRoutineInfo(cardDocId)
           : print("Add Exercise Page: CardDocId not received");
@@ -156,12 +159,12 @@ class _AddExercisePageState extends State<AddExercisePage> {
                 Row(children: [
                   //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                   DropdownButton(
-                      value: frequency,
+                      value: RepeatFrequency.values[frequency],
                       dropdownColor: Colors.white,
                       items: dropDownFrequency,
                       onChanged: (value) {
                         setState(() {
-                          frequency = value;
+                          frequency = RepeatFrequency.values.indexOf(value);
                         });
                       }),
                   Text("Event"),

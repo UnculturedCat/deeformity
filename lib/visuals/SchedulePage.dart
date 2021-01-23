@@ -19,7 +19,7 @@ class SchedulePage extends StatefulWidget {
 }
 
 class SchedulePageState extends State<SchedulePage> {
-  String date = UserSingleton.userSingleton.selectedDate;
+  String date = UserSingleton.userSingleton.selectedStringDate;
   String pageTitle;
   String category;
   final ActivityType activityType;
