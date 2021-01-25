@@ -56,11 +56,36 @@ class HomePageState extends State<HomePage> {
             selectedDate = datePicked;
           })
         : selectedDate = DateTime.now();
+    setDateInSingleton();
+    //setState(() {});
+  }
+
+  void setDateInSingleton() {
     UserSingleton.userSingleton.selectedStringDate =
         DateFormat.yMMMd().format(selectedDate);
     UserSingleton.userSingleton.dateTime =
         selectedDate; //set the selected date in the singleton
-    //setState(() {});
+  }
+
+  Widget createTodayViewButton() {
+    bool isToday = DateFormat.yMMMd().format(selectedDate) ==
+        DateFormat.yMMMd().format(DateTime.now());
+    return isToday
+        ? SizedBox()
+        : FlatButton(
+            onPressed: () {
+              setState(() {
+                selectedDate = DateTime.now();
+                setDateInSingleton();
+              });
+            },
+            child: Text(
+              "TODAY VIEW",
+              style: TextStyle(
+                  fontSize: fontSizeButton,
+                  color: Color.fromRGBO(24, 41, 57, 1)),
+            ),
+          );
   }
 
   Widget build(BuildContext context) {
@@ -108,15 +133,15 @@ class HomePageState extends State<HomePage> {
                     ),
                     onTap: () => openDatePicker(context),
                   ),
-                  CircleAvatar(
-                    child: Text(
-                      "U N",
-                      style: TextStyle(fontSize: 15, color: Colors.white),
-                    ),
-                    radius: 20,
-                    //backgroundImage: AssetImage("assets\test.png"),
-                  ),
-
+                  // CircleAvatar(
+                  //   child: Text(
+                  //     "U N",
+                  //     style: TextStyle(fontSize: 15, color: Colors.white),
+                  //   ),
+                  //   radius: 20,
+                  //   //backgroundImage: AssetImage("assets\test.png"),
+                  // ),
+                  createTodayViewButton()
                   // RaisedButton(
                   //   shape: CircleBorder(),
                   //   onPressed: () {
