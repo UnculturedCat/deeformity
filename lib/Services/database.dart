@@ -3,6 +3,7 @@ import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/User/UserClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class DatabaseService {
   final String uid;
@@ -22,6 +23,8 @@ class DatabaseService {
       .doc(UserSingleton.userSingleton.currentUSer.uid)
       .snapshots()
       .map((doc) => createUserDataFromSnapshot(doc));
+
+  Stream<QuerySnapshot> get allUsers => usersCollection.snapshots();
 
   final CollectionReference usersCollection =
       FirebaseFirestore.instance.collection("Users");
@@ -100,6 +103,12 @@ class DatabaseService {
         .collection(scheduleSubCollectionName)
         .doc(doc.id)
         .delete();
+  }
+
+  Future<QuerySnapshot> searchForUser(String searchQuery) async {
+    return await usersCollection
+        .where("Location", isEqualTo: searchQuery)
+        .get();
   }
   // Future<String> fetchUserData() {
   //   userCollection.doc(uid).update(data)

@@ -38,25 +38,6 @@ class SettingsPageState extends State<SettingsPage> {
         backgroundColor: Color.fromRGBO(21, 33, 47, 15),
       ),
 
-      //Navigation bar
-      // bottomNavigationBar: BottomAppBar
-      // (
-      //   color: Color.fromRGBO(21, 33, 47, 15),
-      //   child: Row
-      //   (
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     children: <Widget>
-      //     [
-      //       // FlatButton
-      //       // (
-      //       //   onPressed: handleProfile,
-      //       //   child: Text("Profile", style: TextStyle(fontSize:14, color: Colors.white,),),
-      //       // )
-      //       IconButton(icon: Icon(Icons.home), color: Colors.white, iconSize: 30, onPressed: handleProfile)
-      //     ],
-      //   )
-      // ),
-
       //Page Body
       body: SafeArea(
           child: ListView(

@@ -35,10 +35,26 @@ const gradientDecoration = BoxDecoration(
     ]));
 
 final List<DropdownMenuItem<String>> dropDownLocations = <String>[
+  "Amsterdam",
+  "Amersfoort",
+  "Almere",
+  "Apeldoorn",
+  "Arnhem",
+  "Breda",
+  "Den Haag",
   "Enschede",
-  "Utrecht",
   "Eindhoven",
-  "Amsterdam"
+  "Groningen",
+  "Haarlem",
+  "Haarlemmermeer",
+  "Leiden",
+  "Nijmegen",
+  "Rotterdam",
+  "Tilburg",
+  "Utrecht",
+  "Zaanstad",
+  "Zwolle",
+  "'s-Hertogenbosch"
 ]
     .map<DropdownMenuItem<String>>((String value) => DropdownMenuItem<String>(
           value: value,

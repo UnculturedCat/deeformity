@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../visuals/Finances.dart';
 import '../visuals/MailPage.dart';
@@ -25,17 +26,17 @@ class NavigatorClassState extends State<NavigatorClass> {
   List<Widget> _pages = <Widget>[
     HomePage(),
     //FinancePage(),
-    //SearchPage(),
+    SearchPage(),
     MailPage(),
-    NotificationsPage(),
+    //NotificationsPage(),
     ProfilePage()
   ];
   List<String> _pageNames = <String>[
     "HomePage",
     //"FinancePage",
-    //"SearchPage",
+    "SearchPage",
     "MailPage",
-    "NotificationsPage",
+    //"NotificationsPage",
     "ProfilePage"
   ];
 
@@ -73,11 +74,16 @@ class NavigatorClassState extends State<NavigatorClass> {
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           //BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Finances"),
-          //BottomNavigationBarItem( icon: Icon(Icons.search),label: "Search",),
-          BottomNavigationBarItem(icon: Icon(Icons.mail), label: "Mail"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.notifications_none), label: "Notifications"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile")
+            icon: Icon(CupertinoIcons.search),
+            label: "Search",
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.chat_bubble_2), label: "Inbox"),
+          // BottomNavigationBarItem(
+          //     icon: Icon(CupertinoIcons.bell_solid), label: "Notifications"),
+          BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.person_fill), label: "Profile")
         ],
         onTap: _itemTapped,
       ),

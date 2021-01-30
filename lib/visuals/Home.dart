@@ -192,30 +192,8 @@ class HomePageState extends State<HomePage> {
                 openSchedulePage(ActivityType.physio);
               },
             ),
-            // Container(
-            //   padding: EdgeInsets.only(top: 20),
-            //   child: RaisedButton(
-            //       child: Text(
-            //         "Claim page test button",
-            //         style: TextStyle(color: Colors.white),
-            //       ),
-            //       color: Colors.red,
-            //       onPressed: () {
-            //         UserSingleton.userSingleton.bullSHit = "Home";
-            //       }),
-            // ),
-            // Container(
-            //   padding: EdgeInsets.only(top: 20),
-            //   child: RaisedButton(
-            //       child: Text(
-            //         "Print Page name test button",
-            //         style: TextStyle(color: Colors.white),
-            //       ),
-            //       color: Colors.red,
-            //       onPressed: () {
-            //         print(UserSingleton.userSingleton.bullSHit);
-            //       }),
-            // ),
+            Divider(),
+            Container(padding: EdgeInsets.only(top: 20), child: Column()),
           ],
         )),
       ),
