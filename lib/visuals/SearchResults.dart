@@ -34,7 +34,6 @@ class _SearchResultsState extends State<SearchResults> {
 
   Widget createUserCard(QueryDocumentSnapshot doc) {
     if (doc.id == UserSingleton.userSingleton.userID) return SizedBox();
-
     return Container(
         padding: EdgeInsets.only(top: 100, bottom: 100),
         child: Text(doc.data()["First Name"]));
@@ -55,7 +54,7 @@ class _SearchResultsState extends State<SearchResults> {
     return loading
         ? Loading()
         : snapshot.isEmpty
-            ? Text("No active user found in loaction")
+            ? Text("No active user found in location")
             : Column(
                 children: [for (var doc in snapshot) createUserCard(doc)],
               );

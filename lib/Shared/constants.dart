@@ -6,6 +6,7 @@ const double fontSizeInputHint = 12;
 const double fontSizeButton = 15;
 const TextStyle cardHeaderStyle = TextStyle(color: Colors.white, fontSize: 30);
 const textInputDecoration = InputDecoration(
+    contentPadding: EdgeInsets.all(1),
     filled: true,
     focusedBorder:
         OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
@@ -15,6 +16,7 @@ const textInputDecoration = InputDecoration(
     floatingLabelBehavior: FloatingLabelBehavior.always);
 
 const textInputDecorationWhite = InputDecoration(
+    contentPadding: EdgeInsets.all(1),
     filled: true,
     focusedBorder:
         OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
