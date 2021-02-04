@@ -18,6 +18,7 @@ class SearchPage extends StatefulWidget {
 
 class SearchPageSate extends State<SearchPage> {
   String searchquery = dropDownLocations.first.value;
+  String textBoxquery = "";
   SearchPageSate();
   Widget build(BuildContext context) {
     return StreamProvider<QuerySnapshot>.value(
@@ -72,7 +73,7 @@ class SearchPageSate extends State<SearchPage> {
                   )),
                   onChanged: (value) {
                     setState(() {
-                      // searchquery = value;
+                      textBoxquery = value;
                     });
                   },
                 ),
@@ -82,11 +83,8 @@ class SearchPageSate extends State<SearchPage> {
         ),
         body: SafeArea(
           child: Container(
-            padding: EdgeInsets.only(top: 10, left: 20, right: 20),
-            child: ListView(
-              children: [SearchResults(searchquery)],
-            ),
-          ),
+              padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+              child: SearchResults(searchquery, textBoxquery)),
         ),
       ),
     );

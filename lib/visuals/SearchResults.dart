@@ -7,7 +7,8 @@ import 'package:deeformity/Shared/loading.dart';
 
 class SearchResults extends StatefulWidget {
   final String searchQuery;
-  SearchResults(this.searchQuery);
+  final String textBoxQuery;
+  SearchResults(this.searchQuery, this.textBoxQuery);
   @override
   _SearchResultsState createState() => _SearchResultsState(this.searchQuery);
 }
@@ -32,11 +33,58 @@ class _SearchResultsState extends State<SearchResults> {
     }
   }
 
+  void openUserCard(QueryDocumentSnapshot doc) {}
+
   Widget createUserCard(QueryDocumentSnapshot doc) {
     if (doc.id == UserSingleton.userSingleton.userID) return SizedBox();
+    String firstName = doc.data()["First Name"];
+    String lastName = doc.data()["Last Name"];
+    String profession = doc.data()["Profession"] ?? "Private user";
+    String userFullName = firstName + " " + lastName;
+
+    //Fliters displayed users according to textForm input
+    if (widget.textBoxQuery.isNotEmpty) {
+      int iterationPos = 0;
+      for (var s in widget.textBoxQuery.characters) {
+        if (s.toUpperCase() != userFullName[iterationPos].toUpperCase())
+          return SizedBox();
+        iterationPos += 1;
+      }
+    }
     return Container(
-        padding: EdgeInsets.only(top: 100, bottom: 100),
-        child: Text(doc.data()["First Name"]));
+      padding: EdgeInsets.only(top: 10),
+      child: InkWell(
+        child: Card(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          child: Container(
+            child: ListTile(
+              leading: CircleAvatar(),
+              title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      firstName + " " + lastName,
+                      style: TextStyle(
+                        color: Color.fromRGBO(21, 33, 47, 1),
+                      ),
+                    ),
+                    Text(
+                      profession,
+                      style: TextStyle(
+                          color: Color.fromRGBO(21, 33, 47, 1),
+                          fontWeight: FontWeight.w300,
+                          fontSize: 12),
+                    )
+                  ]),
+            ),
+          ),
+        ),
+        onTap: () {
+          openUserCard(doc);
+        },
+      ),
+    );
   }
 
   @override
@@ -52,10 +100,10 @@ class _SearchResultsState extends State<SearchResults> {
       }
     });
     return loading
-        ? Loading()
+        ? Center(child: Loading())
         : snapshot.isEmpty
             ? Text("No active user found in location")
-            : Column(
+            : ListView(
                 children: [for (var doc in snapshot) createUserCard(doc)],
               );
   }
