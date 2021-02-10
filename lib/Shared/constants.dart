@@ -1,12 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import '../Screens/SearhPage.dart';
 
 const double fontSize = 20;
 const double fontSizeInputHint = 12;
 const double fontSizeButton = 15;
 const TextStyle cardHeaderStyle = TextStyle(color: Colors.white, fontSize: 30);
 const textInputDecoration = InputDecoration(
-    contentPadding: EdgeInsets.all(1),
+    contentPadding: EdgeInsets.all(15),
     filled: true,
     focusedBorder:
         OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
@@ -16,7 +17,7 @@ const textInputDecoration = InputDecoration(
     floatingLabelBehavior: FloatingLabelBehavior.always);
 
 const textInputDecorationWhite = InputDecoration(
-    contentPadding: EdgeInsets.all(1),
+    contentPadding: EdgeInsets.all(15),
     filled: true,
     focusedBorder:
         OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
@@ -56,7 +57,7 @@ final List<DropdownMenuItem<String>> dropDownLocations = <String>[
   "Utrecht",
   "Zaanstad",
   "Zwolle",
-  "'s-Hertogenbosch"
+  "'s-Hertogenbosch",
 ]
     .map<DropdownMenuItem<String>>((String value) => DropdownMenuItem<String>(
           value: value,

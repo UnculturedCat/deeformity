@@ -149,7 +149,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
                     maxLines: null,
                     //keyboardType: TextInputType.multiline,
                     decoration: textInputDecorationWhite.copyWith(
-                        contentPadding: EdgeInsets.only(right: 10, left: 10),
+                        //contentPadding: EdgeInsets.only(right: 10, left: 10),
                         hintText: "Description",
                         hintStyle: TextStyle(fontSize: fontSizeInputHint)),
                     onSaved: (input) => description = input,

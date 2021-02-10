@@ -33,6 +33,7 @@ class DatabaseService {
       FirebaseFirestore.instance.collection("Schedules");
 
   String scheduleSubCollectionName = "Daily routines";
+  String workOutScheduleCollectionName = "Workout routines";
 
   UserData createUserDataFromSnapshot(DocumentSnapshot snap) {
     UserSingleton.userSingleton.userData = UserData(

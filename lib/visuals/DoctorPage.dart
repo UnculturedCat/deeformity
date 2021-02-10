@@ -1,6 +1,6 @@
 import 'package:deeformity/visuals/Settings.dart';
 import 'package:flutter/material.dart';
-import 'Profile.dart';
+import '../Screens/Profile.dart';
 
 class DoctorPage extends StatefulWidget {
   @override

@@ -1,6 +1,6 @@
 import 'package:deeformity/Services/Authentication.dart';
 import 'package:flutter/material.dart';
-import 'Profile.dart';
+import '../Screens/Profile.dart';
 import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {

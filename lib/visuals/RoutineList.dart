@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
-import 'package:deeformity/visuals/Profile.dart';
+import 'package:deeformity/Screens/Profile.dart';
 import 'package:deeformity/visuals/RoutinePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

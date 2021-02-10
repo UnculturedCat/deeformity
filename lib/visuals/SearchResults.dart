@@ -4,13 +4,14 @@ import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Services/database.dart';
 import 'package:deeformity/Shared/loading.dart';
+import 'package:provider/provider.dart';
 
 class SearchResults extends StatefulWidget {
-  final String searchQuery;
+  final String locationQuery;
   final String textBoxQuery;
-  SearchResults(this.searchQuery, this.textBoxQuery);
+  SearchResults(this.locationQuery, this.textBoxQuery);
   @override
-  _SearchResultsState createState() => _SearchResultsState(this.searchQuery);
+  _SearchResultsState createState() => _SearchResultsState(this.locationQuery);
 }
 
 class _SearchResultsState extends State<SearchResults> {
@@ -22,7 +23,8 @@ class _SearchResultsState extends State<SearchResults> {
   List<QueryDocumentSnapshot> snapshot;
   _SearchResultsState(this.query);
 
-  void getSnapshots() async {
+  //Uncomment for manual retreival of QuerySnapshots. Was done for study purposes
+  /*void getSnapshots() async {
     loading = true;
     querySnapshot = await DatabaseService().searchForUser(query);
     snapshot = querySnapshot.docs;
@@ -31,12 +33,14 @@ class _SearchResultsState extends State<SearchResults> {
       gotSnaps = true;
       setState(() {});
     }
-  }
+  }*/
 
   void openUserCard(QueryDocumentSnapshot doc) {}
 
   Widget createUserCard(QueryDocumentSnapshot doc) {
-    if (doc.id == UserSingleton.userSingleton.userID) return SizedBox();
+    if ((doc.id == UserSingleton.userSingleton.userID ||
+            doc.data()["Location"] != widget.locationQuery) &&
+        widget.textBoxQuery.isEmpty) return SizedBox();
     String firstName = doc.data()["First Name"];
     String lastName = doc.data()["Last Name"];
     String profession = doc.data()["Profession"] ?? "Private user";
@@ -51,6 +55,8 @@ class _SearchResultsState extends State<SearchResults> {
         iterationPos += 1;
       }
     }
+
+    //create card
     return Container(
       padding: EdgeInsets.only(top: 10),
       child: InkWell(
@@ -64,7 +70,7 @@ class _SearchResultsState extends State<SearchResults> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      firstName + " " + lastName,
+                      userFullName,
                       style: TextStyle(
                         color: Color.fromRGBO(21, 33, 47, 1),
                       ),
@@ -89,10 +95,13 @@ class _SearchResultsState extends State<SearchResults> {
 
   @override
   Widget build(BuildContext context) {
+    final snaps = Provider.of<QuerySnapshot>(context);
+
+    /* //Uncomment for manual retreival of QuerySnapshots. Was done for study purposes
     setState(() {
       queryChanged = false;
-      if (query != widget.searchQuery) {
-        query = widget.searchQuery;
+      if (query != widget.locationQuery) {
+        query = widget.locationQuery;
         queryChanged = true;
       }
       if (queryChanged || snapshot == null) {
@@ -105,6 +114,11 @@ class _SearchResultsState extends State<SearchResults> {
             ? Text("No active user found in location")
             : ListView(
                 children: [for (var doc in snapshot) createUserCard(doc)],
-              );
+              );*/
+
+    return snaps != null && snaps.docs.isNotEmpty
+        ? ListView(
+            children: snaps.docs.map((doc) => createUserCard(doc)).toList())
+        : SizedBox();
   }
 }

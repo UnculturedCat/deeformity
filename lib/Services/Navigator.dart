@@ -1,19 +1,17 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../visuals/Finances.dart';
-import '../visuals/MailPage.dart';
-import '../visuals/NotificationsPage.dart';
-import '../visuals/SearhPage.dart';
-import '../visuals/Home.dart';
+import '../Screens/WorkOutSchedulePage.dart';
+import '../Screens/SearhPage.dart';
+import '../Screens/Home.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
-import '../visuals/Profile.dart';
+import '../Screens/Profile.dart';
+import 'package:flutter/services.dart';
 
 class NavigatorClass extends StatefulWidget {
   static FirebaseAnalytics analytics = new FirebaseAnalytics();
   //static FirebaseAnalyticsObserver observer = new FirebaseAnalyticsObserver(analytics: analytics);
-  NavigatorClass();
+  NavigatorClass({Key key}) : super(key: key);
   State<StatefulWidget> createState() {
     return NavigatorClassState();
   }
@@ -27,7 +25,7 @@ class NavigatorClassState extends State<NavigatorClass> {
     HomePage(),
     //FinancePage(),
     SearchPage(),
-    MailPage(),
+    WorkoutSchedulePage(),
     //NotificationsPage(),
     ProfilePage()
   ];
@@ -35,7 +33,7 @@ class NavigatorClassState extends State<NavigatorClass> {
     "HomePage",
     //"FinancePage",
     "SearchPage",
-    "MailPage",
+    "WorkoutSchedulePage",
     //"NotificationsPage",
     "ProfilePage"
   ];
@@ -70,6 +68,7 @@ class NavigatorClassState extends State<NavigatorClass> {
         selectedItemColor: Color.fromRGBO(21, 33, 47, 1),
         iconSize: 30,
         backgroundColor: Colors.white,
+        unselectedItemColor: Colors.grey,
         //elevation: 8,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
@@ -79,11 +78,12 @@ class NavigatorClassState extends State<NavigatorClass> {
             label: "Search",
           ),
           BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.chat_bubble_2), label: "Inbox"),
+              icon: Icon(CupertinoIcons.calendar_circle_fill),
+              label: "Workout"),
           // BottomNavigationBarItem(
           //     icon: Icon(CupertinoIcons.bell_solid), label: "Notifications"),
           BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.person_fill), label: "Profile")
+              icon: Icon(CupertinoIcons.profile_circled), label: "Profile")
         ],
         onTap: _itemTapped,
       ),
