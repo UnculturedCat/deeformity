@@ -59,6 +59,8 @@ class DatabaseService {
     });
   }
 
+  Future saveWorkoutSchedule(String workoutScheduleName, String day) async {}
+
   Future updateUserData({bool professionalAccount, String location}) async {}
 
   Future<String> createSchedule(
@@ -70,14 +72,14 @@ class DatabaseService {
       int reps,
       String description,
       String scheduleType,
-      String date,
+      String day,
       String dateTime,
       int frequency}) async {
     DocumentReference ref =
         await scheduleCollection.doc(uid).collection("Daily routines").add({
       "Card Id": cardId,
       "User Id": userId,
-      "Date": date,
+      "Date": day,
       "Name": workOutName,
       "Category": category,
       "Schedule Type": scheduleType,

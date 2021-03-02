@@ -1,22 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Services/database.dart';
 import 'package:flutter/services.dart';
+import 'dart:io';
+
+import 'package:image_picker/image_picker.dart';
 
 class AddExercisePage extends StatefulWidget {
-  final ActivityType _activityType;
-  AddExercisePage(this._activityType);
+  final String day;
+  AddExercisePage(this.day);
   @override
-  _AddExercisePageState createState() => _AddExercisePageState(_activityType);
+  _AddExercisePageState createState() => _AddExercisePageState();
 }
 
 class _AddExercisePageState extends State<AddExercisePage> {
   final _formKey = GlobalKey<FormState>();
   String cardId;
   String userId = UserSingleton.userSingleton.currentUSer.uid;
-  final ActivityType _activityType;
   String category;
   String workOutName;
   int sets;
@@ -25,16 +28,11 @@ class _AddExercisePageState extends State<AddExercisePage> {
   String date = UserSingleton.userSingleton.selectedStringDate;
   int frequency = RepeatFrequency.none.index;
   DateTime dateTime = UserSingleton.userSingleton.dateTime;
+  File _mediaFile;
+  final ImagePicker _imagePicker = ImagePicker();
+  Image picture;
 
-  _AddExercisePageState(this._activityType) {
-    if (_activityType == ActivityType.fitness) {
-      category = "Fitness";
-    } else if (_activityType == ActivityType.physio) {
-      category = "Physio";
-    } else if (_activityType == ActivityType.personal) {
-      category = "Personal";
-    }
-  }
+  _AddExercisePageState();
   void addExercise() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
@@ -48,7 +46,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
               sets: sets,
               reps: reps,
               description: description,
-              date: date,
+              day: widget.day,
               dateTime: dateTime.toString(),
               frequency: frequency);
       cardDocId.isNotEmpty
@@ -63,8 +61,26 @@ class _AddExercisePageState extends State<AddExercisePage> {
     Navigator.pop(context);
   }
 
-  void attachMedia() {
+  Future<void> attachPhoto(ImageSource source) async {
     //open attach media page
+    PickedFile selected = await _imagePicker.getImage(source: source);
+    if (selected != null) {
+      setState(() {
+        _mediaFile = File(selected.path);
+        picture = Image.file(_mediaFile);
+      });
+    }
+  }
+
+  Future<void> attachVideo(ImageSource source) async {
+    //open attach media page
+    PickedFile selected = await _imagePicker.getVideo(source: source);
+    if (selected != null) {
+      setState(() {
+        // _mediaFile = File(selected.path);
+        // picture = Image.file(_mediaFile);
+      });
+    }
   }
 
   @override
@@ -78,122 +94,244 @@ class _AddExercisePageState extends State<AddExercisePage> {
         ),
         backgroundColor: Color.fromRGBO(21, 33, 47, 15),
       ),
-      body: Center(
-        child: Container(
-          padding: EdgeInsets.only(top: 20, left: 10, right: 10),
-          child: Form(
-            key: _formKey,
-            child: ListView(
-              children: [
-                Container(
-                    padding: EdgeInsets.only(left: 10, bottom: 30),
-                    child: Text(
-                      category,
-                      style: TextStyle(fontSize: 30),
-                    )),
-                Container(
-                  child: TextFormField(
-                    decoration: textInputDecorationWhite.copyWith(
-                      hintStyle: TextStyle(fontSize: fontSizeInputHint),
-                      hintText: "Workout Name",
-                    ),
-                    onSaved: (input) => workOutName = input,
-                    validator: (input) =>
-                        input.isEmpty ? "Enter exercise name" : null,
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.only(top: 30),
-                  child: Row(
+      body: GestureDetector(
+        child: Center(
+          child: Container(
+            padding: EdgeInsets.only(top: 20, left: 10, right: 10),
+            child: Form(
+              key: _formKey,
+              child: Column(children: [
+                Expanded(
+                  //height: MediaQuery.of(context).size.height * 0.70,
+                  child: ListView(
                     children: [
                       Container(
-                        width: 70,
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
-                          ],
-                          decoration: textInputDecorationWhite.copyWith(
-                              hintStyle: TextStyle(fontSize: fontSizeInputHint),
-                              hintText: "reps"),
-                          onSaved: (input) => reps = int.parse(input),
-                          validator: (input) =>
-                              input.isEmpty ? "Enter number of reps" : null,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 20,
+                          padding: EdgeInsets.only(left: 10, bottom: 20),
+                          child: Text(
+                            widget.day,
+                            style: TextStyle(
+                                fontSize: 30, fontWeight: FontWeight.bold),
+                          )),
+                      Container(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(5).copyWith(top: 2),
+                                child: Text(
+                                  "Give your exercise a clear and succint name",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Color.fromRGBO(21, 33, 47, 15),
+                                    // /fontSize: 15,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                child: TextFormField(
+                                  maxLength: 20,
+                                  decoration: textInputDecorationWhite.copyWith(
+                                    hintStyle:
+                                        TextStyle(fontSize: fontSizeInputHint),
+                                    hintText: "Workout Name",
+                                  ),
+                                  onSaved: (input) => workOutName = input,
+                                  validator: (input) => input.isEmpty
+                                      ? "Enter exercise name"
+                                      : null,
+                                ),
+                              ),
+                            ]),
                       ),
                       Container(
-                        width: 70,
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))
-                          ],
-                          decoration: textInputDecorationWhite.copyWith(
-                              hintStyle: TextStyle(fontSize: fontSizeInputHint),
-                              hintText: "Sets"),
-                          onSaved: (input) => sets = int.parse(input),
-                          validator: (input) =>
-                              input.isEmpty ? "Enter number of sets" : null,
-                        ),
-                      )
+                        //height: 300,
+                        padding: EdgeInsets.only(top: 30),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(5).copyWith(top: 2),
+                                child: Text(
+                                  "Describe the flow of the exercise. From sets, reps, rest time etc",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Color.fromRGBO(21, 33, 47, 15),
+                                    //fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                child: TextFormField(
+                                  maxLines: null,
+                                  minLines: 12,
+                                  //textInputAction: TextInputAction.newline,
+
+                                  decoration: textInputDecorationWhite.copyWith(
+                                      hintText: "Description",
+                                      hintStyle: TextStyle(
+                                          fontSize: fontSizeInputHint)),
+                                  onSaved: (input) => description = input,
+                                  //validator: (input) => input.isEmpty? "Enter",
+                                ),
+                              ),
+                            ]),
+                      ),
+                      Container(
+                        child: picture != null
+                            ? Container(
+                                padding: EdgeInsets.all(10),
+                                child: Column(children: [
+                                  Container(
+                                    child: picture,
+                                  ),
+                                  Container(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        RaisedButton(
+                                            child: Text("DELETE"),
+                                            onPressed: () {
+                                              setState(() {
+                                                picture = null;
+                                              });
+                                            }),
+                                        RaisedButton(
+                                            child: Text("REPLACE"),
+                                            onPressed: () {})
+                                      ],
+                                    ),
+                                  )
+                                ]),
+                              )
+                            : Container(
+                                padding: EdgeInsets.only(top: 10, bottom: 10),
+                                child: GestureDetector(
+                                  child: Row(children: [
+                                    //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                                    Icon(
+                                      Icons.image,
+                                      size: 50,
+                                    ),
+                                    Text("Add Media"),
+                                  ]),
+                                  onTap: () {
+                                    showModalBottomSheet(
+                                        context: context,
+                                        builder: (context) {
+                                          return Container(
+                                            padding: EdgeInsets.all(10),
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  padding: EdgeInsets.only(
+                                                      top: 10, bottom: 10),
+                                                  child: GestureDetector(
+                                                    child: Row(children: [
+                                                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                                                      Icon(
+                                                        Icons.image,
+                                                        size: 50,
+                                                      ),
+                                                      Text(
+                                                          "Add Photo from device"),
+                                                    ]),
+                                                    onTap: () {
+                                                      attachPhoto(
+                                                          ImageSource.gallery);
+                                                    },
+                                                  ),
+                                                ),
+                                                Container(
+                                                  padding: EdgeInsets.only(
+                                                      top: 10, bottom: 10),
+                                                  child: GestureDetector(
+                                                    child: Row(children: [
+                                                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                                                      Icon(
+                                                        Icons.photo_camera,
+                                                        size: 50,
+                                                      ),
+                                                      Text(
+                                                          "Add Photo from camera"),
+                                                    ]),
+                                                    onTap: () {
+                                                      attachPhoto(
+                                                          ImageSource.camera);
+                                                    },
+                                                  ),
+                                                ),
+                                                Container(
+                                                  padding: EdgeInsets.only(
+                                                      top: 10, bottom: 10),
+                                                  child: GestureDetector(
+                                                    child: Row(children: [
+                                                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                                                      Icon(
+                                                        Icons.video_library,
+                                                        size: 50,
+                                                      ),
+                                                      Text(
+                                                          "Add video from gallery"),
+                                                    ]),
+                                                    onTap: () {
+                                                      attachVideo(
+                                                          ImageSource.gallery);
+                                                    },
+                                                  ),
+                                                ),
+                                                Container(
+                                                  padding: EdgeInsets.only(
+                                                      top: 10, bottom: 10),
+                                                  child: GestureDetector(
+                                                    child: Row(children: [
+                                                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                                                      Icon(
+                                                        Icons.videocam,
+                                                        size: 50,
+                                                      ),
+                                                      Text(
+                                                          "Add video from camera"),
+                                                    ]),
+                                                    onTap: () {
+                                                      attachVideo(
+                                                          ImageSource.camera);
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        });
+                                  },
+                                ),
+                              ),
+                      ),
                     ],
                   ),
                 ),
                 Container(
-                  height: 300,
-                  padding: EdgeInsets.only(top: 30),
-                  child: TextFormField(
-                    maxLines: null,
-                    //keyboardType: TextInputType.multiline,
-                    decoration: textInputDecorationWhite.copyWith(
-                        //contentPadding: EdgeInsets.only(right: 10, left: 10),
-                        hintText: "Description",
-                        hintStyle: TextStyle(fontSize: fontSizeInputHint)),
-                    onSaved: (input) => description = input,
-                    //validator: (input) => input.isEmpty? "Enter",
-                  ),
-                ),
-                Row(children: [
-                  //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
-                  DropdownButton(
-                      value: RepeatFrequency.values[frequency],
-                      dropdownColor: Colors.white,
-                      items: dropDownFrequency,
-                      onChanged: (value) {
-                        setState(() {
-                          frequency = RepeatFrequency.values.indexOf(value);
-                        });
-                      }),
-                  Text("Event"),
-                ]),
-                Row(children: [
-                  //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
-                  IconButton(
-                      icon: Icon(Icons.image),
-                      iconSize: 50,
-                      onPressed: attachMedia),
-                  Text("Add media"),
-                ]),
-                SizedBox(
-                  height: 50,
-                ),
-                RaisedButton(
-                    child: Text(
-                      "Create Exercise",
-                      style: TextStyle(
-                          fontSize: fontSizeButton,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.white),
-                    ),
-                    color: Color.fromRGBO(27, 98, 40, 1),
-                    onPressed: addExercise)
-              ],
+                  padding: EdgeInsets.only(bottom: 50),
+                  child: RaisedButton(
+                      child: Text(
+                        "Create Exercise",
+                        style: TextStyle(
+                            fontSize: fontSizeButton,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.white),
+                      ),
+                      color: Color.fromRGBO(27, 98, 40, 1),
+                      onPressed: addExercise),
+                )
+              ]),
             ),
           ),
         ),
+        onTap: () {
+          FocusScopeNode currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus) {
+            currentFocus.unfocus();
+          }
+        },
       ),
     );
   }

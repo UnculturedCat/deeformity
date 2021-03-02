@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/DataManager/Utility.dart';
 import 'package:deeformity/AuthenticationWrapper.dart';
-import '../visuals/SchedulePage.dart';
 import 'package:deeformity/Shared/constants.dart';
 
 class HomePage extends StatefulWidget {
@@ -39,9 +38,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   void openSchedulePage(ActivityType activityType) {
     UserSingleton.userSingleton.selectedStringDate =
         DateFormat.yMMMd().format(selectedDate);
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return SchedulePage(scheduleData, activityType);
-    }));
+    // Navigator.push(context, MaterialPageRoute(builder: (context) {
+    //   return SchedulePage(scheduleData, activityType);
+    // }));
   }
 
   void openDatePicker(BuildContext context) async {
