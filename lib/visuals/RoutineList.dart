@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:deeformity/Screens/Profile.dart';
-import 'package:deeformity/visuals/RoutinePage.dart';
+import 'package:deeformity/visuals/ExercisePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -29,7 +29,7 @@ class _RoutineListState extends State<RoutineList> {
 
   void openCard(QueryDocumentSnapshot doc) {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => RoutinePage(doc)));
+        context, MaterialPageRoute(builder: (context) => ExercisePage(doc)));
   }
 
   Widget createRoutineCard(QueryDocumentSnapshot doc) {

@@ -115,6 +115,10 @@ DropdownMenuItem<RepeatFrequency> createTextWidget(RepeatFrequency value) {
   return DropdownMenuItem<RepeatFrequency>(value: receivedValue, child: child);
 }
 
+enum MediaType { photo, video, textDocument }
+
+enum MediaAssetSource { file, network, asset }
+
 const List<String> locations = [
   "Enschede",
   "Utrecht",

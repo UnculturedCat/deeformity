@@ -4,27 +4,15 @@ import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/User/UserClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'dart:io';
 
 class DatabaseService {
   final String uid;
   DatabaseService({this.uid});
 
-  Stream<QuerySnapshot> get currentUsers {
-    return usersCollection.snapshots();
-  }
-
-  //get schedule snapshot for the current user
-  Stream<QuerySnapshot> get schedule => scheduleCollection
-      .doc(UserSingleton.userSingleton.currentUSer.uid)
-      .collection(scheduleSubCollectionName)
-      .snapshots();
-
-  Stream<UserData> get userData => usersCollection
-      .doc(UserSingleton.userSingleton.currentUSer.uid)
-      .snapshots()
-      .map((doc) => createUserDataFromSnapshot(doc));
-
-  Stream<QuerySnapshot> get allUsers => usersCollection.snapshots();
+  firebase_storage.FirebaseStorage _mediaStorage =
+      firebase_storage.FirebaseStorage.instance;
 
   final CollectionReference usersCollection =
       FirebaseFirestore.instance.collection("Users");
@@ -34,6 +22,23 @@ class DatabaseService {
 
   String scheduleSubCollectionName = "Daily routines";
   String workOutScheduleCollectionName = "Workout routines";
+
+  Stream<QuerySnapshot> get currentUsers {
+    return usersCollection.snapshots();
+  }
+
+  //get schedule snapshot for the current user
+  Stream<QuerySnapshot> get schedule => scheduleCollection
+      .doc(UserSingleton.userSingleton.currentUSer.uid)
+      .collection(workOutScheduleCollectionName)
+      .snapshots();
+
+  Stream<UserData> get userData => usersCollection
+      .doc(UserSingleton.userSingleton.currentUSer.uid)
+      .snapshots()
+      .map((doc) => createUserDataFromSnapshot(doc));
+
+  Stream<QuerySnapshot> get allUsers => usersCollection.snapshots();
 
   UserData createUserDataFromSnapshot(DocumentSnapshot snap) {
     UserSingleton.userSingleton.userData = UserData(
@@ -66,28 +71,25 @@ class DatabaseService {
   Future<String> createSchedule(
       {String cardId,
       String userId,
-      String category,
+      String scheduleName,
       String workOutName,
-      int sets,
-      int reps,
       String description,
-      String scheduleType,
       String day,
       String dateTime,
-      int frequency}) async {
-    DocumentReference ref =
-        await scheduleCollection.doc(uid).collection("Daily routines").add({
+      String mediaURL,
+      String mediaStoragePath}) async {
+    DocumentReference ref = await scheduleCollection
+        .doc(uid)
+        .collection(workOutScheduleCollectionName)
+        .add({
       "Card Id": cardId,
       "User Id": userId,
-      "Date": day,
+      "Day": day,
+      "Schedule Name": scheduleName,
       "Name": workOutName,
-      "Category": category,
-      "Schedule Type": scheduleType,
-      "Sets": sets,
-      "Reps": reps,
       "Description": description,
-      "Frequency": frequency,
-      "DateTime": dateTime
+      "MediaURL": mediaURL,
+      "Media Path": mediaStoragePath
     });
     return ref.id;
   }
@@ -95,7 +97,7 @@ class DatabaseService {
   Future updateRoutineInfo(String cardId) async {
     await scheduleCollection
         .doc(uid)
-        .collection(scheduleSubCollectionName)
+        .collection(workOutScheduleCollectionName)
         .doc(cardId)
         .update({"Card Id": cardId});
   }
@@ -103,7 +105,7 @@ class DatabaseService {
   Future deleteRoutine(QueryDocumentSnapshot doc) async {
     await scheduleCollection
         .doc(uid)
-        .collection(scheduleSubCollectionName)
+        .collection(workOutScheduleCollectionName)
         .doc(doc.id)
         .delete();
   }
@@ -113,7 +115,45 @@ class DatabaseService {
         .where("Location", isEqualTo: searchQuery)
         .get();
   }
-  // Future<String> fetchUserData() {
-  //   userCollection.doc(uid).update(data)
-  // }
+
+  Future<Map<String, String>> storeMedia(
+      File file, String title, MediaType mediaType) async {
+    String subfolder = "";
+    switch (mediaType) {
+      case MediaType.photo:
+        subfolder = "Photos";
+        break;
+      case MediaType.video:
+        subfolder = "Videos";
+        break;
+      case MediaType.textDocument:
+        subfolder = "Documents";
+        break;
+      default:
+        subfolder = "";
+        break;
+    }
+    var mediaFileName = uid + DateTime.now().millisecondsSinceEpoch.toString();
+
+    firebase_storage.TaskSnapshot task = await _mediaStorage
+        .ref()
+        .child(subfolder)
+        .child(mediaFileName)
+        .putFile(file);
+    String downloadURL = await task.ref.getDownloadURL();
+    String fullPath = task.ref.fullPath;
+    Map<String, String> mediaFields = {
+      "downloadURL": downloadURL,
+      "fullPath": fullPath
+    };
+    return mediaFields;
+  }
+
+  Future<void> deleteMedia(String url) async {
+    //await _mediaStorage.ref().child(fullPath).delete();
+    firebase_storage.Reference reference = _mediaStorage.refFromURL(url);
+    print(reference.fullPath);
+    await reference.delete();
+    print("image deleted");
+  }
 }

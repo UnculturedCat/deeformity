@@ -45,5 +45,7 @@
 	<string>Used to capture audio for better experience</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Used to add media to for better experience</string>
+	<key>NSAllowsArbitraryLoads</key>
+  	<true/>
 </dict>
 </plist>

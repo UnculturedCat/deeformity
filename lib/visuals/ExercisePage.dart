@@ -2,20 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Shared/constants.dart';
 
-class RoutinePage extends StatefulWidget {
+class ExercisePage extends StatefulWidget {
   final QueryDocumentSnapshot documentSnapshot;
-  RoutinePage(this.documentSnapshot);
+  ExercisePage(this.documentSnapshot);
   @override
-  _RoutinePageState createState() => _RoutinePageState(documentSnapshot);
+  _ExercisePageState createState() => _ExercisePageState(documentSnapshot);
 }
 
-class _RoutinePageState extends State<RoutinePage> {
+class _ExercisePageState extends State<ExercisePage> {
   QueryDocumentSnapshot docSnapshot;
-  _RoutinePageState(this.docSnapshot);
+  var media;
+  _ExercisePageState(this.docSnapshot);
   @override
   Widget build(BuildContext context) {
     String title = docSnapshot.data()["Name"];
     String description = docSnapshot.data()["Description"];
+    String mediaURL = docSnapshot.data()["MediaURL"];
+    if (mediaURL != null && mediaURL.isNotEmpty) {
+      media = Image.network(mediaURL);
+    }
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -29,6 +34,21 @@ class _RoutinePageState extends State<RoutinePage> {
         padding: EdgeInsets.only(left: 10, right: 10),
         decoration: gradientDecoration,
         child: ListView(children: [
+          Center(
+            child: Container(
+              padding: EdgeInsets.only(top: 20, bottom: 20),
+              child: Text(
+                title,
+                style: cardHeaderStyle,
+              ),
+            ),
+          ),
+          Container(
+            height: 400,
+            child: Center(
+              child: media,
+            ),
+          ),
           Container(
             padding: EdgeInsets.only(top: 20),
             child: Text("Description",

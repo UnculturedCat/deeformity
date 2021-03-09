@@ -22,46 +22,60 @@ class _AddExercisePageState extends State<AddExercisePage> {
   String userId = UserSingleton.userSingleton.currentUSer.uid;
   String category;
   String workOutName;
-  int sets;
-  int reps;
   String description;
   String date = UserSingleton.userSingleton.selectedStringDate;
-  int frequency = RepeatFrequency.none.index;
   DateTime dateTime = UserSingleton.userSingleton.dateTime;
   File _mediaFile;
   final ImagePicker _imagePicker = ImagePicker();
   Image picture;
+  String mediaURL;
+  String mediaStoragePath;
+  bool working = false;
 
   _AddExercisePageState();
   void addExercise() async {
     if (_formKey.currentState.validate()) {
+      setState(() {
+        working = true;
+      });
       _formKey.currentState.save();
+
+      Map<String, String> mediaFields;
+
+      //store media in fireCloud
+      if (_mediaFile != null) {
+        mediaFields =
+            await DatabaseService(uid: UserSingleton.userSingleton.userID)
+                .storeMedia(_mediaFile, workOutName, MediaType.photo);
+        mediaURL = mediaFields["downloadURL"];
+        mediaStoragePath = mediaFields["fullPath"];
+      }
+
       String cardDocId = await DatabaseService(
               uid: UserSingleton.userSingleton.currentUSer.uid)
           .createSchedule(
               cardId: cardId,
-              category: category,
               userId: userId,
               workOutName: workOutName,
-              sets: sets,
-              reps: reps,
               description: description,
               day: widget.day,
               dateTime: dateTime.toString(),
-              frequency: frequency);
+              mediaURL: mediaURL,
+              mediaStoragePath: mediaStoragePath);
       cardDocId.isNotEmpty
-          ? updateRoutineInfo(cardDocId)
-          : print("Add Exercise Page: CardDocId not received");
+          ? Navigator.pop(context)
+          : setState(() {
+              working = false;
+              showBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Center(child: Text("Could not create exercise"));
+                  });
+            });
     }
   }
 
-  void updateRoutineInfo(String cardDocId) async {
-    await DatabaseService(uid: UserSingleton.userSingleton.currentUSer.uid)
-        .updateRoutineInfo(cardDocId);
-    Navigator.pop(context);
-  }
-
-  Future<void> attachPhoto(ImageSource source) async {
+  Future<void> attachPhoto(ImageSource source, BuildContext context) async {
     //open attach media page
     PickedFile selected = await _imagePicker.getImage(source: source);
     if (selected != null) {
@@ -70,17 +84,102 @@ class _AddExercisePageState extends State<AddExercisePage> {
         picture = Image.file(_mediaFile);
       });
     }
+    Navigator.pop(context);
   }
 
-  Future<void> attachVideo(ImageSource source) async {
+  Future<void> attachVideo(ImageSource source, BuildContext context) async {
     //open attach media page
     PickedFile selected = await _imagePicker.getVideo(source: source);
     if (selected != null) {
       setState(() {
-        // _mediaFile = File(selected.path);
+        _mediaFile = File(selected.path);
         // picture = Image.file(_mediaFile);
       });
     }
+    Navigator.pop(context);
+  }
+
+  void showMediaSelectionOption() {
+    showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        context: context,
+        builder: (context) {
+          return Container(
+            padding: EdgeInsets.all(10),
+            child: Wrap(
+              children: [
+                Container(
+                  padding: EdgeInsets.only(top: 10, bottom: 10),
+                  child: GestureDetector(
+                    child: Row(children: [
+                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                      Icon(
+                        Icons.image,
+                        size: 50,
+                      ),
+                      Text("Add Photo from device"),
+                    ]),
+                    onTap: () {
+                      attachPhoto(ImageSource.gallery, context);
+                    },
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 10, bottom: 10),
+                  child: GestureDetector(
+                    child: Row(children: [
+                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                      Icon(
+                        Icons.photo_camera,
+                        size: 50,
+                      ),
+                      Text("Add Photo from camera"),
+                    ]),
+                    onTap: () {
+                      attachPhoto(ImageSource.camera, context);
+                    },
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 10, bottom: 10),
+                  child: GestureDetector(
+                    child: Row(children: [
+                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                      Icon(
+                        Icons.video_library,
+                        size: 50,
+                      ),
+                      Text("Add video from gallery"),
+                    ]),
+                    onTap: () {
+                      attachVideo(ImageSource.gallery, context);
+                    },
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 10, bottom: 10),
+                  child: GestureDetector(
+                    child: Row(children: [
+                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                      Icon(
+                        Icons.videocam,
+                        size: 50,
+                      ),
+                      Text("Add video from camera"),
+                    ]),
+                    onTap: () {
+                      attachVideo(ImageSource.camera, context);
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: 120,
+                )
+              ],
+            ),
+          );
+        });
   }
 
   @override
@@ -195,9 +294,9 @@ class _AddExercisePageState extends State<AddExercisePage> {
                                                 picture = null;
                                               });
                                             }),
-                                        RaisedButton(
-                                            child: Text("REPLACE"),
-                                            onPressed: () {})
+                                        // RaisedButton(
+                                        //     child: Text("REPLACE"),
+                                        //     onPressed: () {})
                                       ],
                                     ),
                                   )
@@ -214,95 +313,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
                                     ),
                                     Text("Add Media"),
                                   ]),
-                                  onTap: () {
-                                    showModalBottomSheet(
-                                        context: context,
-                                        builder: (context) {
-                                          return Container(
-                                            padding: EdgeInsets.all(10),
-                                            child: Column(
-                                              children: [
-                                                Container(
-                                                  padding: EdgeInsets.only(
-                                                      top: 10, bottom: 10),
-                                                  child: GestureDetector(
-                                                    child: Row(children: [
-                                                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
-                                                      Icon(
-                                                        Icons.image,
-                                                        size: 50,
-                                                      ),
-                                                      Text(
-                                                          "Add Photo from device"),
-                                                    ]),
-                                                    onTap: () {
-                                                      attachPhoto(
-                                                          ImageSource.gallery);
-                                                    },
-                                                  ),
-                                                ),
-                                                Container(
-                                                  padding: EdgeInsets.only(
-                                                      top: 10, bottom: 10),
-                                                  child: GestureDetector(
-                                                    child: Row(children: [
-                                                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
-                                                      Icon(
-                                                        Icons.photo_camera,
-                                                        size: 50,
-                                                      ),
-                                                      Text(
-                                                          "Add Photo from camera"),
-                                                    ]),
-                                                    onTap: () {
-                                                      attachPhoto(
-                                                          ImageSource.camera);
-                                                    },
-                                                  ),
-                                                ),
-                                                Container(
-                                                  padding: EdgeInsets.only(
-                                                      top: 10, bottom: 10),
-                                                  child: GestureDetector(
-                                                    child: Row(children: [
-                                                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
-                                                      Icon(
-                                                        Icons.video_library,
-                                                        size: 50,
-                                                      ),
-                                                      Text(
-                                                          "Add video from gallery"),
-                                                    ]),
-                                                    onTap: () {
-                                                      attachVideo(
-                                                          ImageSource.gallery);
-                                                    },
-                                                  ),
-                                                ),
-                                                Container(
-                                                  padding: EdgeInsets.only(
-                                                      top: 10, bottom: 10),
-                                                  child: GestureDetector(
-                                                    child: Row(children: [
-                                                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
-                                                      Icon(
-                                                        Icons.videocam,
-                                                        size: 50,
-                                                      ),
-                                                      Text(
-                                                          "Add video from camera"),
-                                                    ]),
-                                                    onTap: () {
-                                                      attachVideo(
-                                                          ImageSource.camera);
-                                                    },
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        });
-                                  },
+                                  onTap: (showMediaSelectionOption),
                                 ),
                               ),
                       ),
@@ -311,16 +322,18 @@ class _AddExercisePageState extends State<AddExercisePage> {
                 ),
                 Container(
                   padding: EdgeInsets.only(bottom: 50),
-                  child: RaisedButton(
-                      child: Text(
-                        "Create Exercise",
-                        style: TextStyle(
-                            fontSize: fontSizeButton,
-                            fontWeight: FontWeight.normal,
-                            color: Colors.white),
-                      ),
-                      color: Color.fromRGBO(27, 98, 40, 1),
-                      onPressed: addExercise),
+                  child: working
+                      ? SizedBox()
+                      : RaisedButton(
+                          child: Text(
+                            "Create Exercise",
+                            style: TextStyle(
+                                fontSize: fontSizeButton,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.white),
+                          ),
+                          color: Color.fromRGBO(27, 98, 40, 1),
+                          onPressed: addExercise),
                 )
               ]),
             ),
