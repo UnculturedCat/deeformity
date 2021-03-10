@@ -1,11 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
+import 'package:deeformity/Shared/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Services/database.dart';
-import 'package:flutter/services.dart';
 import 'dart:io';
+import 'package:deeformity/Services/AppVideoPlayer.dart';
 
 import 'package:image_picker/image_picker.dart';
 
@@ -31,6 +31,7 @@ class _AddExercisePageState extends State<AddExercisePage> {
   String mediaURL;
   String mediaStoragePath;
   bool working = false;
+  AppVideoPlayer _videoPlayer;
 
   _AddExercisePageState();
   void addExercise() async {
@@ -93,10 +94,80 @@ class _AddExercisePageState extends State<AddExercisePage> {
     if (selected != null) {
       setState(() {
         _mediaFile = File(selected.path);
-        // picture = Image.file(_mediaFile);
+
+        //set video player to play from file
+        _videoPlayer = AppVideoPlayer(
+          assetSource: MediaAssetSource.file,
+          assetFile: _mediaFile,
+        );
       });
     }
     Navigator.pop(context);
+  }
+
+  Widget displayMediaWidget() {
+    return picture == null && _videoPlayer == null
+        ? Container(
+            padding: EdgeInsets.only(top: 10, bottom: 10),
+            child: GestureDetector(
+              child: Row(children: [
+                //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                Icon(
+                  Icons.image,
+                  size: 50,
+                ),
+                Text("Add Media"),
+              ]),
+              onTap: (showMediaSelectionOption),
+            ),
+          )
+        : Column(
+            children: [
+              Container(
+                padding: EdgeInsets.only(top: 20, bottom: 50),
+                child: Stack(
+                  alignment: AlignmentDirectional.bottomEnd,
+                  children: [
+                    picture != null
+                        ? picture
+                        : _videoPlayer != null
+                            ? _videoPlayer
+                            : Text("Nothing to show. Delete and try again"),
+                    IconButton(
+                      icon: Icon(
+                        CupertinoIcons.delete,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          picture = null;
+                          _videoPlayer = null;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              // Container(
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.end,
+              //     children: [
+              //       ElevatedButton(
+              //           child: Text("DELETE"),
+              //           onPressed: () {
+              //             setState(() {
+              //               picture = null;
+              //             });
+              //           }),
+              //       // RaisedButton(
+              //       //     child: Text("REPLACE"),
+              //       //     onPressed: () {})
+              //     ],
+              //   ),
+              // )
+            ],
+          );
   }
 
   void showMediaSelectionOption() {
@@ -186,156 +257,141 @@ class _AddExercisePageState extends State<AddExercisePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: false,
+        //centerTitle: false,
         title: Text(
           "Add Exercise",
-          style: TextStyle(color: Colors.white, fontSize: 20),
+          style: pageHeaderStyle,
         ),
         backgroundColor: Color.fromRGBO(21, 33, 47, 15),
+        actions: [
+          Container(
+            padding: EdgeInsets.only(left: 5, right: 5),
+            child: TextButton(
+              onPressed: addExercise,
+              child: Text(
+                "Create",
+                style: headerActionButtonStyle,
+              ),
+            ),
+          ),
+        ],
       ),
       body: GestureDetector(
         child: Center(
           child: Container(
-            padding: EdgeInsets.only(top: 20, left: 10, right: 10),
+            padding: EdgeInsets.only(top: 20, left: 20, right: 20),
             child: Form(
               key: _formKey,
-              child: Column(children: [
-                Expanded(
-                  //height: MediaQuery.of(context).size.height * 0.70,
-                  child: ListView(
-                    children: [
-                      Container(
-                          padding: EdgeInsets.only(left: 10, bottom: 20),
-                          child: Text(
-                            widget.day,
-                            style: TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
-                          )),
-                      Container(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(5).copyWith(top: 2),
-                                child: Text(
-                                  "Give your exercise a clear and succint name",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    color: Color.fromRGBO(21, 33, 47, 15),
-                                    // /fontSize: 15,
+              child: Column(
+                children: [
+                  Expanded(
+                    //height: MediaQuery.of(context).size.height * 0.70,
+                    child: ListView(
+                      children: [
+                        Container(
+                            padding: EdgeInsets.only(left: 10, bottom: 20),
+                            child: Text(
+                              widget.day,
+                              style: TextStyle(
+                                  fontSize: 30, fontWeight: FontWeight.bold),
+                            )),
+                        Container(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(5).copyWith(top: 2),
+                                  child: Text(
+                                    "Give your exercise a clear and succint name",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Color.fromRGBO(21, 33, 47, 15),
+                                      // /fontSize: 15,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Container(
-                                child: TextFormField(
-                                  maxLength: 20,
-                                  decoration: textInputDecorationWhite.copyWith(
-                                    hintStyle:
-                                        TextStyle(fontSize: fontSizeInputHint),
-                                    hintText: "Workout Name",
-                                  ),
-                                  onSaved: (input) => workOutName = input,
-                                  validator: (input) => input.isEmpty
-                                      ? "Enter exercise name"
-                                      : null,
-                                ),
-                              ),
-                            ]),
-                      ),
-                      Container(
-                        //height: 300,
-                        padding: EdgeInsets.only(top: 30),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(5).copyWith(top: 2),
-                                child: Text(
-                                  "Describe the flow of the exercise. From sets, reps, rest time etc",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    color: Color.fromRGBO(21, 33, 47, 15),
-                                    //fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                child: TextFormField(
-                                  maxLines: null,
-                                  minLines: 12,
-                                  //textInputAction: TextInputAction.newline,
-
-                                  decoration: textInputDecorationWhite.copyWith(
-                                      hintText: "Description",
+                                Container(
+                                  child: TextFormField(
+                                    maxLength: 20,
+                                    decoration:
+                                        textInputDecorationWhite.copyWith(
                                       hintStyle: TextStyle(
-                                          fontSize: fontSizeInputHint)),
-                                  onSaved: (input) => description = input,
-                                  //validator: (input) => input.isEmpty? "Enter",
-                                ),
-                              ),
-                            ]),
-                      ),
-                      Container(
-                        child: picture != null
-                            ? Container(
-                                padding: EdgeInsets.all(10),
-                                child: Column(children: [
-                                  Container(
-                                    child: picture,
+                                          fontSize: fontSizeInputHint),
+                                      hintText: "Workout Name",
+                                    ),
+                                    onSaved: (input) => workOutName = input,
+                                    validator: (input) => input.isEmpty
+                                        ? "Enter exercise name"
+                                        : null,
                                   ),
-                                  Container(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        RaisedButton(
-                                            child: Text("DELETE"),
-                                            onPressed: () {
-                                              setState(() {
-                                                picture = null;
-                                              });
-                                            }),
-                                        // RaisedButton(
-                                        //     child: Text("REPLACE"),
-                                        //     onPressed: () {})
-                                      ],
-                                    ),
-                                  )
-                                ]),
-                              )
-                            : Container(
-                                padding: EdgeInsets.only(top: 10, bottom: 10),
-                                child: GestureDetector(
-                                  child: Row(children: [
-                                    //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
-                                    Icon(
-                                      Icons.image,
-                                      size: 50,
-                                    ),
-                                    Text("Add Media"),
-                                  ]),
-                                  onTap: (showMediaSelectionOption),
                                 ),
-                              ),
-                      ),
-                    ],
+                              ]),
+                        ),
+                        Container(
+                          //height: 300,
+                          padding: EdgeInsets.only(top: 30),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(5).copyWith(top: 2),
+                                  child: Text(
+                                    "Describe the flow of the exercise. From sets, reps, rest time etc",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Color.fromRGBO(21, 33, 47, 15),
+                                      //fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  child: TextFormField(
+                                    maxLines: null,
+                                    minLines: 12,
+                                    //textInputAction: TextInputAction.newline,
+
+                                    decoration:
+                                        textInputDecorationWhite.copyWith(
+                                            hintText: "Description",
+                                            hintStyle: TextStyle(
+                                                fontSize: fontSizeInputHint)),
+                                    onSaved: (input) => description = input,
+                                    //validator: (input) => input.isEmpty? "Enter",
+                                  ),
+                                ),
+                              ]),
+                        ),
+                        Container(child: displayMediaWidget()),
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.only(bottom: 50),
-                  child: working
-                      ? SizedBox()
-                      : RaisedButton(
-                          child: Text(
-                            "Create Exercise",
-                            style: TextStyle(
-                                fontSize: fontSizeButton,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.white),
-                          ),
-                          color: Color.fromRGBO(27, 98, 40, 1),
-                          onPressed: addExercise),
-                )
-              ]),
+                  // Container(
+                  //   padding: EdgeInsets.only(bottom: 50),
+                  //   child: working
+                  //       ? SizedBox()
+                  //       // : ElevatedButton(
+                  //       //     child: Text(
+                  //       //       "Create Exercise",
+                  //       //       style: TextStyle(
+                  //       //           fontSize: fontSizeButton,
+                  //       //           fontWeight: FontWeight.normal,
+                  //       //           color: Colors.white),
+                  //       //     ),
+                  //       //     style: ElevatedButton.styleFrom(
+                  //       //         primary: Color.fromRGBO(27, 98, 40, 1)),
+                  //       //     onPressed: addExercise),
+                  //       : TextButton(
+                  //           onPressed: addExercise,
+                  //           child: Text(
+                  //             "DONE",
+                  //             style: TextStyle(
+                  //                 color: Color.fromRGBO(27, 98, 40, 1),
+                  //                 fontSize: 15),
+                  //           ),
+                  //         ),
+                  // ),
+                ],
+              ),
             ),
           ),
         ),

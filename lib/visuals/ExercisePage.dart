@@ -23,10 +23,10 @@ class _ExercisePageState extends State<ExercisePage> {
     }
     return Scaffold(
       appBar: AppBar(
-        centerTitle: false,
+        //centerTitle: false,
         title: Text(
           title,
-          style: TextStyle(color: Colors.white, fontSize: 20),
+          style: pageHeaderStyle,
         ),
         backgroundColor: Color.fromRGBO(21, 33, 47, 15),
       ),

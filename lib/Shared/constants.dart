@@ -6,6 +6,12 @@ const double fontSize = 20;
 const double fontSizeInputHint = 12;
 const double fontSizeButton = 15;
 const TextStyle cardHeaderStyle = TextStyle(color: Colors.white, fontSize: 30);
+const headerActionButtonStyle = TextStyle(
+    color: Color.fromRGBO(13, 255, 53, 1),
+    fontSize: 17,
+    fontWeight: FontWeight.w600);
+const pageHeaderStyle =
+    TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold);
 const textInputDecoration = InputDecoration(
     contentPadding: EdgeInsets.all(15),
     filled: true,
@@ -115,9 +121,17 @@ DropdownMenuItem<RepeatFrequency> createTextWidget(RepeatFrequency value) {
   return DropdownMenuItem<RepeatFrequency>(value: receivedValue, child: child);
 }
 
-enum MediaType { photo, video, textDocument }
+enum MediaType {
+  photo,
+  video,
+  textDocument,
+}
 
-enum MediaAssetSource { file, network, asset }
+enum MediaAssetSource {
+  file,
+  network,
+  asset,
+}
 
 const List<String> locations = [
   "Enschede",
@@ -128,9 +142,16 @@ const List<String> locations = [
 
 const List<String> eventFrequency = ["One time", "Daily", "Weekly"];
 
-enum ProfileType { professional, client }
+enum ProfileType {
+  professional,
+  client,
+}
 
-enum ActivityType { fitness, physio, personal }
+enum ActivityType {
+  fitness,
+  physio,
+  personal,
+}
 
 enum ScheduleCategory {
   vidoeSession,

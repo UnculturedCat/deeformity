@@ -42,7 +42,7 @@ class WorkoutDayState extends State<WorkoutDay> {
         appBar: AppBar(
           title: Text(
             widget.day,
-            style: TextStyle(color: Colors.white, fontSize: 20),
+            style: pageHeaderStyle,
           ),
           backgroundColor: Color.fromRGBO(21, 33, 47, 15),
         ),
