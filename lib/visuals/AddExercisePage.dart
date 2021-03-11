@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:deeformity/Services/database.dart';
 import 'dart:io';
 import 'package:deeformity/Services/AppVideoPlayer.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:image_picker/image_picker.dart';
 
@@ -16,8 +17,10 @@ class AddExercisePage extends StatefulWidget {
   _AddExercisePageState createState() => _AddExercisePageState();
 }
 
-class _AddExercisePageState extends State<AddExercisePage> {
+class _AddExercisePageState extends State<AddExercisePage>
+/*with WidgetsBindingObserver // implement later*/ {
   final _formKey = GlobalKey<FormState>();
+  PermissionStatus permission;
   String cardId;
   String userId = UserSingleton.userSingleton.currentUSer.uid;
   String category;
@@ -34,6 +37,21 @@ class _AddExercisePageState extends State<AddExercisePage> {
   AppVideoPlayer _videoPlayer;
 
   _AddExercisePageState();
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance?.addObserver(this);
+  // }
+
+// //Implement this later
+//   @override
+//   void didChangeAppLifecycleState(AppLifecycleState state) async {
+//     if (state == AppLifecycleState.resumed) {
+//       return;
+//     }
+//   }
+
   void addExercise() async {
     if (_formKey.currentState.validate()) {
       setState(() {
@@ -76,7 +94,54 @@ class _AddExercisePageState extends State<AddExercisePage> {
     }
   }
 
+  Future<bool> checkAndRequestMediaPermission(ImageSource source) async {
+    if (source == ImageSource.camera) {
+      //permission = await Permission.camera.status;
+      permission = await Permission.camera.request();
+      return permission == PermissionStatus.granted;
+    } else if (source == ImageSource.gallery) {
+      permission = await Permission.photos.request();
+      return permission == PermissionStatus.granted;
+    }
+    return false;
+  }
+
+//attach photo
   Future<void> attachPhoto(ImageSource source, BuildContext context) async {
+    bool permissionGranted = await checkAndRequestMediaPermission(source);
+    if (!permissionGranted) {
+      await showCupertinoModalPopup(
+          context: context,
+          builder: (context) {
+            return CupertinoActionSheet(
+              title: Text("Permission Needed"),
+              message: Text("Go to App settings and try again?"),
+              actions: [
+                CupertinoActionSheetAction(
+                  child: Text("Yes"),
+                  onPressed: () async {
+                    await openAppSettings();
+                    Navigator.pop(context);
+                  },
+                ),
+                CupertinoActionSheetAction(
+                  child: Text("No"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          });
+      return; //remove when didChangeAppLifecycleState has been figured out
+    }
+    //Uncomment when didChangeAppLifecycleState has been figured out. This will wait for user to resume
+    // permissionGranted = await checkAndRequestMediaPermission(source);
+    // //check again if user granted permission after being promted
+    // if (!permissionGranted) {
+    //   //exit if user denied permission.
+    //   return;
+    // }
     //open attach media page
     PickedFile selected = await _imagePicker.getImage(source: source);
     if (selected != null) {

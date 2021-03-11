@@ -7,7 +7,13 @@
         {
             "name": "deeformity",
             "request": "launch",
-            "type": "dart"
-        }
+            "type": "dart",
+        },
+        {
+            "name": "deeformityRelease",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
     ]
 }
