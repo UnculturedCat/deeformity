@@ -64,14 +64,10 @@ class _AppVideoPlayerState extends State<AppVideoPlayer> {
   Widget build(BuildContext context) {
     return _chewieController != null &&
             _chewieController.videoPlayerController.value.isInitialized
-        ? Column(
-            children: [
-              AspectRatio(
-                  aspectRatio:
-                      _chewieController.videoPlayerController.value.aspectRatio,
-                  child: Chewie(controller: _chewieController)),
-            ],
-          )
+        ? AspectRatio(
+            aspectRatio:
+                _chewieController.videoPlayerController.value.aspectRatio,
+            child: Chewie(controller: _chewieController))
         : Loading();
     // return _controller != null && _controller.value != null
     //     ? Stack(
