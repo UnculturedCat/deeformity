@@ -20,7 +20,6 @@ class AddExercisePage extends StatefulWidget {
 class _AddExercisePageState extends State<AddExercisePage>
 /*with WidgetsBindingObserver // implement later*/ {
   final _formKey = GlobalKey<FormState>();
-  PermissionStatus permission;
   String cardId;
   String userId = UserSingleton.userSingleton.currentUSer.uid;
   String category;
@@ -35,6 +34,7 @@ class _AddExercisePageState extends State<AddExercisePage>
   String mediaStoragePath;
   bool working = false;
   AppVideoPlayer _videoPlayer;
+  MediaType _mediaType;
 
   _AddExercisePageState();
 
@@ -44,7 +44,7 @@ class _AddExercisePageState extends State<AddExercisePage>
   //   WidgetsBinding.instance?.addObserver(this);
   // }
 
-// //Implement this later
+// //Implement this later to ensure app does not restart after permission has been given in the settings.
 //   @override
 //   void didChangeAppLifecycleState(AppLifecycleState state) async {
 //     if (state == AppLifecycleState.resumed) {
@@ -65,7 +65,7 @@ class _AddExercisePageState extends State<AddExercisePage>
       if (_mediaFile != null) {
         mediaFields =
             await DatabaseService(uid: UserSingleton.userSingleton.userID)
-                .storeMedia(_mediaFile, workOutName, MediaType.photo);
+                .storeMedia(_mediaFile, workOutName, _mediaType);
         mediaURL = mediaFields["downloadURL"];
         mediaStoragePath = mediaFields["fullPath"];
       }
@@ -80,7 +80,8 @@ class _AddExercisePageState extends State<AddExercisePage>
               day: widget.day,
               dateTime: dateTime.toString(),
               mediaURL: mediaURL,
-              mediaStoragePath: mediaStoragePath);
+              mediaStoragePath: mediaStoragePath,
+              mediaType: _mediaType);
       cardDocId.isNotEmpty
           ? Navigator.pop(context)
           : setState(() {
@@ -95,79 +96,83 @@ class _AddExercisePageState extends State<AddExercisePage>
   }
 
   Future<bool> checkAndRequestMediaPermission(ImageSource source) async {
+    PermissionStatus permission;
     if (source == ImageSource.camera) {
-      //permission = await Permission.camera.status;
       permission = await Permission.camera.request();
-      return permission == PermissionStatus.granted;
     } else if (source == ImageSource.gallery) {
       permission = await Permission.photos.request();
-      return permission == PermissionStatus.granted;
     }
+    if (permission == PermissionStatus.granted) return true;
+    await showCupertinoModalPopup(
+        context: context,
+        builder: (context) {
+          return CupertinoActionSheet(
+            title: Text("Permission needed"),
+            message: Text("Grant permission from App settings and try again?"),
+            actions: [
+              CupertinoActionSheetAction(
+                child: Text("Yes"),
+                onPressed: () async {
+                  await openAppSettings();
+                  Navigator.pop(context);
+                },
+              ),
+              CupertinoActionSheetAction(
+                child: Text("No"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
     return false;
   }
 
 //attach photo
-  Future<void> attachPhoto(ImageSource source, BuildContext context) async {
-    bool permissionGranted = await checkAndRequestMediaPermission(source);
-    if (!permissionGranted) {
-      await showCupertinoModalPopup(
-          context: context,
-          builder: (context) {
-            return CupertinoActionSheet(
-              title: Text("Permission Needed"),
-              message: Text("Go to App settings and try again?"),
-              actions: [
-                CupertinoActionSheetAction(
-                  child: Text("Yes"),
-                  onPressed: () async {
-                    await openAppSettings();
-                    Navigator.pop(context);
-                  },
-                ),
-                CupertinoActionSheetAction(
-                  child: Text("No"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            );
-          });
-      return; //remove when didChangeAppLifecycleState has been figured out
-    }
-    //Uncomment when didChangeAppLifecycleState has been figured out. This will wait for user to resume
+  Future<void> attachPhoto(ImageSource source) async {
+    // bool permissionGranted = await checkAndRequestMediaPermission(source);
+    // if (!permissionGranted) {
+    //   return; //remove when didChangeAppLifecycleState has been figured out
+    // }
+    //Uncomment when didChangeAppLifecycleState has been figured out.
     // permissionGranted = await checkAndRequestMediaPermission(source);
     // //check again if user granted permission after being promted
     // if (!permissionGranted) {
     //   //exit if user denied permission.
     //   return;
     // }
-    //open attach media page
-    PickedFile selected = await _imagePicker.getImage(source: source);
-    if (selected != null) {
-      setState(() {
-        _mediaFile = File(selected.path);
-        picture = Image.file(_mediaFile);
-      });
+    if (await checkAndRequestMediaPermission(source)) {
+      //open attach media page
+      PickedFile selected = await _imagePicker.getImage(source: source);
+      _mediaType = MediaType.photo;
+      if (selected != null) {
+        setState(() {
+          _mediaFile = File(selected.path);
+          picture = Image.file(_mediaFile);
+        });
+      }
+      Navigator.pop(context);
     }
-    Navigator.pop(context);
   }
 
-  Future<void> attachVideo(ImageSource source, BuildContext context) async {
-    //open attach media page
-    PickedFile selected = await _imagePicker.getVideo(source: source);
-    if (selected != null) {
-      setState(() {
-        _mediaFile = File(selected.path);
-
-        //set video player to play from file
-        _videoPlayer = AppVideoPlayer(
-          assetSource: MediaAssetSource.file,
-          assetFile: _mediaFile,
-        );
-      });
+  Future<void> attachVideo(ImageSource source) async {
+    if (await checkAndRequestMediaPermission(source)) {
+      //open attach media page
+      PickedFile selected = await _imagePicker.getVideo(source: source);
+      _mediaType = MediaType.video;
+      if (selected != null) {
+        setState(() {
+          _mediaFile = File(selected.path);
+          //set video player to play from file
+          _videoPlayer = AppVideoPlayer(
+            assetSource: MediaAssetSource.file,
+            assetFile: _mediaFile,
+          );
+        });
+      }
+      Navigator.pop(context);
     }
-    Navigator.pop(context);
   }
 
   Widget displayMediaWidget() {
@@ -214,23 +219,6 @@ class _AddExercisePageState extends State<AddExercisePage>
                   ],
                 ),
               ),
-              // Container(
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.end,
-              //     children: [
-              //       ElevatedButton(
-              //           child: Text("DELETE"),
-              //           onPressed: () {
-              //             setState(() {
-              //               picture = null;
-              //             });
-              //           }),
-              //       // RaisedButton(
-              //       //     child: Text("REPLACE"),
-              //       //     onPressed: () {})
-              //     ],
-              //   ),
-              // )
             ],
           );
   }
@@ -257,7 +245,7 @@ class _AddExercisePageState extends State<AddExercisePage>
                       Text("Add Photo from device"),
                     ]),
                     onTap: () {
-                      attachPhoto(ImageSource.gallery, context);
+                      attachPhoto(ImageSource.gallery);
                     },
                   ),
                 ),
@@ -273,7 +261,7 @@ class _AddExercisePageState extends State<AddExercisePage>
                       Text("Add Photo from camera"),
                     ]),
                     onTap: () {
-                      attachPhoto(ImageSource.camera, context);
+                      attachPhoto(ImageSource.camera);
                     },
                   ),
                 ),
@@ -289,7 +277,7 @@ class _AddExercisePageState extends State<AddExercisePage>
                       Text("Add video from gallery"),
                     ]),
                     onTap: () {
-                      attachVideo(ImageSource.gallery, context);
+                      attachVideo(ImageSource.gallery);
                     },
                   ),
                 ),
@@ -305,7 +293,7 @@ class _AddExercisePageState extends State<AddExercisePage>
                       Text("Add video from camera"),
                     ]),
                     onTap: () {
-                      attachVideo(ImageSource.camera, context);
+                      attachVideo(ImageSource.camera);
                     },
                   ),
                 ),
@@ -331,13 +319,15 @@ class _AddExercisePageState extends State<AddExercisePage>
         actions: [
           Container(
             padding: EdgeInsets.only(left: 5, right: 5),
-            child: TextButton(
-              onPressed: addExercise,
-              child: Text(
-                "Create",
-                style: headerActionButtonStyle,
-              ),
-            ),
+            child: !working
+                ? TextButton(
+                    onPressed: addExercise,
+                    child: Text(
+                      "Create",
+                      style: headerActionButtonStyle,
+                    ),
+                  )
+                : SizedBox(),
           ),
         ],
       ),
@@ -426,7 +416,9 @@ class _AddExercisePageState extends State<AddExercisePage>
                                 ),
                               ]),
                         ),
-                        Container(child: displayMediaWidget()),
+                        Align(
+                            alignment: Alignment.center,
+                            child: displayMediaWidget())
                       ],
                     ),
                   ),

@@ -77,7 +77,8 @@ class DatabaseService {
       String day,
       String dateTime,
       String mediaURL,
-      String mediaStoragePath}) async {
+      String mediaStoragePath,
+      MediaType mediaType}) async {
     DocumentReference ref = await scheduleCollection
         .doc(uid)
         .collection(workOutScheduleCollectionName)
@@ -89,7 +90,8 @@ class DatabaseService {
       "Name": workOutName,
       "Description": description,
       "MediaURL": mediaURL,
-      "Media Path": mediaStoragePath
+      "Media Path": mediaStoragePath,
+      "Media type": mediaType.index
     });
     return ref.id;
   }

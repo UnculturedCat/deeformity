@@ -1,3 +1,4 @@
+import 'package:deeformity/Services/AppVideoPlayer.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Shared/constants.dart';
@@ -11,6 +12,7 @@ class ExercisePage extends StatefulWidget {
 
 class _ExercisePageState extends State<ExercisePage> {
   QueryDocumentSnapshot docSnapshot;
+  AppVideoPlayer appVideoPlayer;
   var media;
   _ExercisePageState(this.docSnapshot);
   @override
@@ -18,8 +20,24 @@ class _ExercisePageState extends State<ExercisePage> {
     String title = docSnapshot.data()["Name"];
     String description = docSnapshot.data()["Description"];
     String mediaURL = docSnapshot.data()["MediaURL"];
+    int mediaTypeIndex = docSnapshot.data()["Media type"] ?? 15;
     if (mediaURL != null && mediaURL.isNotEmpty) {
-      media = Image.network(mediaURL);
+      if (mediaTypeIndex != 15) {
+        MediaType mediaType = MediaType.values[mediaTypeIndex];
+        switch (mediaType) {
+          case MediaType.photo:
+            media = Image.network(mediaURL);
+            break;
+          case MediaType.video:
+            appVideoPlayer = AppVideoPlayer(
+              assetURL: mediaURL,
+              assetSource: MediaAssetSource.network,
+            );
+            break;
+          case MediaType.textDocument:
+            break;
+        }
+      }
     }
     return Scaffold(
       appBar: AppBar(
@@ -44,9 +62,10 @@ class _ExercisePageState extends State<ExercisePage> {
             ),
           ),
           Container(
+            alignment: Alignment.center,
             height: 400,
             child: Center(
-              child: media,
+              child: media != null ? media : appVideoPlayer,
             ),
           ),
           Container(
