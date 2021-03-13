@@ -22,6 +22,7 @@ class AppVideoPlayer extends StatefulWidget {
 class _AppVideoPlayerState extends State<AppVideoPlayer> {
   VideoPlayerController _controller;
   ChewieController _chewieController;
+  bool showControls = true;
 
   @override
   void initState() {
@@ -42,6 +43,7 @@ class _AppVideoPlayerState extends State<AppVideoPlayer> {
     }
     _controller.initialize().then((_) {
       _chewieController = ChewieController(videoPlayerController: _controller);
+      _chewieController.enterFullScreen();
       setState(() {});
     });
     // _controller = VideoPlayerController.network(widget.assetURL)
@@ -64,10 +66,65 @@ class _AppVideoPlayerState extends State<AppVideoPlayer> {
   Widget build(BuildContext context) {
     return _chewieController != null &&
             _chewieController.videoPlayerController.value.isInitialized
-        ? AspectRatio(
-            aspectRatio:
-                _chewieController.videoPlayerController.value.aspectRatio,
-            child: Chewie(controller: _chewieController))
+        ? GestureDetector(
+            child: AspectRatio(
+              aspectRatio:
+                  _chewieController.videoPlayerController.value.aspectRatio,
+              child: Stack(
+                alignment: AlignmentDirectional.bottomStart,
+                children: [
+                  VideoPlayer(_controller),
+                  showControls
+                      ? Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _controller.value.isPlaying
+                                  ? IconButton(
+                                      icon: Icon(CupertinoIcons.pause_circle),
+                                      onPressed: () {
+                                        setState(() {
+                                          _controller.pause();
+                                        });
+                                      },
+                                      color: Colors.white,
+                                    )
+                                  : _controller.value.position !=
+                                          _controller.value.duration
+                                      ? IconButton(
+                                          icon: Icon(
+                                              CupertinoIcons.play_circle_fill),
+                                          onPressed: () {
+                                            setState(() {
+                                              _controller.play();
+                                            });
+                                          },
+                                          color: Colors.white,
+                                        )
+                                      : IconButton(
+                                          icon: Icon(Icons.replay),
+                                          onPressed: () {
+                                            setState(() {
+                                              _controller.seekTo(Duration.zero);
+                                              _controller.play();
+                                            });
+                                          },
+                                          color: Colors.white,
+                                        ),
+                            ],
+                          ),
+                        )
+                      : SizedBox(),
+                  VideoProgressIndicator(_controller, allowScrubbing: true)
+                ],
+              ),
+            ),
+            onTap: () {
+              setState(() {
+                showControls = !showControls;
+              });
+            },
+          )
         : Loading();
     // return _controller != null && _controller.value != null
     //     ? Stack(
