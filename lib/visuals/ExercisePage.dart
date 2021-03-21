@@ -61,16 +61,18 @@ class _ExercisePageState extends State<ExercisePage> {
               ),
             ),
           ),
-          Container(
-            color: Colors.white,
-            alignment: Alignment.center,
-            height: 400,
-            child: media != null
-                ? media
-                : appVideoPlayer != null
-                    ? appVideoPlayer
-                    : SizedBox(),
-          ),
+          media != null || appVideoPlayer != null
+              ? Container(
+                  color: Colors.white,
+                  alignment: Alignment.center,
+                  height: 400,
+                  child: media != null
+                      ? media
+                      : appVideoPlayer != null
+                          ? appVideoPlayer
+                          : SizedBox(),
+                )
+              : SizedBox(),
           Container(
             padding: EdgeInsets.only(top: 20),
             child: Text("Description",

@@ -6,7 +6,6 @@ import '../Screens/SearhPage.dart';
 import '../Screens/Home.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import '../Screens/Profile.dart';
-import 'package:flutter/services.dart';
 
 class NavigatorClass extends StatefulWidget {
   static FirebaseAnalytics analytics = new FirebaseAnalytics();

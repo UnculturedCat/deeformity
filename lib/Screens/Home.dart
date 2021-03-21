@@ -3,12 +3,9 @@ import 'package:deeformity/Screens/Profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../visuals/ScheduleCard.dart';
 import 'package:deeformity/Services/database.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deeformity/DataManager/Utility.dart';
-import 'package:deeformity/AuthenticationWrapper.dart';
 import 'package:deeformity/Shared/constants.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,8 +19,6 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   DateTime selectedDate = UserSingleton.userSingleton.dateTime;
-
-  ScheduleData scheduleData;
 
   void openProfilePage() {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -71,7 +66,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
         DateFormat.yMMMd().format(DateTime.now());
     return isToday
         ? SizedBox()
-        : FlatButton(
+        : TextButton(
             onPressed: () {
               setState(() {
                 selectedDate = DateTime.now();
@@ -80,7 +75,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
             },
             child: Text(
               "VIEW TODAY",
-              style: TextStyle(fontSize: fontSizeButton, color: Colors.white),
+              style: TextStyle(
+                  fontSize: fontSizeButton, color: elementColorWhiteBackground),
             ),
           );
   }
@@ -116,133 +112,86 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
     return StreamProvider<QuerySnapshot>.value(
       value: DatabaseService().schedule,
       child: Scaffold(
-        // appBar: PreferredSize(
-        //   preferredSize: Size(double.infinity, 1),
-        //   child: AppBar(),
+        // appBar: AppBar(
+        //   backgroundColor: Colors.white,
+        //   title: Container(
+        //     padding: EdgeInsets.only(top: 10, left: 15, right: 15),
+        //     child: Row(
+        //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //       children: [
+        //         InkWell(
+        //           child: Container(
+        //             child: Row(children: [
+        //               Icon(
+        //                 CupertinoIcons.calendar_today,
+        //                 size: 40,
+        //                 color: elementColorWhiteBackground,
+        //               ),
+        //               Column(
+        //                 crossAxisAlignment: CrossAxisAlignment.start,
+        //                 children: [
+        //                   Text(
+        //                     "Date",
+        //                     style: TextStyle(
+        //                         color: elementColorWhiteBackground,
+        //                         fontSize: 20),
+        //                   ),
+        //                   Text(
+        //                     DateFormat.yMMMd().format(selectedDate),
+        //                     style:
+        //                         TextStyle(color: elementColorWhiteBackground),
+        //                   ),
+        //                 ],
+        //               )
+        //             ]),
+        //           ),
+        //           onTap: () => openDatePicker(context),
+        //         ),
+        //         createTodayViewButton()
+        //       ],
+        //     ),
+        //   ),
         // ),
-        appBar: AppBar(
-          //backgroundColor: Color.fromRGBO(24, 41, 57, 1),
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    //colors: [Colors.lightBlue, Colors.blueGrey]
-                    colors: [
-                  Color.fromRGBO(47, 72, 100, 1),
-                  Color.fromRGBO(24, 41, 57, 1)
-                ])),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 40,
-                ),
-                Container(
-                  padding: EdgeInsets.only(top: 10, left: 15, right: 15),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InkWell(
-                        child: Container(
-                          child: Row(children: [
-                            Icon(
-                              CupertinoIcons.calendar_today,
-                              size: 40,
-                              color: Colors.white,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Date",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                                Text(
-                                  DateFormat.yMMMd().format(selectedDate),
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                // FlatButton(
-                                //     onPressed: null,
-                                //     child: Text(
-                                //       DateFormat.yMMMd().format(selectedDate),
-                                //       style: TextStyle(
-                                //         color: Color.fromRGBO(24, 41, 57, 1),
-                                //         fontSize: 15, /*fontWeight: FontWeight.bold*/
-                                //       ),
-                                //     )),
-                              ],
-                            )
-                          ]),
-                        ),
-                        onTap: () => openDatePicker(context),
-                      ),
-                      // CircleAvatar(
-                      //   child: Text(
-                      //     "U N",
-                      //     style: TextStyle(fontSize: 15, color: Colors.white),
-                      //   ),
-                      //   radius: 20,
-                      //   //backgroundImage: AssetImage("assets\test.png"),
-                      // ),
-                      createTodayViewButton()
-                      // RaisedButton(
-                      //   shape: CircleBorder(),
-                      //   onPressed: () {
-                      //     //openProfilePage();
-                      //     print("Today: Open user Profile");
-                      //   },
-                      //   child: CircleAvatar(
-                      //     child: Text(
-                      //       "U N",
-                      //       style: TextStyle(fontSize: 15, color: Colors.white),
-                      //     ),
-                      //     radius: 20,
-                      //     //backgroundImage: AssetImage("assets\test.png"),
-                      //   ),
-                      // )
-                      //)
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
         //backgroundColor: Colors.white,
         body: SafeArea(
             child: Column(
           children: [
             Container(
-              padding: EdgeInsets.only(top: 20),
-              child: Column(
+              padding: EdgeInsets.only(top: 10, left: 15, right: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GestureDetector(
+                  InkWell(
                     child: Container(
-                        padding: EdgeInsets.only(left: 20, right: 20),
-                        child: ScheduleCard(ActivityType.fitness)),
-                    onTap: () {
-                      openSchedulePage(ActivityType.fitness);
-                    },
+                      child: Row(children: [
+                        Icon(
+                          CupertinoIcons.calendar_today,
+                          size: 40,
+                          color: elementColorWhiteBackground,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Date",
+                              style: TextStyle(
+                                  color: elementColorWhiteBackground,
+                                  fontSize: 20),
+                            ),
+                            Text(
+                              DateFormat.yMMMd().format(selectedDate),
+                              style:
+                                  TextStyle(color: elementColorWhiteBackground),
+                            ),
+                          ],
+                        )
+                      ]),
+                    ),
+                    onTap: () => openDatePicker(context),
                   ),
+                  createTodayViewButton()
                 ],
               ),
-            ),
-            GestureDetector(
-              child: Container(
-                padding: EdgeInsets.only(top: 20),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(left: 20, right: 20),
-                      child: ScheduleCard(ActivityType.physio),
-                    ),
-                  ],
-                ),
-              ),
-              onTap: () {
-                openSchedulePage(ActivityType.physio);
-              },
             ),
             Divider(),
             Container(

@@ -123,19 +123,20 @@ class SignInState extends State<SignIn> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Container(
-                                child: RaisedButton(
+                                child: ElevatedButton(
                                   onPressed: validateInput,
                                   child: Text(
                                     "LOGIN",
                                     style: TextStyle(
                                         fontSize: 15, color: Colors.white),
                                   ),
-                                  color: Color.fromRGBO(36, 36, 36, 100),
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Color.fromRGBO(36, 36, 36, 100)),
                                 ),
                               ),
                               SizedBox(width: 20),
                               Container(
-                                  child: FlatButton(
+                                  child: TextButton(
                                 onPressed: handleSignUp,
                                 child: Text(
                                   "Create an account",

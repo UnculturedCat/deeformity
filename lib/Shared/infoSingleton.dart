@@ -1,8 +1,6 @@
-import 'dart:async';
 import '../Screens/SearhPage.dart';
 import 'package:deeformity/User/UserClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 
 class UserSingleton {

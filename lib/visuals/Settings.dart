@@ -51,16 +51,18 @@ class SettingsPageState extends State<SettingsPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                RaisedButton(
-                    onPressed: handleLogout,
-                    child: Text(
-                      "Logout",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
+                ElevatedButton(
+                  onPressed: handleLogout,
+                  child: Text(
+                    "Logout",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
                     ),
-                    color: Color.fromRGBO(36, 36, 36, 100)),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                      primary: Color.fromRGBO(36, 36, 36, 100)),
+                ),
               ],
             ),
           )

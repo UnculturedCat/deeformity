@@ -1,3 +1,4 @@
+import 'package:deeformity/Shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:deeformity/User/UserClass.dart';
@@ -49,8 +50,8 @@ class _UserProfileState extends State<UserProfile> {
         appBar: AppBar(
           title: Text(
             "Profile",
-            style:
-                TextStyle(color: Color.fromRGBO(21, 33, 47, 1), fontSize: 20),
+            style: TextStyle(
+                color: Color.fromRGBO(21, 33, 47, 1), fontSize: fontSize),
           ),
           //backgroundColor: Color.fromRGBO(21, 33, 47, 15),
           backgroundColor: Colors.white,

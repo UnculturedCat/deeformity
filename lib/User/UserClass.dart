@@ -1,4 +1,3 @@
-import 'package:deeformity/User/otherProfile.dart';
 import 'package:flutter/material.dart';
 
 class UserData {

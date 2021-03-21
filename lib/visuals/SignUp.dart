@@ -21,7 +21,6 @@ class SignUpPageState extends State<SignUpPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -208,7 +207,7 @@ class SignUpPageState extends State<SignUpPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        FlatButton(
+                        TextButton(
                             onPressed: handlCancelled,
                             child: Text(
                               "Cancel",
@@ -217,7 +216,7 @@ class SignUpPageState extends State<SignUpPage> {
                                   color: Colors.white,
                                   fontWeight: FontWeight.normal),
                             )),
-                        RaisedButton(
+                        ElevatedButton(
                           onPressed: handleDone,
                           child: Text(
                             "DONE",
@@ -226,7 +225,8 @@ class SignUpPageState extends State<SignUpPage> {
                               color: Colors.white,
                             ),
                           ),
-                          color: Color.fromRGBO(36, 36, 36, 100),
+                          style: ElevatedButton.styleFrom(
+                              primary: Color.fromRGBO(36, 36, 36, 100)),
                         )
                       ],
                     ),

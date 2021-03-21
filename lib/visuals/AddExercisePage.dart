@@ -1,6 +1,5 @@
 import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
-import 'package:deeformity/Shared/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Services/database.dart';
@@ -11,8 +10,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddExercisePage extends StatefulWidget {
-  final String day;
-  AddExercisePage(this.day);
+  final DaysOfTheWeek dayEnum;
+  final String scheduleName;
+  AddExercisePage({@required this.dayEnum, @required this.scheduleName});
   @override
   _AddExercisePageState createState() => _AddExercisePageState();
 }
@@ -72,16 +72,17 @@ class _AddExercisePageState extends State<AddExercisePage>
 
       String cardDocId = await DatabaseService(
               uid: UserSingleton.userSingleton.currentUSer.uid)
-          .createSchedule(
+          .createRoutine(
               cardId: cardId,
               userId: userId,
               workOutName: workOutName,
               description: description,
-              day: widget.day,
+              dayEnum: widget.dayEnum,
               dateTime: dateTime.toString(),
               mediaURL: mediaURL,
               mediaStoragePath: mediaStoragePath,
-              mediaType: _mediaType);
+              mediaType: _mediaType,
+              scheduleName: widget.scheduleName);
       cardDocId.isNotEmpty
           ? Navigator.pop(context)
           : setState(() {
@@ -191,35 +192,66 @@ class _AddExercisePageState extends State<AddExercisePage>
               onTap: (showMediaSelectionOption),
             ),
           )
-        : Column(
-            children: [
-              Container(
-                padding: EdgeInsets.only(top: 20, bottom: 50),
-                child: Stack(
-                  alignment: AlignmentDirectional.bottomEnd,
-                  children: [
-                    picture != null
-                        ? picture
-                        : _videoPlayer != null
-                            ? _videoPlayer
-                            : Text("Nothing to show. Delete and try again"),
-                    IconButton(
-                      icon: Icon(
-                        CupertinoIcons.delete,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          picture = null;
-                          _videoPlayer = null;
-                        });
-                      },
-                    ),
-                  ],
+        : Container(
+            padding: EdgeInsets.only(top: 20, bottom: 50),
+            child: Column(
+              children: [
+                // Container(
+                //   padding: EdgeInsets.only(top: 20, bottom: 50),
+                //   child: Stack(
+                //     alignment: AlignmentDirectional.bottomEnd,
+                //     children: [
+                //       picture != null
+                //           ? picture
+                //           : _videoPlayer != null
+                //               ? _videoPlayer
+                //               : Text("Nothing to show. Delete and try again"),
+                //       IconButton(
+                //         icon: Icon(
+                //           CupertinoIcons.delete,
+                //           color: Colors.white,
+                //           size: 30,
+                //         ),
+                //         onPressed: () {
+                //           setState(() {
+                //             picture = null;
+                //             _videoPlayer = null;
+                //           });
+                //         },
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                Container(
+                  color: Colors.white,
+                  alignment: Alignment.center,
+                  height: 400,
+                  child: picture != null
+                      ? picture
+                      : _videoPlayer != null
+                          ? _videoPlayer
+                          : Center(
+                              child:
+                                  Text("Nothing to show. Delete and try again"),
+                            ),
                 ),
-              ),
-            ],
+                Container(
+                  child: IconButton(
+                    icon: Icon(
+                      CupertinoIcons.delete,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        picture = null;
+                        _videoPlayer = null;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
           );
   }
 
@@ -346,7 +378,7 @@ class _AddExercisePageState extends State<AddExercisePage>
                         Container(
                             padding: EdgeInsets.only(left: 10, bottom: 20),
                             child: Text(
-                              widget.day,
+                              convertDayToString(widget.dayEnum),
                               style: TextStyle(
                                   fontSize: 30, fontWeight: FontWeight.bold),
                             )),

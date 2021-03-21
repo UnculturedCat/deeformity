@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  UserCredential _userCredential;
   //User user;
 
   String errorMessage = "";
@@ -27,7 +26,7 @@ class AuthenticationService {
 
   Future<bool> signIn(String email, String password) async {
     try {
-      UserCredential userCred = await _firebaseAuth.signInWithEmailAndPassword(
+      await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       errorMessage = "";
       // if (userCred != null) {

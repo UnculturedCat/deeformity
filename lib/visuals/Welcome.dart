@@ -1,5 +1,3 @@
-import 'package:provider/provider.dart';
-
 import 'SignUp.dart';
 import 'package:flutter/material.dart';
 import 'SignIn.dart';
@@ -21,7 +19,6 @@ class WelcomePageState extends State<WelcomePage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 

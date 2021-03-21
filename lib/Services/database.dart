@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/User/UserClass.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'dart:io';
 
@@ -20,17 +18,22 @@ class DatabaseService {
   final CollectionReference scheduleCollection =
       FirebaseFirestore.instance.collection("Schedules");
 
-  String scheduleSubCollectionName = "Daily routines";
-  String workOutScheduleCollectionName = "Workout routines";
+  String workOutScheduleSubCollectionName = "Workout routines";
+  String addedWorkOutScheduleSubCollectionName = "Added Workout Schedule";
 
   Stream<QuerySnapshot> get currentUsers {
     return usersCollection.snapshots();
   }
 
+  Stream<QuerySnapshot> get addedSchedules => scheduleCollection
+      .doc(UserSingleton.userSingleton.currentUSer.uid)
+      .collection(addedWorkOutScheduleSubCollectionName)
+      .snapshots();
+
   //get schedule snapshot for the current user
   Stream<QuerySnapshot> get schedule => scheduleCollection
       .doc(UserSingleton.userSingleton.currentUSer.uid)
-      .collection(workOutScheduleCollectionName)
+      .collection(workOutScheduleSubCollectionName)
       .snapshots();
 
   Stream<UserData> get userData => usersCollection
@@ -68,24 +71,32 @@ class DatabaseService {
 
   Future updateUserData({bool professionalAccount, String location}) async {}
 
-  Future<String> createSchedule(
-      {String cardId,
-      String userId,
-      String scheduleName,
-      String workOutName,
-      String description,
-      String day,
-      String dateTime,
-      String mediaURL,
-      String mediaStoragePath,
-      MediaType mediaType}) async {
+  Future createSchedule(String scheduleName) async {
+    await scheduleCollection
+        .doc(uid)
+        .collection(addedWorkOutScheduleSubCollectionName)
+        .add({"Schedule Name": scheduleName, "User Id": uid});
+  }
+
+  Future<String> createRoutine({
+    String cardId,
+    String userId,
+    String scheduleName,
+    String workOutName,
+    String description,
+    DaysOfTheWeek dayEnum,
+    String dateTime,
+    String mediaURL,
+    String mediaStoragePath,
+    MediaType mediaType,
+  }) async {
     DocumentReference ref = await scheduleCollection
         .doc(uid)
-        .collection(workOutScheduleCollectionName)
+        .collection(workOutScheduleSubCollectionName)
         .add({
       "Card Id": cardId,
       "User Id": userId,
-      "Day": day,
+      "Day": dayEnum.index,
       "Schedule Name": scheduleName,
       "Name": workOutName,
       "Description": description,
@@ -99,7 +110,7 @@ class DatabaseService {
   Future updateRoutineInfo(String cardId) async {
     await scheduleCollection
         .doc(uid)
-        .collection(workOutScheduleCollectionName)
+        .collection(workOutScheduleSubCollectionName)
         .doc(cardId)
         .update({"Card Id": cardId});
   }
@@ -107,7 +118,7 @@ class DatabaseService {
   Future deleteRoutine(QueryDocumentSnapshot doc) async {
     await scheduleCollection
         .doc(uid)
-        .collection(workOutScheduleCollectionName)
+        .collection(workOutScheduleSubCollectionName)
         .doc(doc.id)
         .delete();
   }

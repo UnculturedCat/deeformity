@@ -1,17 +1,22 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../Screens/SearhPage.dart';
 
+//Fonts
 const double fontSize = 20;
 const double fontSizeInputHint = 12;
 const double fontSizeButton = 15;
+const Color elementColorWhiteBackground = Color.fromRGBO(21, 33, 47, 1);
+
+//Cards
 const TextStyle cardHeaderStyle = TextStyle(color: Colors.white, fontSize: 30);
 const headerActionButtonStyle = TextStyle(
-    color: Color.fromRGBO(13, 255, 53, 1),
+    color: Color.fromRGBO(3, 173, 0, 1),
     fontSize: 17,
     fontWeight: FontWeight.w600);
+//Page Header: App bar
 const pageHeaderStyle =
     TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold);
+
+//Form fields
 const textInputDecoration = InputDecoration(
     contentPadding: EdgeInsets.all(15),
     filled: true,
@@ -33,6 +38,7 @@ const textInputDecorationWhite = InputDecoration(
     //floatingLabelBehavior: FloatingLabelBehavior.never
     );
 
+//GradientDecoration
 const gradientDecoration = BoxDecoration(
     gradient: RadialGradient(
         //begin: Alignment.topCenter,
@@ -161,4 +167,46 @@ enum RepeatFrequency {
   none,
   daily,
   weekly,
+}
+
+enum DaysOfTheWeek {
+  monday,
+  tuesday,
+  wednesday,
+  thursday,
+  friday,
+  saturday,
+  sunday,
+}
+
+String convertDayToString(DaysOfTheWeek dayEnum) {
+  String dayString = " ";
+  switch (dayEnum) {
+    case DaysOfTheWeek.monday:
+      dayString = "Monday";
+      break;
+    case DaysOfTheWeek.tuesday:
+      dayString = "Tuesday";
+      break;
+    case DaysOfTheWeek.wednesday:
+      dayString = "Wednesday";
+      break;
+    case DaysOfTheWeek.thursday:
+      dayString = "Thursday";
+      break;
+    case DaysOfTheWeek.friday:
+      dayString = "Friday";
+      break;
+    case DaysOfTheWeek.saturday:
+      dayString = "Saturday";
+      break;
+    case DaysOfTheWeek.sunday:
+      dayString = "Sunday";
+      break;
+
+    default:
+      dayString = "Unknown day";
+      break;
+  }
+  return dayString;
 }

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Shared/constants.dart';
-import 'package:deeformity/DataManager/Utility.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 

@@ -97,7 +97,6 @@ class TrainerPageState extends State<TrainerPage> {
                                 child: Container(
                                   color: Colors.lightBlue[50],
                                 )),
-                            //TODO: add default image
                             SizedBox(
                               height: 20,
                             ),
