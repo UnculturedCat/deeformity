@@ -20,9 +20,10 @@ class _ExercisePageState extends State<ExercisePage> {
     String title = docSnapshot.data()["Name"];
     String description = docSnapshot.data()["Description"];
     String mediaURL = docSnapshot.data()["MediaURL"];
-    int mediaTypeIndex = docSnapshot.data()["Media type"] ?? 15;
+    int mediaTypeIndex = docSnapshot.data()["Media type"];
+
     if (mediaURL != null && mediaURL.isNotEmpty) {
-      if (mediaTypeIndex != 15) {
+      if (mediaTypeIndex != MediaType.none.index) {
         MediaType mediaType = MediaType.values[mediaTypeIndex];
         switch (mediaType) {
           case MediaType.photo:
@@ -36,9 +37,12 @@ class _ExercisePageState extends State<ExercisePage> {
             break;
           case MediaType.textDocument:
             break;
+          case MediaType.none:
+            break;
         }
       }
     }
+
     return Scaffold(
       appBar: AppBar(
         //centerTitle: false,

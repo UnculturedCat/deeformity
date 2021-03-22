@@ -128,6 +128,7 @@ DropdownMenuItem<RepeatFrequency> createTextWidget(RepeatFrequency value) {
 }
 
 enum MediaType {
+  none,
   photo,
   video,
   textDocument,

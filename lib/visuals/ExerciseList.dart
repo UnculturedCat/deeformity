@@ -41,7 +41,8 @@ class _ExerciseListState extends State<ExerciseList> {
   }
 
   Widget createExerciseCard(QueryDocumentSnapshot doc) {
-    if (doc.data()["Day"] == widget.dayEnum.index &&
+    List<int> days = List.from(doc.data()["Days"]) ?? [];
+    if (days.contains(widget.dayEnum.index) &&
         doc.data()["Schedule Name"] == widget.scheduleName) {
       return Container(
         child: InkWell(

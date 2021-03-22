@@ -22,10 +22,11 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
   WorkoutSchedulePageState();
 
   bool largUI = false;
-  String scheduleToCreate;
+  bool signalFromDropDown = false;
   bool creatingSchedule = false;
   String selectedSchedule;
   QuerySnapshot _exercisesSnapshot;
+  String scheduleToCreate;
   List<QueryDocumentSnapshot> _exercisesForTheDay = [];
   List<String> schedules;
   final _formkey = GlobalKey<FormState>();
@@ -81,15 +82,6 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     }
   }
 
-  void getSchedulesFormDataBase(QuerySnapshot snapshot) {
-    List<String> tempSchedule = [];
-    snapshot.docs.forEach((element) {
-      tempSchedule.add(element.data()["Schedule Name"]);
-    });
-    selectedSchedule = tempSchedule[0];
-    schedules = tempSchedule;
-  }
-
   bool checkForTheDaysExercise(
       QuerySnapshot exercisesSnapshot, DaysOfTheWeek dayEnum) {
     _exercisesForTheDay = [];
@@ -97,7 +89,9 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     if ((exercisesSnapshot != null && exercisesSnapshot.docs != null) &&
         exercisesSnapshot.docs.isNotEmpty) {
       exercisesSnapshot.docs.forEach((doc) {
-        if (doc.data()["Day"] == dayEnum.index &&
+        List<int> days = List<int>.from(doc.data()["Days"]) ??
+            []; //get list of days that this exercise should occur
+        if (days.contains(dayEnum.index) &&
             doc.data()["Schedule Name"] == selectedSchedule) {
           _exercisesForTheDay.add(doc);
           exerciseAvailable = true;
@@ -213,8 +207,18 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
         },
         child: Text(
           "Create New",
+          //style: TextStyle(color: Color.fromRGBO(90, 200, 250, 1)),
           //style: headerActionButtonStyle,
         ));
+  }
+
+  void getSchedulesFormDataBase(QuerySnapshot snapshot) {
+    List<String> tempSchedule = [];
+    snapshot.docs.forEach((element) {
+      tempSchedule.add(element.data()["Schedule Name"]);
+    });
+    selectedSchedule = tempSchedule[0];
+    schedules = tempSchedule;
   }
 
   Widget build(BuildContext context) {
@@ -225,7 +229,9 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
       builder: (context, snapshot) {
         if ((snapshot != null && snapshot.hasData) &&
             (snapshot.data.docs != null && snapshot.data.docs.isNotEmpty)) {
-          getSchedulesFormDataBase(snapshot.data);
+          if (!signalFromDropDown) {
+            getSchedulesFormDataBase(snapshot.data);
+          }
         }
         return StreamBuilder<QuerySnapshot>(
             stream: DatabaseService(uid: UserSingleton.userSingleton.userID)
@@ -238,6 +244,8 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
               }
               return Scaffold(
                 appBar: AppBar(
+                  actionsIconTheme:
+                      IconThemeData(color: elementColorWhiteBackground),
                   backgroundColor: Colors.white,
                   shadowColor: Colors.white10,
                   title:
@@ -303,12 +311,21 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                                           setState(
                                             () {
                                               selectedSchedule = currentVal;
+                                              signalFromDropDown = true;
                                             },
                                           );
                                         },
                                       ),
                               ],
                             ),
+                ),
+                endDrawer: Drawer(
+                  child: ListView(
+                    children: [
+                      IconButton(icon: Icon(Icons.share), onPressed: () {}),
+                      createScheduleButton(),
+                    ],
+                  ),
                 ),
                 body: schedules == null || schedules.isEmpty
                     ? Container(

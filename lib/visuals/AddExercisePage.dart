@@ -20,13 +20,14 @@ class AddExercisePage extends StatefulWidget {
 class _AddExercisePageState extends State<AddExercisePage>
 /*with WidgetsBindingObserver // implement later*/ {
   final _formKey = GlobalKey<FormState>();
+  String date = UserSingleton.userSingleton.selectedStringDate;
+  DateTime dateTime = UserSingleton.userSingleton.dateTime;
   String cardId;
   String userId = UserSingleton.userSingleton.currentUSer.uid;
   String category;
   String workOutName;
   String description;
-  String date = UserSingleton.userSingleton.selectedStringDate;
-  DateTime dateTime = UserSingleton.userSingleton.dateTime;
+  List<int> workOutDays = [];
   File _mediaFile;
   final ImagePicker _imagePicker = ImagePicker();
   Image picture;
@@ -35,7 +36,13 @@ class _AddExercisePageState extends State<AddExercisePage>
   bool working = false;
   AppVideoPlayer _videoPlayer;
   MediaType _mediaType;
-
+  bool mondayAdded = false,
+      tuesdayAdded = false,
+      wedAdded = false,
+      thurAdded = false,
+      friAdded = false,
+      satAdded = false,
+      sunAdded = false;
   _AddExercisePageState();
 
   // @override
@@ -73,17 +80,18 @@ class _AddExercisePageState extends State<AddExercisePage>
       String cardDocId = await DatabaseService(
               uid: UserSingleton.userSingleton.currentUSer.uid)
           .createRoutine(
-              cardId: cardId,
-              userId: userId,
-              workOutName: workOutName,
-              description: description,
-              dayEnum: widget.dayEnum,
-              dateTime: dateTime.toString(),
-              mediaURL: mediaURL,
-              mediaStoragePath: mediaStoragePath,
-              mediaType: _mediaType,
-              scheduleName: widget.scheduleName);
-      cardDocId.isNotEmpty
+        cardId: cardId,
+        userId: userId,
+        workOutName: workOutName,
+        description: description,
+        dateTime: dateTime.toString(),
+        mediaURL: mediaURL,
+        mediaStoragePath: mediaStoragePath,
+        mediaType: _mediaType,
+        scheduleName: widget.scheduleName,
+        days: workOutDays,
+      );
+      cardDocId != null && cardDocId.isNotEmpty
           ? Navigator.pop(context)
           : setState(() {
               working = false;
@@ -93,6 +101,8 @@ class _AddExercisePageState extends State<AddExercisePage>
                     return Center(child: Text("Could not create exercise"));
                   });
             });
+    } else {
+      //check if workoutDays list is empty then show snackBar
     }
   }
 
@@ -176,20 +186,143 @@ class _AddExercisePageState extends State<AddExercisePage>
     }
   }
 
+  Widget createDayCard(DaysOfTheWeek dayEnum) {
+    bool added = false;
+
+    switch (dayEnum) {
+      case DaysOfTheWeek.monday:
+        added = mondayAdded;
+        break;
+
+      case DaysOfTheWeek.tuesday:
+        added = tuesdayAdded;
+        break;
+
+      case DaysOfTheWeek.wednesday:
+        added = wedAdded;
+        break;
+
+      case DaysOfTheWeek.thursday:
+        added = thurAdded;
+        break;
+
+      case DaysOfTheWeek.friday:
+        added = friAdded;
+        break;
+
+      case DaysOfTheWeek.saturday:
+        added = satAdded;
+        break;
+
+      case DaysOfTheWeek.sunday:
+        added = sunAdded;
+        break;
+    }
+
+    return Container(
+      width: MediaQuery.of(context).size.height / 7.5,
+      child: InkWell(
+        child: Card(
+          color: added ? Color.fromRGBO(0, 122, 225, 1) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10),
+            ),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(4),
+            child: Center(
+              child: Text(convertDayToString(dayEnum)),
+            ),
+          ),
+        ),
+        onTap: () {
+          switch (dayEnum) {
+            case DaysOfTheWeek.monday:
+              mondayAdded
+                  ? workOutDays.remove(dayEnum.index)
+                  : workOutDays.add(dayEnum.index);
+              mondayAdded = !mondayAdded;
+              break;
+
+            case DaysOfTheWeek.tuesday:
+              tuesdayAdded
+                  ? workOutDays.remove(dayEnum.index)
+                  : workOutDays.add(dayEnum.index);
+              tuesdayAdded = !tuesdayAdded;
+              break;
+
+            case DaysOfTheWeek.wednesday:
+              wedAdded
+                  ? workOutDays.remove(dayEnum.index)
+                  : workOutDays.add(dayEnum.index);
+              wedAdded = !wedAdded;
+              break;
+
+            case DaysOfTheWeek.thursday:
+              thurAdded
+                  ? workOutDays.remove(dayEnum.index)
+                  : workOutDays.add(dayEnum.index);
+              thurAdded = !thurAdded;
+              break;
+
+            case DaysOfTheWeek.friday:
+              friAdded
+                  ? workOutDays.remove(dayEnum.index)
+                  : workOutDays.add(dayEnum.index);
+              friAdded = !friAdded;
+              break;
+
+            case DaysOfTheWeek.saturday:
+              satAdded
+                  ? workOutDays.remove(dayEnum.index)
+                  : workOutDays.add(dayEnum.index);
+              satAdded = !satAdded;
+              break;
+
+            case DaysOfTheWeek.sunday:
+              sunAdded
+                  ? workOutDays.remove(dayEnum.index)
+                  : workOutDays.add(dayEnum.index);
+              sunAdded = !sunAdded;
+              break;
+          }
+          setState(() {});
+        },
+      ),
+    );
+  }
+
   Widget displayMediaWidget() {
     return picture == null && _videoPlayer == null
         ? Container(
-            padding: EdgeInsets.only(top: 10, bottom: 10),
-            child: GestureDetector(
-              child: Row(children: [
-                //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
-                Icon(
-                  Icons.image,
-                  size: 50,
+            padding: EdgeInsets.only(top: 30, bottom: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(5).copyWith(top: 2),
+                  child: Text(
+                    "Tap on the picture icon to add media ",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: Color.fromRGBO(21, 33, 47, 15),
+                      //fontSize: 12,
+                    ),
+                  ),
                 ),
-                Text("Add Media"),
-              ]),
-              onTap: (showMediaSelectionOption),
+                GestureDetector(
+                  child: Row(children: [
+                    //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                    Icon(
+                      Icons.image,
+                      size: 50,
+                    ),
+                    Text("Add Media"),
+                  ]),
+                  onTap: (showMediaSelectionOption),
+                ),
+              ],
             ),
           )
         : Container(
@@ -447,6 +580,58 @@ class _AddExercisePageState extends State<AddExercisePage>
                                   ),
                                 ),
                               ]),
+                        ),
+                        //Days Container
+                        Container(
+                          padding: EdgeInsets.only(
+                            top: 30,
+                            //bottom: 30,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(5).copyWith(top: 2),
+                                child: Text(
+                                  "Select the days to repeat this exercise",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: Color.fromRGBO(21, 33, 47, 15),
+                                    //fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                // height:
+                                //     MediaQuery.of(context).size.height / 7.5,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    createDayCard(DaysOfTheWeek.monday),
+                                    createDayCard(DaysOfTheWeek.tuesday),
+                                    createDayCard(DaysOfTheWeek.wednesday)
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                // height:
+                                //     MediaQuery.of(context).size.height / 7.5,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    createDayCard(DaysOfTheWeek.thursday),
+                                    createDayCard(DaysOfTheWeek.friday),
+                                    createDayCard(DaysOfTheWeek.saturday)
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                child: createDayCard(DaysOfTheWeek.sunday),
+                              )
+                            ],
+                          ),
                         ),
                         Align(
                             alignment: Alignment.center,

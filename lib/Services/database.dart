@@ -84,11 +84,12 @@ class DatabaseService {
     String scheduleName,
     String workOutName,
     String description,
-    DaysOfTheWeek dayEnum,
     String dateTime,
     String mediaURL,
     String mediaStoragePath,
     MediaType mediaType,
+    bool exerciseDone,
+    List<int> days,
   }) async {
     DocumentReference ref = await scheduleCollection
         .doc(uid)
@@ -96,13 +97,14 @@ class DatabaseService {
         .add({
       "Card Id": cardId,
       "User Id": userId,
-      "Day": dayEnum.index,
       "Schedule Name": scheduleName,
       "Name": workOutName,
       "Description": description,
       "MediaURL": mediaURL,
       "Media Path": mediaStoragePath,
-      "Media type": mediaType.index
+      "Media type": mediaType != null ? mediaType.index : MediaType.none.index,
+      "Done": exerciseDone,
+      "Days": days,
     });
     return ref.id;
   }
