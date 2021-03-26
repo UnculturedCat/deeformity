@@ -24,11 +24,12 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
   bool largUI = false;
   bool signalFromDropDown = false;
   bool creatingSchedule = false;
-  String selectedSchedule;
+  QueryDocumentSnapshot selectedSchedule;
   QuerySnapshot _exercisesSnapshot;
   String scheduleToCreate;
   List<QueryDocumentSnapshot> _exercisesForTheDay = [];
-  List<String> schedules;
+  List<QueryDocumentSnapshot> _schedulesExercises = [];
+  List<QueryDocumentSnapshot> schedules;
   final _formkey = GlobalKey<FormState>();
 
   void openExerciseCard(QueryDocumentSnapshot doc) {
@@ -39,7 +40,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
 
   Widget createExerciseCard(QueryDocumentSnapshot doc, DaysOfTheWeek dayEnum) {
     return Container(
-      key: Key(dayEnum.toString()),
+      key: Key(doc.id),
       width: largUI
           ? MediaQuery.of(context).size.width / 2.2
           : MediaQuery.of(context).size.height / 7.5,
@@ -53,7 +54,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
           child: Container(
             padding: EdgeInsets.all(4),
             child: Center(
-              child: Text(doc.data()["Name"]),
+              child: Text(doc.data()["Name"] ?? "Error name"),
             ),
           ),
         ),
@@ -69,7 +70,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return WorkoutDay(
         dayEnum: dayEnum,
-        scheduleName: selectedSchedule,
+        scheduleDoc: selectedSchedule,
       );
     }));
   }
@@ -83,7 +84,9 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
   }
 
   bool checkForTheDaysExercise(
-      QuerySnapshot exercisesSnapshot, DaysOfTheWeek dayEnum) {
+    QuerySnapshot exercisesSnapshot,
+    DaysOfTheWeek dayEnum,
+  ) {
     _exercisesForTheDay = [];
     bool exerciseAvailable = false;
     if ((exercisesSnapshot != null && exercisesSnapshot.docs != null) &&
@@ -91,8 +94,21 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
       exercisesSnapshot.docs.forEach((doc) {
         List<int> days = List<int>.from(doc.data()["Days"]) ??
             []; //get list of days that this exercise should occur
+
         if (days.contains(dayEnum.index) &&
-            doc.data()["Schedule Name"] == selectedSchedule) {
+            doc.data()["Schedule Id"] == selectedSchedule.id) {
+          bool addToList = true;
+
+          _schedulesExercises.forEach(
+            (element) {
+              if (element.id == doc.id) {
+                addToList = false;
+              }
+            },
+          );
+          if (addToList) {
+            _schedulesExercises.add(doc);
+          }
           _exercisesForTheDay.add(doc);
           exerciseAvailable = true;
         }
@@ -198,26 +214,169 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     );
   }
 
-  Widget createScheduleButton() {
+  Widget createScheduleButton({bool popContext = false}) {
     return TextButton(
         onPressed: () {
+          if (popContext) Navigator.pop(context);
           setState(() {
             creatingSchedule = true;
           });
         },
         child: Text(
-          "Create New",
-          //style: TextStyle(color: Color.fromRGBO(90, 200, 250, 1)),
+          "New Schedule",
+          // style: TextStyle(color: Color.fromRGBO(66, 133, 244, 40)),
           //style: headerActionButtonStyle,
         ));
   }
 
+  Widget createDrawer() {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.45,
+      //height: MediaQuery.of(context).size.height * 0.45,
+      child: Drawer(
+        child: Center(
+          child: ListView(
+            //padding: EdgeInsets.zero,
+            children: [
+              createScheduleButton(popContext: true),
+              Container(
+                child: Divider(
+                  color: Colors.blue,
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(6),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.offline_share, color: Colors.blue),
+                    Text(
+                      "Share Schedule",
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                child: Divider(
+                  color: Colors.blue[100],
+                ),
+              ),
+              InkWell(
+                child: Container(
+                  padding: EdgeInsets.all(6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        CupertinoIcons.delete,
+                        color: Colors.blue,
+                      ),
+                      Text(
+                        "Delete Schedule",
+                        style: TextStyle(color: Colors.blue),
+                      )
+                    ],
+                  ),
+                ),
+                onTap: deleteSchedule,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void showScheduleOptions() {
+    // showCupertinoModalPopup(
+    //     context: context,
+    //     builder: (context) {
+    //       return CupertinoActionSheet(
+    //         //title: Text("Schule Options"),
+    //         actions: [
+    //           CupertinoActionSheetAction(
+    //             child: createScheduleButton(popContext: true),
+    //             onPressed: () {},
+    //           ),
+    //           CupertinoActionSheetAction(
+    //             child: Container(
+    //               padding: EdgeInsets.all(6),
+    //               child: Row(
+    //                 mainAxisAlignment: MainAxisAlignment.center,
+    //                 children: [
+    //                   Icon(Icons.offline_share, color: Colors.blue),
+    //                   Text(
+    //                     "Share Schedule",
+    //                     style: TextStyle(color: Colors.blue),
+    //                   ),
+    //                 ],
+    //               ),
+    //             ),
+    //             onPressed: () {},
+    //           ),
+    //           CupertinoActionSheetAction(
+    //               child: Container(
+    //                 padding: EdgeInsets.all(6),
+    //                 child: Row(
+    //                   mainAxisAlignment: MainAxisAlignment.center,
+    //                   children: [
+    //                     Icon(
+    //                       CupertinoIcons.delete,
+    //                       color: Colors.red,
+    //                     ),
+    //                     Text(
+    //                       "Delete Schedule",
+    //                       style: TextStyle(color: Colors.red),
+    //                     )
+    //                   ],
+    //                 ),
+    //               ),
+    //               onPressed: () {}),
+    //         ],
+    //       );
+    //     });
+  }
+
+  void shareSchedule() {}
+
+  void deleteSchedule() {
+    showCupertinoDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: Text("Warning"),
+            content:
+                Text("Are you sure you want permanently delete this schedule?"),
+            actions: [
+              CupertinoActionSheetAction(
+                child: Text("Yes"),
+                onPressed: () async {
+                  await DatabaseService(uid: UserSingleton.userSingleton.userID)
+                      .deleteSchedule(selectedSchedule, _schedulesExercises);
+                  Navigator.pop(context);
+                },
+              ),
+              CupertinoActionSheetAction(
+                child: Text("No"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
+  }
+
   void getSchedulesFormDataBase(QuerySnapshot snapshot) {
-    List<String> tempSchedule = [];
-    snapshot.docs.forEach((element) {
-      tempSchedule.add(element.data()["Schedule Name"]);
-    });
-    selectedSchedule = tempSchedule[0];
+    List<QueryDocumentSnapshot> tempSchedule = [];
+    if (snapshot != null &&
+        (snapshot.docs != null && snapshot.docs.isNotEmpty)) {
+      snapshot.docs.forEach((element) {
+        tempSchedule.add(element);
+      });
+      selectedSchedule = tempSchedule[0];
+    }
     schedules = tempSchedule;
   }
 
@@ -227,23 +386,29 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
       stream: DatabaseService(uid: UserSingleton.userSingleton.userID)
           .addedSchedules,
       builder: (context, snapshot) {
-        if ((snapshot != null && snapshot.hasData) &&
-            (snapshot.data.docs != null && snapshot.data.docs.isNotEmpty)) {
+        if (snapshot != null && snapshot.hasData) {
+          /*
+          //Note that snapshot in these braces is refering to the streamBuilder snapshot
+          */
           if (!signalFromDropDown) {
             getSchedulesFormDataBase(snapshot.data);
           }
         }
         return StreamBuilder<QuerySnapshot>(
             stream: DatabaseService(uid: UserSingleton.userSingleton.userID)
-                .schedule,
+                .routines,
             builder: (context, routinesSnapshot) {
-              if ((routinesSnapshot != null && routinesSnapshot.hasData) &&
-                  (routinesSnapshot.data.docs != null &&
-                      routinesSnapshot.data.docs.isNotEmpty)) {
+              if (routinesSnapshot != null && routinesSnapshot.hasData) {
                 _exercisesSnapshot = routinesSnapshot.data;
               }
               return Scaffold(
                 appBar: AppBar(
+                  // actions: [
+                  //   IconButton(
+                  //     icon: Icon(Icons.menu),
+                  //     onPressed: showScheduleOptions,
+                  //   )
+                  // ],
                   actionsIconTheme:
                       IconThemeData(color: elementColorWhiteBackground),
                   backgroundColor: Colors.white,
@@ -296,18 +461,21 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                                     ? Container(
                                         child: createScheduleButton(),
                                       )
-                                    : DropdownButton<String>(
+                                    : DropdownButton<QueryDocumentSnapshot>(
                                         value: selectedSchedule,
                                         items: schedules
                                             .map(
-                                              (value) =>
-                                                  DropdownMenuItem<String>(
+                                              (value) => DropdownMenuItem<
+                                                  QueryDocumentSnapshot>(
                                                 value: value,
-                                                child: Text(value),
+                                                child: Text(
+                                                    value.data()["Name"] ??
+                                                        "Error Name"),
                                               ),
                                             )
                                             .toList(),
-                                        onChanged: (String currentVal) {
+                                        onChanged:
+                                            (QueryDocumentSnapshot currentVal) {
                                           setState(
                                             () {
                                               selectedSchedule = currentVal;
@@ -319,14 +487,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                               ],
                             ),
                 ),
-                endDrawer: Drawer(
-                  child: ListView(
-                    children: [
-                      IconButton(icon: Icon(Icons.share), onPressed: () {}),
-                      createScheduleButton(),
-                    ],
-                  ),
-                ),
+                endDrawer: createDrawer(),
                 body: schedules == null || schedules.isEmpty
                     ? Container(
                         padding: EdgeInsets.only(left: 10, right: 10),

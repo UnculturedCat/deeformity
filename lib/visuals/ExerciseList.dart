@@ -8,11 +8,11 @@ import 'package:flutter/material.dart';
 
 class ExerciseList extends StatefulWidget {
   final DaysOfTheWeek dayEnum;
-  final String scheduleName;
+  final QueryDocumentSnapshot scheduleDoc;
   final bool horizontalLayout;
   ExerciseList({
     @required this.dayEnum,
-    @required this.scheduleName,
+    @required this.scheduleDoc,
     this.horizontalLayout = false,
   });
   @override
@@ -27,23 +27,23 @@ class _ExerciseListState extends State<ExerciseList> {
   }
 
   void deleteExercise(QueryDocumentSnapshot doc) async {
-    String mediaURl = doc.data()["MediaURL"];
-    if (mediaURl != null && mediaURl.isNotEmpty) {
-      await DatabaseService(uid: UserSingleton.userSingleton.userID)
-          .deleteMedia(mediaURl);
-    }
+    // String mediaURl = doc.data()["MediaURL"];
+    // if (mediaURl != null && mediaURl.isNotEmpty) {
+    //   await DatabaseService(uid: UserSingleton.userSingleton.userID)
+    //       .deleteMedia(mediaURl);
+    // }
     // String mediaPath = doc.data()["Media Path"];
     // if (mediaPath != null && mediaPath.isNotEmpty) {
     //   await DatabaseService().deleteMedia(mediaPath);
     // }
     await DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .deleteRoutine(doc);
+        .deleteRoutine(doc: doc, dayEnum: widget.dayEnum);
   }
 
   Widget createExerciseCard(QueryDocumentSnapshot doc) {
     List<int> days = List.from(doc.data()["Days"]) ?? [];
     if (days.contains(widget.dayEnum.index) &&
-        doc.data()["Schedule Name"] == widget.scheduleName) {
+        doc.data()["Schedule Id"] == widget.scheduleDoc.id) {
       return Container(
         child: InkWell(
           child: Card(
@@ -61,7 +61,7 @@ class _ExerciseListState extends State<ExerciseList> {
                       ])),
               child: ListTile(
                 title: Text(
-                  doc.data()["Name"],
+                  doc.data()["Name"] ?? "Error Name",
                   style: TextStyle(color: Colors.white),
                 ),
                 trailing:
@@ -93,7 +93,7 @@ class _ExerciseListState extends State<ExerciseList> {
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
         stream:
-            DatabaseService(uid: UserSingleton.userSingleton.userID).schedule,
+            DatabaseService(uid: UserSingleton.userSingleton.userID).routines,
         builder: (context, snapshot) {
           if ((snapshot != null && snapshot.data != null) &&
               (snapshot.data.docs != null && snapshot.data.docs.isNotEmpty)) {

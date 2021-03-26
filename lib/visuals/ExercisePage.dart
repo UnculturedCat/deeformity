@@ -17,8 +17,8 @@ class _ExercisePageState extends State<ExercisePage> {
   _ExercisePageState(this.docSnapshot);
   @override
   Widget build(BuildContext context) {
-    String title = docSnapshot.data()["Name"];
-    String description = docSnapshot.data()["Description"];
+    String title = docSnapshot.data()["Name"] ?? "Error name";
+    String description = docSnapshot.data()["Description"] ?? "Error name";
     String mediaURL = docSnapshot.data()["MediaURL"];
     int mediaTypeIndex = docSnapshot.data()["Media type"];
 

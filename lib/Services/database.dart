@@ -18,7 +18,7 @@ class DatabaseService {
   final CollectionReference scheduleCollection =
       FirebaseFirestore.instance.collection("Schedules");
 
-  String workOutScheduleSubCollectionName = "Workout routines";
+  String workOutRoutinesSubCollectionName = "Workout routines";
   String addedWorkOutScheduleSubCollectionName = "Added Workout Schedule";
 
   Stream<QuerySnapshot> get currentUsers {
@@ -30,10 +30,10 @@ class DatabaseService {
       .collection(addedWorkOutScheduleSubCollectionName)
       .snapshots();
 
-  //get schedule snapshot for the current user
-  Stream<QuerySnapshot> get schedule => scheduleCollection
+  //get routine snapshot for the current user
+  Stream<QuerySnapshot> get routines => scheduleCollection
       .doc(UserSingleton.userSingleton.currentUSer.uid)
-      .collection(workOutScheduleSubCollectionName)
+      .collection(workOutRoutinesSubCollectionName)
       .snapshots();
 
   Stream<UserData> get userData => usersCollection
@@ -75,13 +75,13 @@ class DatabaseService {
     await scheduleCollection
         .doc(uid)
         .collection(addedWorkOutScheduleSubCollectionName)
-        .add({"Schedule Name": scheduleName, "User Id": uid});
+        .add({"Name": scheduleName, "User Id": uid});
   }
 
   Future<String> createRoutine({
     String cardId,
     String userId,
-    String scheduleName,
+    String scheduleId,
     String workOutName,
     String description,
     String dateTime,
@@ -93,11 +93,11 @@ class DatabaseService {
   }) async {
     DocumentReference ref = await scheduleCollection
         .doc(uid)
-        .collection(workOutScheduleSubCollectionName)
+        .collection(workOutRoutinesSubCollectionName)
         .add({
       "Card Id": cardId,
       "User Id": userId,
-      "Schedule Name": scheduleName,
+      "Schedule Id": scheduleId,
       "Name": workOutName,
       "Description": description,
       "MediaURL": mediaURL,
@@ -109,18 +109,63 @@ class DatabaseService {
     return ref.id;
   }
 
-  Future updateRoutineInfo(String cardId) async {
+  Future updateRoutineField({
+    QueryDocumentSnapshot doc,
+    String field,
+    value,
+  }) async {
     await scheduleCollection
         .doc(uid)
-        .collection(workOutScheduleSubCollectionName)
-        .doc(cardId)
-        .update({"Card Id": cardId});
+        .collection(workOutRoutinesSubCollectionName)
+        .doc(doc.id)
+        .update({field: value});
   }
 
-  Future deleteRoutine(QueryDocumentSnapshot doc) async {
+  Future deleteRoutine({
+    QueryDocumentSnapshot doc,
+    DaysOfTheWeek dayEnum,
+    bool deletingSchedule = false,
+  }) async {
+    List<int> days = List<int>.from(doc.data()["Days"]);
+
+    if (!deletingSchedule && !days.remove(dayEnum.index)) {
+      //if the schedule is being deleted just go ahead and delete the routine
+      print("DataBase: DeleteRoutine Failed");
+      return;
+    }
+
+    if (!deletingSchedule) {
+      //messy code, clean up during optimization
+      await updateRoutineField(doc: doc, field: "Days", value: days);
+      doc.data()["Days"] = days;
+    }
+
+    if (deletingSchedule || days.isEmpty) {
+      String mediaURl = doc.data()["MediaURL"];
+      if (mediaURl != null && mediaURl.isNotEmpty) {
+        await deleteMedia(mediaURl);
+      }
+      await scheduleCollection
+          .doc(uid)
+          .collection(workOutRoutinesSubCollectionName)
+          .doc(doc.id)
+          .delete();
+    }
+    print("Deleted routine");
+  }
+
+  Future deleteSchedule(
+    QueryDocumentSnapshot doc,
+    List<QueryDocumentSnapshot> routineSnapshot,
+  ) async {
+    if (routineSnapshot != null) {
+      Future.forEach(routineSnapshot, (document) async {
+        await deleteRoutine(doc: document, deletingSchedule: true);
+      });
+    }
     await scheduleCollection
         .doc(uid)
-        .collection(workOutScheduleSubCollectionName)
+        .collection(addedWorkOutScheduleSubCollectionName)
         .doc(doc.id)
         .delete();
   }

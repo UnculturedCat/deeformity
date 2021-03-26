@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,8 +12,8 @@ import 'package:image_picker/image_picker.dart';
 
 class AddExercisePage extends StatefulWidget {
   final DaysOfTheWeek dayEnum;
-  final String scheduleName;
-  AddExercisePage({@required this.dayEnum, @required this.scheduleName});
+  final QueryDocumentSnapshot scheduleDoc;
+  AddExercisePage({@required this.dayEnum, @required this.scheduleDoc});
   @override
   _AddExercisePageState createState() => _AddExercisePageState();
 }
@@ -44,6 +45,41 @@ class _AddExercisePageState extends State<AddExercisePage>
       satAdded = false,
       sunAdded = false;
   _AddExercisePageState();
+
+  @override
+  void initState() {
+    switch (widget.dayEnum) {
+      case DaysOfTheWeek.monday:
+        mondayAdded = true;
+        break;
+
+      case DaysOfTheWeek.tuesday:
+        tuesdayAdded = true;
+        break;
+
+      case DaysOfTheWeek.wednesday:
+        wedAdded = true;
+        break;
+
+      case DaysOfTheWeek.thursday:
+        thurAdded = true;
+        break;
+
+      case DaysOfTheWeek.friday:
+        friAdded = true;
+        break;
+
+      case DaysOfTheWeek.saturday:
+        satAdded = true;
+        break;
+
+      case DaysOfTheWeek.sunday:
+        sunAdded = true;
+        break;
+    }
+    workOutDays.add(widget.dayEnum.index);
+    super.initState();
+  }
 
   // @override
   // void initState() {
@@ -88,7 +124,7 @@ class _AddExercisePageState extends State<AddExercisePage>
         mediaURL: mediaURL,
         mediaStoragePath: mediaStoragePath,
         mediaType: _mediaType,
-        scheduleName: widget.scheduleName,
+        scheduleId: widget.scheduleDoc.id,
         days: workOutDays,
       );
       cardDocId != null && cardDocId.isNotEmpty
@@ -232,7 +268,11 @@ class _AddExercisePageState extends State<AddExercisePage>
           child: Container(
             padding: EdgeInsets.all(4),
             child: Center(
-              child: Text(convertDayToString(dayEnum)),
+              child: Text(
+                convertDayToString(dayEnum),
+                style: TextStyle(
+                    color: added ? Colors.white : elementColorWhiteBackground),
+              ),
             ),
           ),
         ),
@@ -525,7 +565,7 @@ class _AddExercisePageState extends State<AddExercisePage>
                                     "Give your exercise a clear and succint name",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
-                                      color: Color.fromRGBO(21, 33, 47, 15),
+                                      color: elementColorWhiteBackground,
                                       // /fontSize: 15,
                                     ),
                                   ),
@@ -559,7 +599,7 @@ class _AddExercisePageState extends State<AddExercisePage>
                                     "Describe the flow of the exercise. From sets, reps, rest time etc",
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
-                                      color: Color.fromRGBO(21, 33, 47, 15),
+                                      color: elementColorWhiteBackground,
                                       //fontSize: 12,
                                     ),
                                   ),
@@ -596,7 +636,7 @@ class _AddExercisePageState extends State<AddExercisePage>
                                   "Select the days to repeat this exercise",
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
-                                    color: Color.fromRGBO(21, 33, 47, 15),
+                                    color: elementColorWhiteBackground,
                                     //fontSize: 12,
                                   ),
                                 ),

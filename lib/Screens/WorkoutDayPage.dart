@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/visuals/AddExercisePage.dart';
 import 'package:flutter/material.dart';
@@ -6,8 +7,8 @@ import 'package:deeformity/visuals/ExerciseList.dart';
 
 class WorkoutDay extends StatefulWidget {
   final DaysOfTheWeek dayEnum;
-  final String scheduleName;
-  WorkoutDay({@required this.dayEnum, @required this.scheduleName});
+  final QueryDocumentSnapshot scheduleDoc;
+  WorkoutDay({@required this.dayEnum, @required this.scheduleDoc});
   @override
   State<StatefulWidget> createState() {
     return WorkoutDayState();
@@ -27,7 +28,7 @@ class WorkoutDayState extends State<WorkoutDay> {
   void openCreateExercisePage() {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return AddExercisePage(
-          dayEnum: widget.dayEnum, scheduleName: widget.scheduleName);
+          dayEnum: widget.dayEnum, scheduleDoc: widget.scheduleDoc);
     }));
   }
 
@@ -50,7 +51,7 @@ class WorkoutDayState extends State<WorkoutDay> {
             padding: EdgeInsets.only(top: 20),
             child: ExerciseList(
               dayEnum: widget.dayEnum,
-              scheduleName: widget.scheduleName,
+              scheduleDoc: widget.scheduleDoc,
             ),
           ),
           Container(

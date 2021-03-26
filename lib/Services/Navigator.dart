@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../Screens/WorkOutSchedulePage.dart';
 import '../Screens/SearhPage.dart';
-import '../Screens/Home.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import '../Screens/Profile.dart';
 
@@ -21,15 +20,15 @@ class NavigatorClassState extends State<NavigatorClass> {
   PageController _pageController = PageController();
 
   List<Widget> _pages = <Widget>[
-    HomePage(),
+    //HomePage(),
     //FinancePage(),
-    SearchPage(),
     WorkoutSchedulePage(),
+    SearchPage(),
     //NotificationsPage(),
     ProfilePage()
   ];
   List<String> _pageNames = <String>[
-    "HomePage",
+    //"HomePage",
     //"FinancePage",
     "SearchPage",
     "WorkoutSchedulePage",
@@ -70,15 +69,16 @@ class NavigatorClassState extends State<NavigatorClass> {
         unselectedItemColor: Colors.grey,
         //elevation: 8,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          //BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           //BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Finances"),
+
+          BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.calendar_circle_fill),
+              label: "Workout"),
           BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.search),
             label: "Search",
           ),
-          BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.calendar_circle_fill),
-              label: "Workout"),
           // BottomNavigationBarItem(
           //     icon: Icon(CupertinoIcons.bell_solid), label: "Notifications"),
           BottomNavigationBarItem(
