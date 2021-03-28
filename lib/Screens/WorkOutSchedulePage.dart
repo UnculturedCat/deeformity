@@ -244,18 +244,21 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                   color: Colors.blue,
                 ),
               ),
-              Container(
-                padding: EdgeInsets.all(6),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.offline_share, color: Colors.blue),
-                    Text(
-                      "Share Schedule",
-                      style: TextStyle(color: Colors.blue),
-                    ),
-                  ],
+              InkWell(
+                child: Container(
+                  padding: EdgeInsets.all(6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.offline_share, color: Colors.blue),
+                      Text(
+                        "Share Schedule",
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ],
+                  ),
                 ),
+                onTap: shareSchedule,
               ),
               Container(
                 child: Divider(
@@ -338,7 +341,18 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     //     });
   }
 
-  void shareSchedule() {}
+  void shareSchedule() {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: ListView(
+              children: [],
+            ),
+          );
+        });
+  }
 
   void deleteSchedule() {
     showCupertinoDialog(
@@ -487,7 +501,9 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                               ],
                             ),
                 ),
-                endDrawer: createDrawer(),
+                endDrawer: schedules == null || schedules.isEmpty
+                    ? null
+                    : createDrawer(),
                 body: schedules == null || schedules.isEmpty
                     ? Container(
                         padding: EdgeInsets.only(left: 10, right: 10),
@@ -497,7 +513,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                             children: [
                               Container(
                                 child: Text(
-                                  "Whoops, you have no schedule. \nTap on \"Create New\" to create a schedule. \n You can also save a schedule from another user",
+                                  "Whoops, you have no schedule. \nTap on \"New Schedule\" to create a schedule. \n You can also save a schedule from another user",
                                   style: TextStyle(
                                     color: elementColorWhiteBackground,
                                     fontSize: fontSize,

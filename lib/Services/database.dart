@@ -20,9 +20,17 @@ class DatabaseService {
 
   String workOutRoutinesSubCollectionName = "Workout routines";
   String addedWorkOutScheduleSubCollectionName = "Added Workout Schedule";
+  String addedUsers = "Added Users";
 
   Stream<QuerySnapshot> get currentUsers {
     return usersCollection.snapshots();
+  }
+
+  Stream<QuerySnapshot> get addedUsersSnapShot {
+    return usersCollection
+        .doc(UserSingleton.userSingleton.userID)
+        .collection(addedUsers)
+        .snapshots();
   }
 
   Stream<QuerySnapshot> get addedSchedules => scheduleCollection
@@ -54,11 +62,12 @@ class DatabaseService {
         location: snap.data()["Location"] ?? "Unknown");
   }
 
-  Future createUserData(
-      {String firstName,
-      String lastName,
-      bool professionalAccount,
-      String location}) async {
+  Future createUserData({
+    String firstName,
+    String lastName,
+    bool professionalAccount,
+    String location,
+  }) async {
     await usersCollection.doc(uid).set({
       "First Name": firstName,
       "Last Name": lastName,
@@ -67,10 +76,41 @@ class DatabaseService {
     });
   }
 
-  Future saveWorkoutSchedule(String workoutScheduleName, String day) async {}
+  Future<void> connectWithUser(QueryDocumentSnapshot userToAdd) async {
+    await usersCollection
+        .doc(uid)
+        .collection(addedUsers)
+        .doc(userToAdd.id)
+        .set({"User Id": userToAdd.id});
+    //UserSingleton.userSingleton.addedUsers.add(userToAdd);
+  }
 
-  Future updateUserData({bool professionalAccount, String location}) async {}
+  Future<void> disconnectWithUser(QueryDocumentSnapshot userToRemove) async {
+    await usersCollection
+        .doc(uid)
+        .collection(addedUsers)
+        .doc(userToRemove.id)
+        .delete();
+    //UserSingleton.userSingleton.addedUsers.add(userToAdd);
+  }
 
+  Future<QuerySnapshot> searchForUser(String searchQuery) async {
+    return await usersCollection
+        .where("Location", isEqualTo: searchQuery)
+        .get();
+  }
+
+  Future updateUserData({
+    QueryDocumentSnapshot doc,
+    String field,
+    value,
+  }) async {
+    await usersCollection.doc(uid).set({field: value}, SetOptions(merge: true));
+  }
+
+/*
+  Routine and schedule functions
+*/
   Future createSchedule(String scheduleName) async {
     await scheduleCollection
         .doc(uid)
@@ -170,12 +210,9 @@ class DatabaseService {
         .delete();
   }
 
-  Future<QuerySnapshot> searchForUser(String searchQuery) async {
-    return await usersCollection
-        .where("Location", isEqualTo: searchQuery)
-        .get();
-  }
-
+/*
+  Media functions
+*/
   Future<Map<String, String>> storeMedia(
       File file, String title, MediaType mediaType) async {
     String subfolder = "";

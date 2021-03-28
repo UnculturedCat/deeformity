@@ -195,33 +195,6 @@ class _UserProfileState extends State<UserProfile> {
                   ],
                 ),
               ),
-              // Container(
-              //   padding: EdgeInsets.only(top: 20, right: 10, left: 10),
-              //   child: RaisedButton(
-              //       child: Text(
-              //         "Claim page test button",
-              //         style: TextStyle(color: Colors.white),
-              //       ),
-              //       color: Colors.red,
-              //       onPressed: () {
-              //         //UserSingleton.userSingleton.bullSHit = "Profile";
-              //       }),
-              // ),
-              // Container(
-              //   padding: EdgeInsets.only(top: 20),
-              //   child: RaisedButton(
-              //       child: Text(
-              //         "Print Page name test button",
-              //         style: TextStyle(color: Colors.white),
-              //       ),
-              //       color: Colors.red,
-              //       onPressed: () {
-              //         //print(UserSingleton.userSingleton.bullSHit);
-              //       }),
-              // ),
-              Container(
-                  //add stats
-                  )
             ],
           ),
         ),

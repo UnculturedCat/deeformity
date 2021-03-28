@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
+import 'package:deeformity/User/otherProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -32,7 +33,11 @@ class _SearchResultsState extends State<SearchResults> {
     }
   }*/
 
-  void openUserCard(QueryDocumentSnapshot doc) {}
+  void openUserCard(QueryDocumentSnapshot doc) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return OtherUserProfile(doc);
+    }));
+  }
 
   Widget createUserCard(QueryDocumentSnapshot doc) {
     if ((doc.id == UserSingleton.userSingleton.userID ||
