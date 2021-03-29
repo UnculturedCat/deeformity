@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Services/database.dart';
 import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
+import 'package:deeformity/visuals/AddedUsersList.dart';
 import 'package:deeformity/visuals/ExercisePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -343,15 +344,22 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
 
   void shareSchedule() {
     showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return Container(
-            height: MediaQuery.of(context).size.height * 0.75,
-            child: ListView(
-              children: [],
-            ),
-          );
-        });
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.only(top: 50),
+          height: MediaQuery.of(context).size.height * 0.85,
+          child: AddedUsers(
+            sharingItem: true,
+            schedule: selectedSchedule,
+            schedulesExercises: _schedulesExercises,
+          ),
+        );
+      },
+    );
   }
 
   void deleteSchedule() {

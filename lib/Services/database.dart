@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:deeformity/Shared/constants.dart';
-import 'package:deeformity/User/UserClass.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'dart:io';
+
+import 'package:flutter/material.dart';
 
 class DatabaseService {
   final String uid;
@@ -44,23 +45,12 @@ class DatabaseService {
       .collection(workOutRoutinesSubCollectionName)
       .snapshots();
 
-  Stream<UserData> get userData => usersCollection
+//Get snapshot of current user
+  Stream<DocumentSnapshot> get userData => usersCollection
       .doc(UserSingleton.userSingleton.currentUSer.uid)
-      .snapshots()
-      .map((doc) => createUserDataFromSnapshot(doc));
+      .snapshots();
 
   Stream<QuerySnapshot> get allUsers => usersCollection.snapshots();
-
-  UserData createUserDataFromSnapshot(DocumentSnapshot snap) {
-    UserSingleton.userSingleton.userData = UserData(
-        firstName: snap.data()["First Name"] ?? "Unknown",
-        lastName: snap.data()["Last Name"] ?? "Unknown",
-        location: snap.data()["Location"] ?? "Unknown");
-    return UserData(
-        firstName: snap.data()["First Name"] ?? "Unknown",
-        lastName: snap.data()["Last Name"] ?? "Unknown",
-        location: snap.data()["Location"] ?? "Unknown");
-  }
 
   Future createUserData({
     String firstName,
@@ -81,8 +71,24 @@ class DatabaseService {
         .doc(uid)
         .collection(addedUsers)
         .doc(userToAdd.id)
-        .set({"User Id": userToAdd.id});
-    //UserSingleton.userSingleton.addedUsers.add(userToAdd);
+        .set({
+      "User Id": userToAdd.id,
+      "First Name": userToAdd.data()["First Name"],
+      "Last Name": userToAdd.data()["Last Name"],
+    });
+
+    //add to other user's addedUsers collection
+    await usersCollection
+        .doc(userToAdd.id)
+        .collection(addedUsers)
+        .doc(uid)
+        .set({
+      "User Id": UserSingleton.userSingleton.userDataSnapShot.id,
+      "First Name":
+          UserSingleton.userSingleton.userDataSnapShot.data()["First Name"],
+      "Last Name":
+          UserSingleton.userSingleton.userDataSnapShot.data()["Last Name"],
+    });
   }
 
   Future<void> disconnectWithUser(QueryDocumentSnapshot userToRemove) async {
@@ -91,7 +97,12 @@ class DatabaseService {
         .collection(addedUsers)
         .doc(userToRemove.id)
         .delete();
-    //UserSingleton.userSingleton.addedUsers.add(userToAdd);
+//Remove to other user's addedUsers collection
+    await usersCollection
+        .doc(userToRemove.id)
+        .collection(addedUsers)
+        .doc(uid)
+        .delete();
   }
 
   Future<QuerySnapshot> searchForUser(String searchQuery) async {
@@ -111,32 +122,27 @@ class DatabaseService {
 /*
   Routine and schedule functions
 */
-  Future createSchedule(String scheduleName) async {
-    await scheduleCollection
-        .doc(uid)
-        .collection(addedWorkOutScheduleSubCollectionName)
-        .add({"Name": scheduleName, "User Id": uid});
-  }
 
-  Future<String> createRoutine({
-    String cardId,
-    String userId,
-    String scheduleId,
-    String workOutName,
-    String description,
-    String dateTime,
-    String mediaURL,
-    String mediaStoragePath,
-    MediaType mediaType,
-    bool exerciseDone,
-    List<int> days,
-  }) async {
+  Future<String> createRoutine(
+      {String cardId,
+      String userId,
+      String scheduleId,
+      String workOutName,
+      String description,
+      String dateTime,
+      String mediaURL,
+      String mediaStoragePath,
+      MediaType mediaType,
+      bool exerciseDone,
+      List<int> days,
+      bool differUser = false,
+      String differUserId}) async {
     DocumentReference ref = await scheduleCollection
-        .doc(uid)
+        .doc(differUser ? differUserId : uid)
         .collection(workOutRoutinesSubCollectionName)
         .add({
       "Card Id": cardId,
-      "User Id": userId,
+      "Creator Id": uid,
       "Schedule Id": scheduleId,
       "Name": workOutName,
       "Description": description,
@@ -208,6 +214,40 @@ class DatabaseService {
         .collection(addedWorkOutScheduleSubCollectionName)
         .doc(doc.id)
         .delete();
+  }
+
+  Future createSchedule(String scheduleName) async {
+    await scheduleCollection
+        .doc(uid)
+        .collection(addedWorkOutScheduleSubCollectionName)
+        .add({"Name": scheduleName, "Creator Id": uid});
+  }
+
+  Future shareSchedule({
+    @required QueryDocumentSnapshot userDoc,
+    @required QueryDocumentSnapshot schedule,
+    @required List<QueryDocumentSnapshot> schedulesExercises,
+  }) async {
+    print("Sharing Schedule to " + userDoc.id);
+    await scheduleCollection
+        .doc(userDoc.id)
+        .collection(addedWorkOutScheduleSubCollectionName)
+        .add({"Name": schedule.data()["Name"], "Creator Id": uid});
+    Future.forEach(schedulesExercises, (QueryDocumentSnapshot exercise) async {
+      await createRoutine(
+          differUser: true,
+          differUserId: userDoc.id,
+          cardId: exercise.data()["Card Id"],
+          scheduleId: exercise.data()["Schedule Id"],
+          workOutName: exercise.data()["Name"],
+          description: exercise.data()["Description"],
+          mediaURL: exercise.data()["MediaURL"],
+          mediaStoragePath: exercise.data()["mediaStoragePath"],
+          mediaType: MediaType.values[exercise.data()["Media type"]],
+          days: List<int>.from(exercise.data()["Days"]));
+    });
+
+    print("Shared Schedule to " + userDoc.id);
   }
 
 /*

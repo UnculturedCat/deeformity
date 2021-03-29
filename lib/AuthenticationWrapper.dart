@@ -18,11 +18,16 @@ class AuthenticationWrapper extends StatelessWidget {
       //initialize utility class here utility.initialize
 
       UserSingleton(user: firebaseUser);
-      //Extremely dirty fix during optimization
+      //Extremely dirty fix during optimization: possible solution will be to create a setupListeners function
       DatabaseService(uid: UserSingleton.userSingleton.userID)
           .addedUsersSnapShot
           .listen((addedUsersSnapShot) {
         UserSingleton.userSingleton.addedUsers = addedUsersSnapShot.docs;
+      });
+      DatabaseService(uid: UserSingleton.userSingleton.userID)
+          .userData
+          .listen((doc) {
+        UserSingleton.userSingleton.userDataSnapShot = doc;
       });
       return NavigatorClass();
     }

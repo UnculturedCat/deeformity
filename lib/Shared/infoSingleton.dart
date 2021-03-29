@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../Screens/SearhPage.dart';
-import 'package:deeformity/User/UserClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 
@@ -8,8 +7,8 @@ class UserSingleton {
   User currentUSer;
   String selectedStringDate;
   String userID;
-  UserData userData;
   SearchPage searchPage;
+  DocumentSnapshot userDataSnapShot;
   List<QueryDocumentSnapshot> addedUsers = [];
   DateTime dateTime = DateTime.now();
   static final UserSingleton userSingleton = UserSingleton._internal();

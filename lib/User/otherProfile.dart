@@ -53,71 +53,78 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
               backgroundColor: Colors.white,
               iconTheme: IconThemeData(color: elementColorWhiteBackground),
             ),
-            body: Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          child: CircleAvatar(
-                            child: widget.userDoc.data()["ProfileImage Url"] !=
-                                    null
-                                ? null
-                                : Text(widget.userDoc.data()["First Name"][0]),
-                            backgroundImage: widget.userDoc
-                                        .data()["ProfileImage Url"] !=
-                                    null
-                                ? NetworkImage(
-                                    widget.userDoc.data()["ProfileImage Url"])
-                                : null,
-                            radius: 40,
+            body: Center(
+              child: Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            child: CircleAvatar(
+                              child: widget.userDoc
+                                          .data()["ProfileImage Url"] !=
+                                      null
+                                  ? null
+                                  : Text(
+                                      widget.userDoc.data()["First Name"][0]),
+                              backgroundImage: widget.userDoc
+                                          .data()["ProfileImage Url"] !=
+                                      null
+                                  ? NetworkImage(
+                                      widget.userDoc.data()["ProfileImage Url"])
+                                  : null,
+                              radius: 40,
+                            ),
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              child: addedUser
-                                  ? Row(
-                                      children: [
-                                        TextButton(
-                                          onPressed: disconnectWithUser,
-                                          child: Text(
-                                            "Disconnect",
-                                            style:
-                                                TextStyle(color: Colors.blue),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                child: addedUser
+                                    ? Row(
+                                        children: [
+                                          TextButton(
+                                            onPressed: disconnectWithUser,
+                                            child: Text(
+                                              "Disconnect",
+                                              style:
+                                                  TextStyle(color: Colors.blue),
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    )
-                                  : Row(
-                                      children: [
-                                        TextButton(
-                                          onPressed: connectWithUser,
-                                          child: Text(
-                                            "Connect",
-                                            style:
-                                                TextStyle(color: Colors.blue),
+                                        ],
+                                      )
+                                    : Row(
+                                        children: [
+                                          TextButton(
+                                            onPressed: connectWithUser,
+                                            child: Text(
+                                              "Connect",
+                                              style:
+                                                  TextStyle(color: Colors.blue),
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                            ),
-                            Container(
-                              child: Text(widget.userDoc.data()["First Name"] +
-                                  "\n " +
-                                  widget.userDoc.data()["Last Name"]),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  )
-                ],
+                                        ],
+                                      ),
+                              ),
+                              Container(
+                                child: Text(
+                                  widget.userDoc.data()["First Name"] +
+                                      "\n " +
+                                      widget.userDoc.data()["Last Name"],
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           );
