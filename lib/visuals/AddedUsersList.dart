@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Services/database.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
+import 'package:deeformity/User/otherProfile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Shared/constants.dart';
@@ -41,6 +42,12 @@ class _AddedUsersState extends State<AddedUsers> {
       userToShareSchedule.remove(doc);
     }
     setState(() {});
+  }
+
+  void openUserCard(QueryDocumentSnapshot doc) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return OtherUserProfile(doc);
+    }));
   }
 
   Widget createUserCard(QueryDocumentSnapshot doc) {
@@ -95,9 +102,13 @@ class _AddedUsersState extends State<AddedUsers> {
             ),
           ),
         ),
-        onTap: () {
-          markUser(doc);
-        },
+        onTap: markedForShare
+            ? () {
+                markUser(doc);
+              }
+            : () {
+                openUserCard(doc);
+              },
       ),
     );
   }

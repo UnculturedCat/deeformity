@@ -69,22 +69,23 @@ class _SearchResultsState extends State<SearchResults> {
             child: ListTile(
               leading: CircleAvatar(),
               title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      userFullName,
-                      style: TextStyle(
-                        color: Color.fromRGBO(21, 33, 47, 1),
-                      ),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    userFullName,
+                    style: TextStyle(
+                      color: Color.fromRGBO(21, 33, 47, 1),
                     ),
-                    Text(
-                      profession,
-                      style: TextStyle(
-                          color: Color.fromRGBO(21, 33, 47, 1),
-                          fontWeight: FontWeight.w300,
-                          fontSize: 12),
-                    )
-                  ]),
+                  ),
+                  Text(
+                    profession,
+                    style: TextStyle(
+                        color: Color.fromRGBO(21, 33, 47, 1),
+                        fontWeight: FontWeight.w300,
+                        fontSize: 12),
+                  )
+                ],
+              ),
             ),
           ),
         ),

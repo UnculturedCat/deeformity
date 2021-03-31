@@ -66,6 +66,13 @@ class DatabaseService {
     });
   }
 
+  Future<DocumentSnapshot> getParticularUserDoc(String docId) async {
+    DocumentSnapshot doc;
+    doc = await usersCollection.doc(docId).get();
+
+    return doc;
+  }
+
   Future<void> connectWithUser(QueryDocumentSnapshot userToAdd) async {
     await usersCollection
         .doc(uid)
@@ -97,7 +104,7 @@ class DatabaseService {
         .collection(addedUsers)
         .doc(userToRemove.id)
         .delete();
-//Remove to other user's addedUsers collection
+//Remove from other user's addedUsers collection
     await usersCollection
         .doc(userToRemove.id)
         .collection(addedUsers)
@@ -216,11 +223,23 @@ class DatabaseService {
         .delete();
   }
 
-  Future createSchedule(String scheduleName) async {
+  Future createSchedule(String scheduleName, Map<String, int> daysFocus) async {
     await scheduleCollection
         .doc(uid)
         .collection(addedWorkOutScheduleSubCollectionName)
-        .add({"Name": scheduleName, "Creator Id": uid});
+        .add({"Name": scheduleName, "Creator Id": uid, "Split": daysFocus});
+  }
+
+  Future updateScheduleField({
+    QueryDocumentSnapshot doc,
+    String field,
+    value,
+  }) async {
+    await scheduleCollection
+        .doc(uid)
+        .collection(addedWorkOutScheduleSubCollectionName)
+        .doc(doc.id)
+        .update({field: value});
   }
 
   Future shareSchedule({
@@ -235,16 +254,17 @@ class DatabaseService {
         .add({"Name": schedule.data()["Name"], "Creator Id": uid});
     Future.forEach(schedulesExercises, (QueryDocumentSnapshot exercise) async {
       await createRoutine(
-          differUser: true,
-          differUserId: userDoc.id,
-          cardId: exercise.data()["Card Id"],
-          scheduleId: exercise.data()["Schedule Id"],
-          workOutName: exercise.data()["Name"],
-          description: exercise.data()["Description"],
-          mediaURL: exercise.data()["MediaURL"],
-          mediaStoragePath: exercise.data()["mediaStoragePath"],
-          mediaType: MediaType.values[exercise.data()["Media type"]],
-          days: List<int>.from(exercise.data()["Days"]));
+        differUser: true,
+        differUserId: userDoc.id,
+        cardId: exercise.data()["Card Id"],
+        scheduleId: exercise.data()["Schedule Id"],
+        workOutName: exercise.data()["Name"],
+        description: exercise.data()["Description"],
+        mediaURL: exercise.data()["MediaURL"],
+        mediaStoragePath: exercise.data()["mediaStoragePath"],
+        mediaType: MediaType.values[exercise.data()["Media type"]],
+        days: List<int>.from(exercise.data()["Days"]),
+      );
     });
 
     print("Shared Schedule to " + userDoc.id);

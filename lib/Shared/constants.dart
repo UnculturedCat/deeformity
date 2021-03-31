@@ -5,6 +5,8 @@ const double fontSize = 20;
 const double fontSizeInputHint = 12;
 const double fontSizeButton = 15;
 const Color elementColorWhiteBackground = Color.fromRGBO(21, 33, 47, 1);
+const double fontSizeBody = 15;
+const double iconSizeBody = 15;
 
 //Cards
 const TextStyle cardHeaderStyle = TextStyle(color: Colors.white, fontSize: 30);
@@ -211,3 +213,80 @@ String convertDayToString(DaysOfTheWeek dayEnum) {
   }
   return dayString;
 }
+
+enum WorkoutSplits {
+  upperbody,
+  lowerbody,
+  arms,
+  back,
+  chest,
+  shoulders,
+  legs,
+  cardio,
+  rest,
+}
+
+String convertWorkoutSplitsToString(WorkoutSplits splits) {
+  String split = " ";
+  switch (splits) {
+    case WorkoutSplits.upperbody:
+      split = "Upper Body";
+      break;
+    case WorkoutSplits.lowerbody:
+      split = "Lower Body";
+      break;
+    case WorkoutSplits.arms:
+      split = "Arms";
+      break;
+    case WorkoutSplits.back:
+      split = "Back";
+      break;
+    case WorkoutSplits.chest:
+      split = "Chest";
+      break;
+    case WorkoutSplits.shoulders:
+      split = "Shoulders";
+      break;
+    case WorkoutSplits.cardio:
+      split = "Cardio";
+      break;
+    case WorkoutSplits.rest:
+      split = "Rest";
+      break;
+    case WorkoutSplits.legs:
+      split = "Legs";
+      break;
+    default:
+      split = "Unknown Split";
+      break;
+  }
+  return split;
+}
+
+Map<String, int> daysFocusDefaults = {
+  DaysOfTheWeek.monday.index.toString(): WorkoutSplits.rest.index,
+  DaysOfTheWeek.tuesday.index.toString(): WorkoutSplits.rest.index,
+  DaysOfTheWeek.wednesday.index.toString(): WorkoutSplits.rest.index,
+  DaysOfTheWeek.thursday.index.toString(): WorkoutSplits.rest.index,
+  DaysOfTheWeek.friday.index.toString(): WorkoutSplits.rest.index,
+  DaysOfTheWeek.saturday.index.toString(): WorkoutSplits.rest.index,
+  DaysOfTheWeek.sunday.index.toString(): WorkoutSplits.rest.index,
+};
+
+final List<DropdownMenuItem<WorkoutSplits>> dropDownWorkOutSplits =
+    <WorkoutSplits>[
+  WorkoutSplits.arms,
+  WorkoutSplits.back,
+  WorkoutSplits.cardio,
+  WorkoutSplits.chest,
+  WorkoutSplits.legs,
+  WorkoutSplits.lowerbody,
+  WorkoutSplits.rest,
+  WorkoutSplits.shoulders,
+  WorkoutSplits.upperbody,
+].map((value) {
+  return DropdownMenuItem<WorkoutSplits>(
+    value: value,
+    child: Text(convertWorkoutSplitsToString(value)),
+  );
+}).toList();

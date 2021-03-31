@@ -591,35 +591,35 @@ class _AddExercisePageState extends State<AddExercisePage>
                           //height: 300,
                           padding: EdgeInsets.only(top: 30),
                           child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(5).copyWith(top: 2),
-                                  child: Text(
-                                    "Describe the flow of the exercise. From sets, reps, rest time etc",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: elementColorWhiteBackground,
-                                      //fontSize: 12,
-                                    ),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(5).copyWith(top: 2),
+                                child: Text(
+                                  "Describe the flow of the exercise. From sets, reps, rest time etc",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    color: elementColorWhiteBackground,
+                                    //fontSize: 12,
                                   ),
                                 ),
-                                Container(
-                                  child: TextFormField(
-                                    maxLines: null,
-                                    minLines: 12,
-                                    //textInputAction: TextInputAction.newline,
+                              ),
+                              Container(
+                                child: TextFormField(
+                                  maxLines: null,
+                                  minLines: 12,
+                                  //textInputAction: TextInputAction.newline,
 
-                                    decoration:
-                                        textInputDecorationWhite.copyWith(
-                                            hintText: "Description",
-                                            hintStyle: TextStyle(
-                                                fontSize: fontSizeInputHint)),
-                                    onSaved: (input) => description = input,
-                                    //validator: (input) => input.isEmpty? "Enter",
-                                  ),
+                                  decoration: textInputDecorationWhite.copyWith(
+                                      hintText: "Description",
+                                      hintStyle: TextStyle(
+                                          fontSize: fontSizeInputHint)),
+                                  onSaved: (input) => description = input,
+                                  //validator: (input) => input.isEmpty? "Enter",
                                 ),
-                              ]),
+                              ),
+                            ],
+                          ),
                         ),
                         //Days Container
                         Container(

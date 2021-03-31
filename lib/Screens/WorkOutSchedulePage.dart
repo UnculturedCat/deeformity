@@ -7,6 +7,7 @@ import 'package:deeformity/visuals/ExercisePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Screens/WorkoutDayPage.dart';
+import 'package:deeformity/Shared/UserCardCreator.dart';
 
 class WorkoutSchedulePage extends StatefulWidget {
   final String pageName = "WorkoutSchedulePage";
@@ -25,13 +26,17 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
   bool largUI = false;
   bool signalFromDropDown = false;
   bool creatingSchedule = false;
+  bool editingDescription = false;
   QueryDocumentSnapshot selectedSchedule;
   QuerySnapshot _exercisesSnapshot;
   String scheduleToCreate;
+  String scheduleDescription;
   List<QueryDocumentSnapshot> _exercisesForTheDay = [];
   List<QueryDocumentSnapshot> _schedulesExercises = [];
   List<QueryDocumentSnapshot> schedules;
   final _formkey = GlobalKey<FormState>();
+  final _discriptionFormKey = GlobalKey<FormState>();
+  DocumentSnapshot scheduleCreator;
 
   void openExerciseCard(QueryDocumentSnapshot doc) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -67,11 +72,12 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     );
   }
 
-  void openDay(DaysOfTheWeek dayEnum) {
+  void openDay(DaysOfTheWeek dayEnum, WorkoutSplits workoutSplit) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return WorkoutDay(
         dayEnum: dayEnum,
         scheduleDoc: selectedSchedule,
+        workoutSplit: workoutSplit,
       );
     }));
   }
@@ -79,8 +85,9 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
   void addScheduleToDataBase() async {
     if (_formkey.currentState.validate()) {
       _formkey.currentState.save();
+
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
-          .createSchedule(scheduleToCreate);
+          .createSchedule(scheduleToCreate, daysFocusDefaults);
     }
   }
 
@@ -119,6 +126,9 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
   }
 
   Widget createDayRow(String day, DaysOfTheWeek dayEnum) {
+    WorkoutSplits workoutSplit = WorkoutSplits.values[
+        selectedSchedule.data()["Split"][dayEnum.index.toString()] ??
+            WorkoutSplits.rest];
     return Container(
       key: Key(day),
       child: Row(
@@ -156,14 +166,18 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                       ),
                       Container(
                         //insert Icon
-                        child: Text("Targeted area"),
+                        child: Text(
+                          convertWorkoutSplitsToString(workoutSplit),
+                          style: TextStyle(
+                              color: Colors.white, fontSize: fontSizeBody),
+                        ),
                       )
                     ],
                   ),
                 ),
               ),
               onTap: () {
-                openDay(dayEnum);
+                openDay(dayEnum, workoutSplit);
               },
             ),
           ),
@@ -292,56 +306,6 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     );
   }
 
-  void showScheduleOptions() {
-    // showCupertinoModalPopup(
-    //     context: context,
-    //     builder: (context) {
-    //       return CupertinoActionSheet(
-    //         //title: Text("Schule Options"),
-    //         actions: [
-    //           CupertinoActionSheetAction(
-    //             child: createScheduleButton(popContext: true),
-    //             onPressed: () {},
-    //           ),
-    //           CupertinoActionSheetAction(
-    //             child: Container(
-    //               padding: EdgeInsets.all(6),
-    //               child: Row(
-    //                 mainAxisAlignment: MainAxisAlignment.center,
-    //                 children: [
-    //                   Icon(Icons.offline_share, color: Colors.blue),
-    //                   Text(
-    //                     "Share Schedule",
-    //                     style: TextStyle(color: Colors.blue),
-    //                   ),
-    //                 ],
-    //               ),
-    //             ),
-    //             onPressed: () {},
-    //           ),
-    //           CupertinoActionSheetAction(
-    //               child: Container(
-    //                 padding: EdgeInsets.all(6),
-    //                 child: Row(
-    //                   mainAxisAlignment: MainAxisAlignment.center,
-    //                   children: [
-    //                     Icon(
-    //                       CupertinoIcons.delete,
-    //                       color: Colors.red,
-    //                     ),
-    //                     Text(
-    //                       "Delete Schedule",
-    //                       style: TextStyle(color: Colors.red),
-    //                     )
-    //                   ],
-    //                 ),
-    //               ),
-    //               onPressed: () {}),
-    //         ],
-    //       );
-    //     });
-  }
-
   void shareSchedule() {
     showModalBottomSheet(
       isScrollControlled: true,
@@ -390,16 +354,50 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
         });
   }
 
-  void getSchedulesFormDataBase(QuerySnapshot snapshot) {
+  void getSchedulesFormDataBase(QuerySnapshot snapshot) async {
     List<QueryDocumentSnapshot> tempSchedule = [];
     if (snapshot != null &&
         (snapshot.docs != null && snapshot.docs.isNotEmpty)) {
       snapshot.docs.forEach((element) {
         tempSchedule.add(element);
       });
+      // if (selectedSchedule == null ||
+      //     (selectedSchedule != null &&
+      //         selectedSchedule.data()["Creator Id"] == null)) {
+      //   String creatorId = selectedSchedule.data()["Creator Id"];
+
+      //   if (selectedSchedule.data()["Creator Id"] !=
+      //       UserSingleton.userSingleton.userID) {
+      //     await DatabaseService(uid: UserSingleton.userSingleton.userID)
+      //         .getParticularUserDoc(creatorId);
+      //   }
+      // }
       selectedSchedule = tempSchedule[0];
     }
     schedules = tempSchedule;
+  }
+
+  Future<Widget> getScheduleCreatorCard() async {
+    String creatorId = selectedSchedule.data()["Creator Id"];
+    await DatabaseService(uid: UserSingleton.userSingleton.userID)
+        .getParticularUserDoc(creatorId);
+    return UserCardCreator(scheduleCreator);
+  }
+
+  void setSelectedScheduleDescription() async {
+    if (_discriptionFormKey.currentState.validate()) {
+      _discriptionFormKey.currentState.save();
+      if (scheduleDescription.isNotEmpty) {
+        await DatabaseService(uid: UserSingleton.userSingleton.userID)
+            .updateScheduleField(
+                field: "Description",
+                value: scheduleDescription,
+                doc: selectedSchedule);
+      }
+    }
+    setState(() {
+      editingDescription = false;
+    });
   }
 
   Widget build(BuildContext context) {
@@ -417,20 +415,15 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
           }
         }
         return StreamBuilder<QuerySnapshot>(
-            stream: DatabaseService(uid: UserSingleton.userSingleton.userID)
-                .routines,
-            builder: (context, routinesSnapshot) {
-              if (routinesSnapshot != null && routinesSnapshot.hasData) {
-                _exercisesSnapshot = routinesSnapshot.data;
-              }
-              return Scaffold(
+          stream:
+              DatabaseService(uid: UserSingleton.userSingleton.userID).routines,
+          builder: (context, routinesSnapshot) {
+            if (routinesSnapshot != null && routinesSnapshot.hasData) {
+              _exercisesSnapshot = routinesSnapshot.data;
+            }
+            return GestureDetector(
+              child: Scaffold(
                 appBar: AppBar(
-                  // actions: [
-                  //   IconButton(
-                  //     icon: Icon(Icons.menu),
-                  //     onPressed: showScheduleOptions,
-                  //   )
-                  // ],
                   actionsIconTheme:
                       IconThemeData(color: elementColorWhiteBackground),
                   backgroundColor: Colors.white,
@@ -501,6 +494,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                                           setState(
                                             () {
                                               selectedSchedule = currentVal;
+
                                               signalFromDropDown = true;
                                             },
                                           );
@@ -534,14 +528,101 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                           ),
                         ),
                       )
-                    : Container(
-                        padding: EdgeInsets.only(top: 10, left: 10, right: 10),
-                        child: ListView(
-                          children: DaysOfTheWeek.values
-                              .map((day) =>
-                                  createDayRow(convertDayToString(day), day))
-                              .toList(),
-                        ),
+                    : Column(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(top: 10),
+                            child: Column(
+                              children: [
+                                Text("Created by"),
+                                selectedSchedule.data()["Creator Id"] ==
+                                        UserSingleton.userSingleton.userID
+                                    ? Text("You")
+                                    : getScheduleCreatorCard(),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            child: editingDescription
+                                ? Row(
+                                    //crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.70,
+                                        child: Form(
+                                          key: _discriptionFormKey,
+                                          child: TextFormField(
+                                            maxLines: null,
+                                            minLines: 3,
+                                            decoration: textInputDecorationWhite
+                                                .copyWith(
+                                                    hintText: "Description",
+                                                    hintStyle: TextStyle(
+                                                        fontSize:
+                                                            fontSizeInputHint)),
+                                            onSaved: (input) =>
+                                                scheduleDescription = input,
+                                          ),
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed:
+                                            setSelectedScheduleDescription,
+                                        child: Text("Done"),
+                                      ),
+                                    ],
+                                  )
+                                : Row(
+                                    //crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        child: Text(
+                                          selectedSchedule
+                                                  .data()["Description"] ??
+                                              "No schedule Description",
+                                          style: TextStyle(
+                                            color: elementColorWhiteBackground,
+                                            fontSize: fontSizeBody,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        child: selectedSchedule
+                                                    .data()["Creator Id"] ==
+                                                UserSingleton
+                                                    .userSingleton.userID
+                                            ? IconButton(
+                                                icon: Icon(Icons.edit),
+                                                iconSize: iconSizeBody,
+                                                onPressed: () {
+                                                  setState(() {
+                                                    editingDescription = true;
+                                                  });
+                                                },
+                                              )
+                                            : SizedBox(),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              padding:
+                                  EdgeInsets.only(top: 10, left: 10, right: 10),
+                              child: ListView(
+                                children: DaysOfTheWeek.values
+                                    .map((day) => createDayRow(
+                                        convertDayToString(day), day))
+                                    .toList(),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                 floatingActionButton: IconButton(
                     iconSize: 45,
@@ -559,8 +640,16 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                         largUI = !largUI;
                       });
                     }),
-              );
-            });
+              ),
+              onTap: () {
+                FocusScopeNode currentFocus = FocusScope.of(context);
+                if (!currentFocus.hasPrimaryFocus) {
+                  currentFocus.unfocus();
+                }
+              },
+            );
+          },
+        );
       },
     );
   }
