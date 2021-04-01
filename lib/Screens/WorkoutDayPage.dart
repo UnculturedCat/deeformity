@@ -38,10 +38,15 @@ class WorkoutDayState extends State<WorkoutDay> {
   }
 
   void openCreateExercisePage() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return AddExercisePage(
-          dayEnum: widget.dayEnum, scheduleDoc: widget.scheduleDoc);
-    }));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return AddExercisePage(
+              dayEnum: widget.dayEnum, scheduleDoc: widget.scheduleDoc);
+        },
+      ),
+    );
   }
 
   void updateSchedule() async {

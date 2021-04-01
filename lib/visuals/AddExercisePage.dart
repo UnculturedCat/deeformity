@@ -542,143 +542,142 @@ class _AddExercisePageState extends State<AddExercisePage>
             padding: EdgeInsets.only(top: 20, left: 20, right: 20),
             child: Form(
               key: _formKey,
-              child: Column(
-                children: [
-                  Expanded(
-                    //height: MediaQuery.of(context).size.height * 0.70,
-                    child: ListView(
-                      children: [
-                        Container(
-                            padding: EdgeInsets.only(left: 10, bottom: 20),
-                            child: Text(
-                              convertDayToString(widget.dayEnum),
-                              style: TextStyle(
-                                  fontSize: 30, fontWeight: FontWeight.bold),
-                            )),
-                        Container(
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.all(5).copyWith(top: 2),
-                                  child: Text(
-                                    "Give your exercise a clear and succint name",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: elementColorWhiteBackground,
-                                      // /fontSize: 15,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  child: TextFormField(
-                                    maxLength: 20,
-                                    decoration:
-                                        textInputDecorationWhite.copyWith(
-                                      hintStyle: TextStyle(
-                                          fontSize: fontSizeInputHint),
-                                      hintText: "Workout Name",
-                                    ),
-                                    onSaved: (input) => workOutName = input,
-                                    validator: (input) => input.isEmpty
-                                        ? "Enter exercise name"
-                                        : null,
-                                  ),
-                                ),
-                              ]),
-                        ),
-                        Container(
-                          //height: 300,
-                          padding: EdgeInsets.only(top: 30),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(5).copyWith(top: 2),
-                                child: Text(
-                                  "Describe the flow of the exercise. From sets, reps, rest time etc",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    color: elementColorWhiteBackground,
-                                    //fontSize: 12,
-                                  ),
+              child: SingleChildScrollView(
+                child: Column(
+                  //children: [
+                  // Expanded(
+                  //   //height: MediaQuery.of(context).size.height * 0.70,
+                  //   child: ListView(
+                  children: [
+                    Container(
+                        padding: EdgeInsets.only(left: 10, bottom: 20),
+                        child: Text(
+                          convertDayToString(widget.dayEnum),
+                          style: TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.bold),
+                        )),
+                    Container(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(5).copyWith(top: 2),
+                              child: Text(
+                                "Give your exercise a clear and succint name",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: elementColorWhiteBackground,
+                                  // /fontSize: 15,
                                 ),
                               ),
-                              Container(
-                                child: TextFormField(
-                                  maxLines: null,
-                                  minLines: 12,
-                                  //textInputAction: TextInputAction.newline,
-
-                                  decoration: textInputDecorationWhite.copyWith(
-                                      hintText: "Description",
-                                      hintStyle: TextStyle(
-                                          fontSize: fontSizeInputHint)),
-                                  onSaved: (input) => description = input,
-                                  //validator: (input) => input.isEmpty? "Enter",
+                            ),
+                            Container(
+                              child: TextFormField(
+                                maxLength: 20,
+                                decoration: textInputDecorationWhite.copyWith(
+                                  hintStyle:
+                                      TextStyle(fontSize: fontSizeInputHint),
+                                  hintText: "Workout Name",
                                 ),
+                                onSaved: (input) => workOutName = input,
+                                // validator: (input) => input.isEmpty
+                                //     ? "Enter exercise name"
+                                //     : null,
                               ),
-                            ],
-                          ),
-                        ),
-                        //Days Container
-                        Container(
-                          padding: EdgeInsets.only(
-                            top: 30,
-                            //bottom: 30,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(5).copyWith(top: 2),
-                                child: Text(
-                                  "Select the days to repeat this exercise",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    color: elementColorWhiteBackground,
-                                    //fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                // height:
-                                //     MediaQuery.of(context).size.height / 7.5,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    createDayCard(DaysOfTheWeek.monday),
-                                    createDayCard(DaysOfTheWeek.tuesday),
-                                    createDayCard(DaysOfTheWeek.wednesday)
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                // height:
-                                //     MediaQuery.of(context).size.height / 7.5,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    createDayCard(DaysOfTheWeek.thursday),
-                                    createDayCard(DaysOfTheWeek.friday),
-                                    createDayCard(DaysOfTheWeek.saturday)
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                child: createDayCard(DaysOfTheWeek.sunday),
-                              )
-                            ],
-                          ),
-                        ),
-                        Align(
-                            alignment: Alignment.center,
-                            child: displayMediaWidget())
-                      ],
+                            ),
+                          ]),
                     ),
-                  ),
+                    Container(
+                      //height: 300,
+                      padding: EdgeInsets.only(top: 30),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(5).copyWith(top: 2),
+                            child: Text(
+                              "Describe the flow of the exercise. From sets, reps, rest time etc",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: elementColorWhiteBackground,
+                                //fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            child: TextFormField(
+                              maxLines: null,
+                              minLines: 12,
+                              //textInputAction: TextInputAction.newline,
+
+                              decoration: textInputDecorationWhite.copyWith(
+                                hintText: "Description",
+                                hintStyle:
+                                    TextStyle(fontSize: fontSizeInputHint),
+                              ),
+                              onSaved: (input) => description = input,
+                              //validator: (input) => input.isEmpty? "Enter",
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    //Days Container
+                    Container(
+                      padding: EdgeInsets.only(
+                        top: 30,
+                        //bottom: 30,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(5).copyWith(top: 2),
+                            child: Text(
+                              "Select the days to repeat this exercise",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: elementColorWhiteBackground,
+                                //fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            // height:
+                            //     MediaQuery.of(context).size.height / 7.5,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                createDayCard(DaysOfTheWeek.monday),
+                                createDayCard(DaysOfTheWeek.tuesday),
+                                createDayCard(DaysOfTheWeek.wednesday)
+                              ],
+                            ),
+                          ),
+                          Container(
+                            // height:
+                            //     MediaQuery.of(context).size.height / 7.5,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                createDayCard(DaysOfTheWeek.thursday),
+                                createDayCard(DaysOfTheWeek.friday),
+                                createDayCard(DaysOfTheWeek.saturday)
+                              ],
+                            ),
+                          ),
+                          Container(
+                            child: createDayCard(DaysOfTheWeek.sunday),
+                          )
+                        ],
+                      ),
+                    ),
+                    Align(
+                        alignment: Alignment.center,
+                        child: displayMediaWidget())
+                  ],
+                  //   ),
+                  // ),
                   // Container(
                   //   padding: EdgeInsets.only(bottom: 50),
                   //   child: working
@@ -704,7 +703,8 @@ class _AddExercisePageState extends State<AddExercisePage>
                   //           ),
                   //         ),
                   // ),
-                ],
+                  //],
+                ),
               ),
             ),
           ),

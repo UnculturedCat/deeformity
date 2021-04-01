@@ -37,6 +37,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
   final _formkey = GlobalKey<FormState>();
   final _discriptionFormKey = GlobalKey<FormState>();
   DocumentSnapshot scheduleCreator;
+  UserCardCreator creatorUserCard;
 
   void openExerciseCard(QueryDocumentSnapshot doc) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -373,15 +374,17 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
       //   }
       // }
       selectedSchedule = tempSchedule[0];
+      if (selectedSchedule.data()["Creator Id"] !=
+          UserSingleton.userSingleton.userID) await getScheduleCreatorCard();
     }
     schedules = tempSchedule;
   }
 
-  Future<Widget> getScheduleCreatorCard() async {
+  Future getScheduleCreatorCard() async {
     String creatorId = selectedSchedule.data()["Creator Id"];
     await DatabaseService(uid: UserSingleton.userSingleton.userID)
         .getParticularUserDoc(creatorId);
-    return UserCardCreator(scheduleCreator);
+    creatorUserCard = UserCardCreator(scheduleCreator);
   }
 
   void setSelectedScheduleDescription() async {
@@ -494,7 +497,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                                           setState(
                                             () {
                                               selectedSchedule = currentVal;
-
+                                              getScheduleCreatorCard();
                                               signalFromDropDown = true;
                                             },
                                           );
@@ -538,7 +541,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                                 selectedSchedule.data()["Creator Id"] ==
                                         UserSingleton.userSingleton.userID
                                     ? Text("You")
-                                    : getScheduleCreatorCard(),
+                                    : creatorUserCard,
                               ],
                             ),
                           ),
