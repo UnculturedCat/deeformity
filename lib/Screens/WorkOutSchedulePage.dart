@@ -47,6 +47,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
 
   Widget createExerciseCard(QueryDocumentSnapshot doc, DaysOfTheWeek dayEnum) {
     return Container(
+      color: Colors.white,
       key: Key(doc.id),
       width: largUI
           ? MediaQuery.of(context).size.width / 2.2
@@ -59,6 +60,11 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
             ),
           ),
           child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(
+                Radius.circular(10),
+              ),
+            ),
             padding: EdgeInsets.all(4),
             child: Center(
               child: Text(doc.data()["Name"] ?? "Error name"),
@@ -232,32 +238,60 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
 
   Widget createScheduleButton({bool popContext = false}) {
     return TextButton(
-        onPressed: () {
-          if (popContext) Navigator.pop(context);
-          setState(() {
-            creatingSchedule = true;
-          });
-        },
-        child: Text(
-          "New Schedule",
-          // style: TextStyle(color: Color.fromRGBO(66, 133, 244, 40)),
-          //style: headerActionButtonStyle,
-        ));
+      onPressed: () {
+        if (popContext) Navigator.pop(context);
+        setState(() {
+          creatingSchedule = true;
+        });
+      },
+      child: Text(
+        "New Schedule",
+        // style: TextStyle(color: Color.fromRGBO(66, 133, 244, 40)),
+        //style: headerActionButtonStyle,
+      ),
+    );
   }
 
   Widget createDrawer() {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.45,
+      width: MediaQuery.of(context).size.width * 0.55,
       //height: MediaQuery.of(context).size.height * 0.45,
       child: Drawer(
-        child: Center(
-          child: ListView(
+        child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             //padding: EdgeInsets.zero,
             children: [
-              createScheduleButton(popContext: true),
               Container(
                 child: Divider(
-                  color: Colors.blue,
+                  color: Colors.black26,
+                ),
+              ),
+              InkWell(
+                child: Container(
+                  padding: EdgeInsets.all(6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(CupertinoIcons.floppy_disk, color: Colors.blue),
+                      Text(
+                        "New Schedule",
+                        style:
+                            TextStyle(color: Colors.blue, fontSize: fontSize),
+                      ),
+                    ],
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() {
+                    creatingSchedule = true;
+                  });
+                },
+              ),
+              Container(
+                child: Divider(
+                  color: Colors.black26,
                 ),
               ),
               InkWell(
@@ -269,7 +303,8 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                       Icon(Icons.offline_share, color: Colors.blue),
                       Text(
                         "Share Schedule",
-                        style: TextStyle(color: Colors.blue),
+                        style:
+                            TextStyle(color: Colors.blue, fontSize: fontSize),
                       ),
                     ],
                   ),
@@ -278,7 +313,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
               ),
               Container(
                 child: Divider(
-                  color: Colors.blue[100],
+                  color: Colors.black26,
                 ),
               ),
               InkWell(
@@ -289,11 +324,12 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                     children: [
                       Icon(
                         CupertinoIcons.delete,
-                        color: Colors.blue,
+                        color: Colors.redAccent,
                       ),
                       Text(
                         "Delete Schedule",
-                        style: TextStyle(color: Colors.blue),
+                        style: TextStyle(
+                            color: Colors.redAccent, fontSize: fontSize),
                       )
                     ],
                   ),
@@ -430,7 +466,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                   actionsIconTheme:
                       IconThemeData(color: elementColorWhiteBackground),
                   backgroundColor: Colors.white,
-                  shadowColor: Colors.white10,
+                  shadowColor: Colors.white24,
                   title:
                       creatingSchedule //check if user clicked create schedule
                           ? Form(
@@ -506,6 +542,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                               ],
                             ),
                 ),
+                backgroundColor: Colors.white,
                 endDrawer: schedules == null || schedules.isEmpty
                     ? null
                     : createDrawer(),

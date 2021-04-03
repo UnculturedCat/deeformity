@@ -65,7 +65,7 @@ class _ExerciseListState extends State<ExerciseList> {
                   style: TextStyle(color: Colors.white),
                 ),
                 trailing:
-                    doc.data()["User Id"] == UserSingleton.userSingleton.userID
+                    doc.data()["Creator Id"] == UserSingleton.userSingleton.userID
                         ? IconButton(
                             icon: Icon(
                               CupertinoIcons.delete,
