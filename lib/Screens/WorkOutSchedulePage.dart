@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Screens/WorkoutDayPage.dart';
 import 'package:deeformity/Shared/UserCardCreator.dart';
+import 'package:deeformity/User/otherProfile.dart';
 
 class WorkoutSchedulePage extends StatefulWidget {
   final String pageName = "WorkoutSchedulePage";
@@ -27,6 +28,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
   bool signalFromDropDown = false;
   bool creatingSchedule = false;
   bool editingDescription = false;
+  bool updateSchedule = false;
   QueryDocumentSnapshot selectedSchedule;
   QuerySnapshot _exercisesSnapshot;
   String scheduleToCreate;
@@ -34,10 +36,34 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
   List<QueryDocumentSnapshot> _exercisesForTheDay = [];
   List<QueryDocumentSnapshot> _schedulesExercises = [];
   List<QueryDocumentSnapshot> schedules;
+
   final _formkey = GlobalKey<FormState>();
   final _discriptionFormKey = GlobalKey<FormState>();
   DocumentSnapshot scheduleCreator;
   UserCardCreator creatorUserCard;
+
+  @override
+  void initState() {
+    DatabaseService(uid: UserSingleton.userSingleton.userID)
+        .addedSchedules
+        .listen((schedulesSnapshot) {
+      bool initializeSelectedSchedule = true;
+      schedules = schedulesSnapshot.docs;
+      if (selectedSchedule != null) {
+        schedules.forEach((schedule) {
+          if (schedule.id == selectedSchedule.id) {
+            selectedSchedule = schedule;
+            initializeSelectedSchedule = false;
+          }
+        });
+      }
+      if (initializeSelectedSchedule) {
+        selectedSchedule = schedules[0];
+        getScheduleCreatorCard();
+      }
+    });
+    super.initState();
+  }
 
   void openExerciseCard(QueryDocumentSnapshot doc) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -98,6 +124,17 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     }
   }
 
+  void openCreatorCard(QueryDocumentSnapshot doc) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return OtherUserProfile(doc);
+        },
+      ),
+    );
+  }
+
   bool checkForTheDaysExercise(
     QuerySnapshot exercisesSnapshot,
     DaysOfTheWeek dayEnum,
@@ -112,18 +149,6 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
 
         if (days.contains(dayEnum.index) &&
             doc.data()["Schedule Id"] == selectedSchedule.id) {
-          bool addToList = true;
-
-          _schedulesExercises.forEach(
-            (element) {
-              if (element.id == doc.id) {
-                addToList = false;
-              }
-            },
-          );
-          if (addToList) {
-            _schedulesExercises.add(doc);
-          }
           _exercisesForTheDay.add(doc);
           exerciseAvailable = true;
         }
@@ -369,8 +394,9 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
         builder: (context) {
           return CupertinoAlertDialog(
             title: Text("Warning"),
-            content:
-                Text("Are you sure you want permanently delete this schedule?"),
+            content: Text("Are you sure you want permanently delete " +
+                selectedSchedule.data()["Name"] +
+                "?"),
             actions: [
               CupertinoActionSheetAction(
                 child: Text("Yes"),
@@ -391,36 +417,17 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
         });
   }
 
-  void getSchedulesFormDataBase(QuerySnapshot snapshot) async {
-    List<QueryDocumentSnapshot> tempSchedule = [];
-    if (snapshot != null &&
-        (snapshot.docs != null && snapshot.docs.isNotEmpty)) {
-      snapshot.docs.forEach((element) {
-        tempSchedule.add(element);
-      });
-      // if (selectedSchedule == null ||
-      //     (selectedSchedule != null &&
-      //         selectedSchedule.data()["Creator Id"] == null)) {
-      //   String creatorId = selectedSchedule.data()["Creator Id"];
-
-      //   if (selectedSchedule.data()["Creator Id"] !=
-      //       UserSingleton.userSingleton.userID) {
-      //     await DatabaseService(uid: UserSingleton.userSingleton.userID)
-      //         .getParticularUserDoc(creatorId);
-      //   }
-      // }
-      selectedSchedule = tempSchedule[0];
-      if (selectedSchedule.data()["Creator Id"] !=
-          UserSingleton.userSingleton.userID) await getScheduleCreatorCard();
-    }
-    schedules = tempSchedule;
-  }
-
   Future getScheduleCreatorCard() async {
     String creatorId = selectedSchedule.data()["Creator Id"];
     await DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .getParticularUserDoc(creatorId);
-    creatorUserCard = UserCardCreator(scheduleCreator);
+        .getParticularUserDoc(creatorId)
+        .then((value) {
+      setState(() {
+        scheduleCreator = value;
+        creatorUserCard = UserCardCreator(userDoc: value);
+        //signalFromDropDown = false;
+      });
+    });
   }
 
   void setSelectedScheduleDescription() async {
@@ -432,6 +439,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                 field: "Description",
                 value: scheduleDescription,
                 doc: selectedSchedule);
+        updateSchedule = true;
       }
     }
     setState(() {
@@ -442,252 +450,234 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
   Widget build(BuildContext context) {
     super.build(context);
     return StreamBuilder<QuerySnapshot>(
-      stream: DatabaseService(uid: UserSingleton.userSingleton.userID)
-          .addedSchedules,
-      builder: (context, snapshot) {
-        if (snapshot != null && snapshot.hasData) {
-          /*
-          //Note that snapshot in these braces is refering to the streamBuilder snapshot
-          */
-          if (!signalFromDropDown) {
-            getSchedulesFormDataBase(snapshot.data);
-          }
-        }
-        return StreamBuilder<QuerySnapshot>(
-          stream:
-              DatabaseService(uid: UserSingleton.userSingleton.userID).routines,
-          builder: (context, routinesSnapshot) {
-            if (routinesSnapshot != null && routinesSnapshot.hasData) {
-              _exercisesSnapshot = routinesSnapshot.data;
+      stream: DatabaseService(uid: UserSingleton.userSingleton.userID).routines,
+      builder: (context, routinesSnapshot) {
+        if (routinesSnapshot != null && routinesSnapshot.hasData) {
+          _exercisesSnapshot = routinesSnapshot.data;
+          _schedulesExercises = [];
+          _exercisesSnapshot.docs.forEach((exerciseDoc) {
+            if (exerciseDoc.data()["Schedule Id"] == selectedSchedule.id) {
+              _schedulesExercises.add(exerciseDoc);
             }
-            return GestureDetector(
-              child: Scaffold(
-                appBar: AppBar(
-                  actionsIconTheme:
-                      IconThemeData(color: elementColorWhiteBackground),
-                  backgroundColor: Colors.white,
-                  shadowColor: Colors.white24,
-                  title:
-                      creatingSchedule //check if user clicked create schedule
-                          ? Form(
-                              key: _formkey,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.5,
-                                    child: TextFormField(
-                                      decoration:
-                                          textInputDecorationWhite.copyWith(
-                                        prefixIcon: Icon(CupertinoIcons.tags),
-                                        hintStyle: TextStyle(
-                                          fontSize: fontSizeInputHint,
-                                        ),
-                                        hintText: "Name schedule",
-                                      ),
-                                      onSaved: (input) =>
-                                          scheduleToCreate = input,
-                                      validator: (input) =>
-                                          input.isEmpty ? "Enter a name" : null,
-                                    ),
-                                  ),
-                                  Container(
-                                    child: TextButton(
-                                      child: Text("Done"),
-                                      onPressed: () {
-                                        addScheduleToDataBase();
-                                        setState(() {
-                                          creatingSchedule = false;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                schedules == null ||
-                                        schedules
-                                            .isEmpty //check if user has saved any schedules
-                                    ? Container(
-                                        child: createScheduleButton(),
-                                      )
-                                    : DropdownButton<QueryDocumentSnapshot>(
-                                        value: selectedSchedule,
-                                        items: schedules
-                                            .map(
-                                              (value) => DropdownMenuItem<
-                                                  QueryDocumentSnapshot>(
-                                                value: value,
-                                                child: Text(
-                                                    value.data()["Name"] ??
-                                                        "Error Name"),
-                                              ),
-                                            )
-                                            .toList(),
-                                        onChanged:
-                                            (QueryDocumentSnapshot currentVal) {
-                                          setState(
-                                            () {
-                                              selectedSchedule = currentVal;
-                                              getScheduleCreatorCard();
-                                              signalFromDropDown = true;
-                                            },
-                                          );
-                                        },
-                                      ),
-                              ],
-                            ),
-                ),
-                backgroundColor: Colors.white,
-                endDrawer: schedules == null || schedules.isEmpty
-                    ? null
-                    : createDrawer(),
-                body: schedules == null || schedules.isEmpty
-                    ? Container(
-                        padding: EdgeInsets.only(left: 10, right: 10),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                child: Text(
-                                  "Whoops, you have no schedule. \nTap on \"New Schedule\" to create a schedule. \n You can also save a schedule from another user",
-                                  style: TextStyle(
-                                    color: elementColorWhiteBackground,
-                                    fontSize: fontSize,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    : Column(
+          });
+        }
+        return GestureDetector(
+          child: Scaffold(
+            appBar: AppBar(
+              actionsIconTheme:
+                  IconThemeData(color: elementColorWhiteBackground),
+              backgroundColor: Colors.white,
+              shadowColor: Colors.white24,
+              title: creatingSchedule //check if user clicked create schedule
+                  ? Form(
+                      key: _formkey,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Container(
-                            padding: EdgeInsets.only(top: 10),
-                            child: Column(
-                              children: [
-                                Text("Created by"),
-                                selectedSchedule.data()["Creator Id"] ==
-                                        UserSingleton.userSingleton.userID
-                                    ? Text("You")
-                                    : creatorUserCard,
-                              ],
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            child: TextFormField(
+                              decoration: textInputDecorationWhite.copyWith(
+                                prefixIcon: Icon(CupertinoIcons.tags),
+                                hintStyle: TextStyle(
+                                  fontSize: fontSizeInputHint,
+                                ),
+                                hintText: "Name schedule",
+                              ),
+                              onSaved: (input) => scheduleToCreate = input,
+                              validator: (input) =>
+                                  input.isEmpty ? "Enter a name" : null,
                             ),
                           ),
                           Container(
-                            child: editingDescription
-                                ? Row(
-                                    //crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.70,
-                                        child: Form(
-                                          key: _discriptionFormKey,
-                                          child: TextFormField(
-                                            maxLines: null,
-                                            minLines: 3,
-                                            decoration: textInputDecorationWhite
-                                                .copyWith(
-                                                    hintText: "Description",
-                                                    hintStyle: TextStyle(
-                                                        fontSize:
-                                                            fontSizeInputHint)),
-                                            onSaved: (input) =>
-                                                scheduleDescription = input,
-                                          ),
-                                        ),
-                                      ),
-                                      TextButton(
-                                        onPressed:
-                                            setSelectedScheduleDescription,
-                                        child: Text("Done"),
-                                      ),
-                                    ],
-                                  )
-                                : Row(
-                                    //crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        child: Text(
-                                          selectedSchedule
-                                                  .data()["Description"] ??
-                                              "No schedule Description",
-                                          style: TextStyle(
-                                            color: elementColorWhiteBackground,
-                                            fontSize: fontSizeBody,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        child: selectedSchedule
-                                                    .data()["Creator Id"] ==
-                                                UserSingleton
-                                                    .userSingleton.userID
-                                            ? IconButton(
-                                                icon: Icon(Icons.edit),
-                                                iconSize: iconSizeBody,
-                                                onPressed: () {
-                                                  setState(() {
-                                                    editingDescription = true;
-                                                  });
-                                                },
-                                              )
-                                            : SizedBox(),
-                                      ),
-                                    ],
-                                  ),
-                          ),
-                          Expanded(
-                            child: Container(
-                              padding:
-                                  EdgeInsets.only(top: 10, left: 10, right: 10),
-                              child: ListView(
-                                children: DaysOfTheWeek.values
-                                    .map((day) => createDayRow(
-                                        convertDayToString(day), day))
-                                    .toList(),
-                              ),
+                            child: TextButton(
+                              child: Text("Done"),
+                              onPressed: () {
+                                addScheduleToDataBase();
+                                setState(() {
+                                  creatingSchedule = false;
+                                });
+                              },
                             ),
                           ),
                         ],
                       ),
-                floatingActionButton: IconButton(
-                    iconSize: 45,
-                    icon: largUI
-                        ? Icon(
-                            Icons.zoom_out,
-                            color: Color.fromRGBO(21, 33, 47, 1),
-                          )
-                        : Icon(
-                            CupertinoIcons.zoom_in,
-                            color: Color.fromRGBO(21, 33, 47, 1),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        schedules == null ||
+                                schedules
+                                    .isEmpty //check if user has saved any schedules
+                            ? Container(
+                                child: createScheduleButton(),
+                              )
+                            : DropdownButton<QueryDocumentSnapshot>(
+                                value: selectedSchedule,
+                                items: schedules
+                                    .map(
+                                      (value) => DropdownMenuItem<
+                                          QueryDocumentSnapshot>(
+                                        value: value,
+                                        child: Text(value.data()["Name"] ??
+                                            "Error Name"),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (QueryDocumentSnapshot currentVal) {
+                                  setState(
+                                    () {
+                                      selectedSchedule = currentVal;
+                                      getScheduleCreatorCard();
+                                    },
+                                  );
+                                },
+                              ),
+                      ],
+                    ),
+            ),
+            backgroundColor: Colors.white,
+            endDrawer:
+                schedules == null || schedules.isEmpty ? null : createDrawer(),
+            body: schedules == null || schedules.isEmpty
+                ? Container(
+                    padding: EdgeInsets.only(left: 10, right: 10),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            child: Text(
+                              "Whoops, you have no schedule. \nTap on \"New Schedule\" to create a schedule. \n You can also save a schedule from another user",
+                              style: TextStyle(
+                                color: elementColorWhiteBackground,
+                                fontSize: fontSize,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                    onPressed: () {
-                      setState(() {
-                        largUI = !largUI;
-                      });
-                    }),
-              ),
-              onTap: () {
-                FocusScopeNode currentFocus = FocusScope.of(context);
-                if (!currentFocus.hasPrimaryFocus) {
-                  currentFocus.unfocus();
-                }
-              },
-            );
+                        ],
+                      ),
+                    ),
+                  )
+                : Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(top: 10),
+                        child: Column(
+                          children: [
+                            Text("Created by"),
+                            selectedSchedule.data()["Creator Id"] ==
+                                    UserSingleton.userSingleton.userID
+                                ? Text("You")
+                                : creatorUserCard == null
+                                    ? Text("Fetching Creator")
+                                    : creatorUserCard,
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: 10, right: 10),
+                        child: editingDescription
+                            ? Row(
+                                //crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.70,
+                                    child: Form(
+                                      key: _discriptionFormKey,
+                                      child: TextFormField(
+                                        maxLines: null,
+                                        minLines: 3,
+                                        decoration:
+                                            textInputDecorationWhite.copyWith(
+                                                hintText: "Description",
+                                                hintStyle: TextStyle(
+                                                    fontSize:
+                                                        fontSizeInputHint)),
+                                        onSaved: (input) =>
+                                            scheduleDescription = input,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: setSelectedScheduleDescription,
+                                    child: Text("Done"),
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      selectedSchedule.data()["Description"] ??
+                                          "No schedule Description",
+                                      overflow: TextOverflow.clip,
+                                      style: TextStyle(
+                                        color: elementColorWhiteBackground,
+                                        fontSize: fontSizeBody,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    child: selectedSchedule
+                                                .data()["Creator Id"] ==
+                                            UserSingleton.userSingleton.userID
+                                        ? IconButton(
+                                            icon: Icon(Icons.edit),
+                                            iconSize: iconSizeBody,
+                                            onPressed: () {
+                                              setState(() {
+                                                editingDescription = true;
+                                              });
+                                            },
+                                          )
+                                        : SizedBox(),
+                                  ),
+                                ],
+                              ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding:
+                              EdgeInsets.only(top: 10, left: 10, right: 10),
+                          child: ListView(
+                            children: DaysOfTheWeek.values
+                                .map((day) =>
+                                    createDayRow(convertDayToString(day), day))
+                                .toList(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+            floatingActionButton: IconButton(
+                iconSize: 45,
+                icon: largUI
+                    ? Icon(
+                        Icons.zoom_out,
+                        color: Color.fromRGBO(21, 33, 47, 1),
+                      )
+                    : Icon(
+                        CupertinoIcons.zoom_in,
+                        color: Color.fromRGBO(21, 33, 47, 1),
+                      ),
+                onPressed: () {
+                  setState(() {
+                    largUI = !largUI;
+                  });
+                }),
+          ),
+          onTap: () {
+            FocusScopeNode currentFocus = FocusScope.of(context);
+            if (!currentFocus.hasPrimaryFocus) {
+              currentFocus.unfocus();
+            }
           },
         );
       },

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deeformity/Shared/UserCardCreator.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:deeformity/User/otherProfile.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,6 @@ class _SearchResultsState extends State<SearchResults> {
         widget.textBoxQuery.isEmpty) return SizedBox();
     String firstName = doc.data()["First Name"];
     String lastName = doc.data()["Last Name"];
-    String profession = doc.data()["Profession"] ?? "Private user";
     String userFullName = firstName + " " + lastName;
 
     //Fliters displayed users according to textForm input
@@ -62,32 +62,8 @@ class _SearchResultsState extends State<SearchResults> {
     return Container(
       padding: EdgeInsets.only(top: 10),
       child: InkWell(
-        child: Card(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10))),
-          child: Container(
-            child: ListTile(
-              leading: CircleAvatar(),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    userFullName,
-                    style: TextStyle(
-                      color: Color.fromRGBO(21, 33, 47, 1),
-                    ),
-                  ),
-                  Text(
-                    profession,
-                    style: TextStyle(
-                        color: Color.fromRGBO(21, 33, 47, 1),
-                        fontWeight: FontWeight.w300,
-                        fontSize: 12),
-                  )
-                ],
-              ),
-            ),
-          ),
+        child: UserCardCreator(
+          userDoc: doc,
         ),
         onTap: () {
           openUserCard(doc);

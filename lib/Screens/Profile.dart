@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
+import 'package:deeformity/visuals/AddedSchedulesList.dart';
 import 'package:deeformity/visuals/AddedUsersList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,10 @@ class ProfilePageState extends State<ProfilePage>
   Pages currentpage = Pages.schedules;
   ProfilePageState();
   DocumentSnapshot userDoc;
+  String aboutUser;
   final ImagePicker _imagePicker = ImagePicker();
+  bool editingDescription = false;
+  final _discriptionFormKey = GlobalKey<FormState>();
 
   // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -103,6 +107,19 @@ class ProfilePageState extends State<ProfilePage>
       }
       Navigator.pop(context);
     }
+  }
+
+  void setUserDescription() async {
+    if (_discriptionFormKey.currentState.validate()) {
+      _discriptionFormKey.currentState.save();
+      if (aboutUser.isNotEmpty) {
+        await DatabaseService(uid: UserSingleton.userSingleton.userID)
+            .updateUserData(field: "About", value: aboutUser);
+      }
+    }
+    setState(() {
+      editingDescription = false;
+    });
   }
 
   void showPhotoSelectionOption() {
@@ -229,8 +246,9 @@ class ProfilePageState extends State<ProfilePage>
             ? Scaffold(
                 // key: _scaffoldKey,
                 appBar: AppBar(
-                  actionsIconTheme:
-                      IconThemeData(color: elementColorWhiteBackground),
+                  actionsIconTheme: IconThemeData(
+                    color: elementColorWhiteBackground,
+                  ),
                   backgroundColor: Colors.white,
                   shadowColor: Colors.white24,
                 ),
@@ -251,7 +269,7 @@ class ProfilePageState extends State<ProfilePage>
                                 alignment: Alignment.bottomCenter,
                                 children: [
                                   CircleAvatar(
-                                    radius: 60,
+                                    radius: 50,
                                     child: userDoc.data()[
                                                 "Profile Picture Url"] ==
                                             null
@@ -265,7 +283,10 @@ class ProfilePageState extends State<ProfilePage>
                                             : null,
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.camera_alt),
+                                    icon: Icon(
+                                      Icons.camera_alt,
+                                      color: Colors.white,
+                                    ),
                                     onPressed: showPhotoSelectionOption,
                                   ),
                                 ],
@@ -280,20 +301,97 @@ class ProfilePageState extends State<ProfilePage>
                                   Text(
                                     userDoc.data()["First Name"],
                                     style: TextStyle(
-                                        color: elementColorWhiteBackground,
-                                        fontSize: fontSize),
+                                      color: elementColorWhiteBackground,
+                                      fontSize: fontSize,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                   Text(
                                     userDoc.data()["Last Name"],
                                     style: TextStyle(
-                                        color: elementColorWhiteBackground,
-                                        fontSize: fontSize),
+                                      color: elementColorWhiteBackground,
+                                      fontSize: fontSize,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        UserSingleton
+                                            .userSingleton.addedUsers.length
+                                            .toString(),
+                                        style: TextStyle(
+                                          color: elementColorWhiteBackground,
+                                          fontSize: fontSize,
+                                        ),
+                                      ),
+                                      Icon(Icons.people)
+                                    ],
                                   ),
                                 ],
                               ),
                             ),
                           ],
                         ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: 10, right: 10),
+                        child: editingDescription
+                            ? Row(
+                                //crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.70,
+                                    child: Form(
+                                      key: _discriptionFormKey,
+                                      child: TextFormField(
+                                        maxLines: null,
+                                        minLines: 3,
+                                        decoration:
+                                            textInputDecorationWhite.copyWith(
+                                          hintText: "Description",
+                                          hintStyle: TextStyle(
+                                            fontSize: fontSizeInputHint,
+                                          ),
+                                        ),
+                                        onSaved: (input) => aboutUser = input,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: setUserDescription,
+                                    child: Text("Done"),
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  userDoc.data()["About"] != null
+                                      ? Text(userDoc.data()["About"],
+                                          style: TextStyle(
+                                            color: elementColorWhiteBackground,
+                                            fontSize: fontSizeBody,
+                                          ),
+                                          textAlign: TextAlign.justify)
+                                      : Text(
+                                          "Who am I,\nwhat am I,\nWhere am I?",
+                                          style: TextStyle(
+                                            color: elementColorWhiteBackground,
+                                            fontSize: fontSizeBody,
+                                          ),
+                                          textAlign: TextAlign.justify,
+                                        ),
+                                  IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {
+                                        setState(() {
+                                          editingDescription = true;
+                                        });
+                                      }),
+                                ],
+                              ),
                       ),
                       Divider(
                         color: Colors.black26,
@@ -346,7 +444,7 @@ class ProfilePageState extends State<ProfilePage>
                                 sharingItem: false,
                               )
                             : currentpage == Pages.schedules
-                                ? Container()
+                                ? AddedSchedules()
                                 : Container(),
                       ),
                     ],

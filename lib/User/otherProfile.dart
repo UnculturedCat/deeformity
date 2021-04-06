@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:deeformity/Shared/constants.dart';
 
 class OtherUserProfile extends StatefulWidget {
-  final QueryDocumentSnapshot userDoc;
+  final DocumentSnapshot userDoc;
   OtherUserProfile(this.userDoc);
   @override
   _OtherUserProfileState createState() => _OtherUserProfileState();

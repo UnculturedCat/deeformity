@@ -67,7 +67,7 @@ class DatabaseService {
   }
 
   Future<DocumentSnapshot> getParticularUserDoc(String docId) async {
-    DocumentSnapshot doc;
+    var doc;
     doc = await usersCollection.doc(docId).get();
 
     return doc;
@@ -82,6 +82,7 @@ class DatabaseService {
       "User Id": userToAdd.id,
       "First Name": userToAdd.data()["First Name"],
       "Last Name": userToAdd.data()["Last Name"],
+      "Profile Picture Url": userToAdd.data()["Profile Picture Url"]
     });
 
     //add to other user's addedUsers collection
@@ -95,6 +96,8 @@ class DatabaseService {
           UserSingleton.userSingleton.userDataSnapShot.data()["First Name"],
       "Last Name":
           UserSingleton.userSingleton.userDataSnapShot.data()["Last Name"],
+      "Profile Picture Url": UserSingleton.userSingleton.userDataSnapShot
+          .data()["Profile Picture Url"]
     });
   }
 
@@ -251,7 +254,12 @@ class DatabaseService {
     await scheduleCollection
         .doc(userDoc.id)
         .collection(addedWorkOutScheduleSubCollectionName)
-        .add({"Name": schedule.data()["Name"], "Creator Id": uid});
+        .add({
+      "Name": schedule.data()["Name"],
+      "Creator Id": uid,
+      "Split": schedule.data()["Split"],
+      "Description": schedule.data()[schedule.data()]
+    });
     Future.forEach(schedulesExercises, (QueryDocumentSnapshot exercise) async {
       await createRoutine(
         differUser: true,

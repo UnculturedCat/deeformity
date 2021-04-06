@@ -22,6 +22,11 @@ class _ExercisePageState extends State<ExercisePage> {
   var media;
   _ExercisePageState(this.docSnapshot);
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
   void setDescription() {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
