@@ -66,16 +66,16 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                           Container(
                             child: CircleAvatar(
                               child: widget.userDoc
-                                          .data()["ProfileImage Url"] !=
+                                          .data()["Profile Picture Url"] !=
                                       null
                                   ? null
                                   : Text(
                                       widget.userDoc.data()["First Name"][0]),
                               backgroundImage: widget.userDoc
-                                          .data()["ProfileImage Url"] !=
+                                          .data()["Profile Picture Url"] !=
                                       null
-                                  ? NetworkImage(
-                                      widget.userDoc.data()["ProfileImage Url"])
+                                  ? NetworkImage(widget.userDoc
+                                      .data()["Profile Picture Url"])
                                   : null,
                               radius: 40,
                             ),

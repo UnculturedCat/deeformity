@@ -48,6 +48,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
         .addedSchedules
         .listen((schedulesSnapshot) {
       bool initializeSelectedSchedule = true;
+      schedules = [];
       schedules = schedulesSnapshot.docs;
       if (selectedSchedule != null) {
         schedules.forEach((schedule) {
@@ -57,7 +58,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
           }
         });
       }
-      if (initializeSelectedSchedule) {
+      if (initializeSelectedSchedule && schedules.isNotEmpty) {
         selectedSchedule = schedules[0];
         getScheduleCreatorCard();
       }

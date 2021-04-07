@@ -245,37 +245,60 @@ class DatabaseService {
         .update({field: value});
   }
 
-  Future shareSchedule({
+  Future<String> shareSchedule({
     @required QueryDocumentSnapshot userDoc,
     @required QueryDocumentSnapshot schedule,
     @required List<QueryDocumentSnapshot> schedulesExercises,
   }) async {
+    String errorMessage = "";
     print("Sharing Schedule to " + userDoc.id);
-    await scheduleCollection
-        .doc(userDoc.id)
-        .collection(addedWorkOutScheduleSubCollectionName)
-        .add({
-      "Name": schedule.data()["Name"],
-      "Creator Id": uid,
-      "Split": schedule.data()["Split"],
-      "Description": schedule.data()[schedule.data()]
-    });
-    Future.forEach(schedulesExercises, (QueryDocumentSnapshot exercise) async {
-      await createRoutine(
-        differUser: true,
-        differUserId: userDoc.id,
-        cardId: exercise.data()["Card Id"],
-        scheduleId: exercise.data()["Schedule Id"],
-        workOutName: exercise.data()["Name"],
-        description: exercise.data()["Description"],
-        mediaURL: exercise.data()["MediaURL"],
-        mediaStoragePath: exercise.data()["mediaStoragePath"],
-        mediaType: MediaType.values[exercise.data()["Media type"]],
-        days: List<int>.from(exercise.data()["Days"]),
-      );
-    });
 
+    //check if user already has this schedule
+    CollectionReference targetUserSchedulesRef = scheduleCollection
+        .doc(userDoc.id)
+        .collection(addedWorkOutScheduleSubCollectionName);
+    QuerySnapshot targetUserSchedules = await targetUserSchedulesRef.get();
+    if (targetUserSchedules != null) {
+      if (targetUserSchedules.docs != null &&
+          targetUserSchedules.docs.isNotEmpty) {
+        targetUserSchedules.docs.forEach((element) {
+          if (element.id == schedule.id) {
+            errorMessage =
+                userDoc.data()["First Name"] + " already has this schedule";
+          }
+        });
+      }
+    }
+    if (errorMessage.isEmpty) {
+      await scheduleCollection
+          .doc(userDoc.id)
+          .collection(addedWorkOutScheduleSubCollectionName)
+          .doc(schedule.id)
+          .set({
+        "Name": schedule.data()["Name"],
+        "Creator Id": uid,
+        "Split": schedule.data()["Split"],
+        "Description": schedule.data()["Description"]
+      }, SetOptions(merge: true));
+      Future.forEach(schedulesExercises,
+          (QueryDocumentSnapshot exercise) async {
+        await createRoutine(
+          differUser: true,
+          differUserId: userDoc.id,
+          cardId: exercise.data()["Card Id"],
+          scheduleId: exercise.data()["Schedule Id"],
+          workOutName: exercise.data()["Name"],
+          description: exercise.data()["Description"],
+          mediaURL: exercise.data()["MediaURL"],
+          mediaStoragePath: exercise.data()["mediaStoragePath"],
+          mediaType: MediaType.values[exercise.data()["Media type"]],
+          days: List<int>.from(exercise.data()["Days"]),
+        );
+      });
+    }
     print("Shared Schedule to " + userDoc.id);
+    print(errorMessage);
+    return errorMessage;
   }
 
 /*

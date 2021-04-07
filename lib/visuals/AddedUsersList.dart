@@ -23,14 +23,24 @@ class _AddedUsersState extends State<AddedUsers> {
 
   String textBoxquery;
 
-  void shareSchedule() {
-    Future.forEach(userToShareSchedule, (user) async {
-      await DatabaseService(uid: UserSingleton.userSingleton.userID)
-          .shareSchedule(
-              userDoc: user,
-              schedule: widget.schedule,
-              schedulesExercises: widget.schedulesExercises);
+  void shareSchedule() async {
+    String message = "";
+    await Future.forEach(userToShareSchedule, (user) async {
+      String error =
+          await DatabaseService(uid: UserSingleton.userSingleton.userID)
+              .shareSchedule(
+                  userDoc: user,
+                  schedule: widget.schedule,
+                  schedulesExercises: widget.schedulesExercises);
+
+      if (error.isNotEmpty) {
+        message = message + "!!" + error + "!!";
+      }
     });
+    if (message.isEmpty) message = "Shared successfully";
+    final snackBar = SnackBar(content: Text(message));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    Navigator.pop(context);
   }
 
   void markUser(QueryDocumentSnapshot doc) {
