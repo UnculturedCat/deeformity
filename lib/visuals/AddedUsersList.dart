@@ -17,9 +17,11 @@ class AddedUsers extends StatefulWidget {
 }
 
 class _AddedUsersState extends State<AddedUsers> {
-  List<QueryDocumentSnapshot> userToShareSchedule = [];
+  List<DocumentSnapshot> userToShareSchedule = [];
   bool search = false;
-  List<QueryDocumentSnapshot> addedUsers = [];
+  List<DocumentSnapshot> addedUsers = [];
+  List<DocumentSnapshot> addedUsersSnapshot = [];
+  bool fullDetailsGotten = false;
 
   String textBoxquery;
 
@@ -43,7 +45,7 @@ class _AddedUsersState extends State<AddedUsers> {
     Navigator.pop(context);
   }
 
-  void markUser(QueryDocumentSnapshot doc) {
+  void markUser(DocumentSnapshot doc) {
     //messy code clean up during optimization
     bool add = true;
     userToShareSchedule.forEach((element) {
@@ -57,13 +59,43 @@ class _AddedUsersState extends State<AddedUsers> {
     setState(() {});
   }
 
-  void openUserCard(QueryDocumentSnapshot doc) {
+  void openUserCard(DocumentSnapshot doc) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return OtherUserProfile(doc);
     }));
   }
 
-  Widget createUserCard(QueryDocumentSnapshot doc) {
+  @override
+  void initState() {
+    DatabaseService(uid: UserSingleton.userSingleton.userID)
+        .addedUsersSnapShot
+        .listen((snapShot) {
+      addedUsers = [];
+      addedUsersSnapshot = snapShot.docs;
+      snapShot.docs.forEach((doc) {
+        addeToAddedUsersList(doc);
+      });
+    });
+    super.initState();
+  }
+
+  Future<DocumentSnapshot> retreiveUserDocument(
+      QueryDocumentSnapshot doc) async {
+    return await DatabaseService().getParticularUserDoc(doc.id);
+  }
+
+  void addeToAddedUsersList(QueryDocumentSnapshot doc) async {
+    retreiveUserDocument(doc).then((value) {
+      addedUsers.add(value);
+      if (addedUsers.length == addedUsersSnapshot.length) {
+        setState(() {
+          fullDetailsGotten = true;
+        });
+      }
+    });
+  }
+
+  Widget createUserCard(DocumentSnapshot doc) {
     bool markedForShare = false;
     String firstName = doc.data()["First Name"] ?? "Error";
     String lastName = doc.data()["Last Name"] ?? "Error";
@@ -104,98 +136,98 @@ class _AddedUsersState extends State<AddedUsers> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: StreamBuilder<QuerySnapshot>(
-          stream: DatabaseService(uid: UserSingleton.userSingleton.userID)
-              .addedUsersSnapShot,
-          builder: (context, snapshot) {
-            if ((snapshot != null && snapshot.data != null) &&
-                snapshot.data.docs != null) {
-              addedUsers = snapshot.data.docs;
-            }
-            return Container(
-              padding: EdgeInsets.only(left: 20, right: 20),
-              child: addedUsers.isNotEmpty
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Container(
-                              child: widget.sharingItem
-                                  ? TextButton(
-                                      onPressed: shareSchedule,
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.offline_share,
-                                              color: Colors.blue),
-                                          Text("Share")
-                                        ],
-                                      ),
-                                    )
-                                  : null,
-                            ),
-                          ],
-                        ),
-                        Container(
-                          child: search
-                              ? Column(
+      child: Container(
+        padding: EdgeInsets.only(left: 20, right: 20),
+        child: addedUsers.isNotEmpty
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Container(
+                        child: widget.sharingItem
+                            ? TextButton(
+                                onPressed: shareSchedule,
+                                child: Row(
                                   children: [
-                                    TextFormField(
-                                      decoration:
-                                          textInputDecorationWhite.copyWith(
-                                        prefixIcon: Icon(
-                                          CupertinoIcons.search,
-                                        ),
-                                      ),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          textBoxquery = value;
-                                        });
-                                      },
-                                    ),
+                                    Icon(Icons.offline_share,
+                                        color: Colors.blue),
+                                    Text("Share")
                                   ],
-                                )
-                              : IconButton(
-                                  icon: Icon(
+                                ),
+                              )
+                            : null,
+                      ),
+                    ],
+                  ),
+                  Container(
+                    child: search
+                        ? Column(
+                            children: [
+                              TextFormField(
+                                decoration: textInputDecorationWhite.copyWith(
+                                  prefixIcon: Icon(
                                     CupertinoIcons.search,
-                                    color: Colors.blue,
                                   ),
-                                  onPressed: () {
-                                    setState(
-                                      () {
-                                        search = true;
-                                      },
-                                    );
-                                  }),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.only(
-                              top: 10,
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    textBoxquery = value;
+                                  });
+                                },
+                              ),
+                            ],
+                          )
+                        : IconButton(
+                            icon: Icon(
+                              CupertinoIcons.search,
+                              color: Colors.blue,
                             ),
-                            child: ListView(
-                              children: UserSingleton.userSingleton.addedUsers
+                            onPressed: () {
+                              setState(
+                                () {
+                                  search = true;
+                                },
+                              );
+                            }),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.only(
+                        top: 10,
+                      ),
+                      child: fullDetailsGotten
+                          ? ListView(
+                              children: addedUsers
                                   .map((doc) => createUserCard(doc))
                                   .toList(),
+                            )
+                          : Text(
+                              "Fetching connections",
+                              style: TextStyle(
+                                color: Colors.black38,
+                                fontSize: fontSize,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                        ),
-                      ],
-                    )
-                  : Center(
-                      child: Text(
-                        "Whoops, you have no connections.\nGo to the search page and make a new connection",
-                        style: TextStyle(
-                          color: Colors.black38,
-                          fontSize: fontSize,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
                     ),
-            );
-          }),
+                  ),
+                ],
+              )
+            : Center(
+                child: Text(
+                  "Whoops, you have no connections.\nGo to the search page and make a new connection",
+                  style: TextStyle(
+                    color: Colors.black38,
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+      ),
       onTap: () {
         setState(() {
           search = false;

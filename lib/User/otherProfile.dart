@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Services/database.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
+import 'package:deeformity/visuals/AddedSchedulesList.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Shared/constants.dart';
 
@@ -8,126 +9,222 @@ class OtherUserProfile extends StatefulWidget {
   final DocumentSnapshot userDoc;
   OtherUserProfile(this.userDoc);
   @override
-  _OtherUserProfileState createState() => _OtherUserProfileState();
+  _OtherUserProfileState createState() => _OtherUserProfileState(this.userDoc);
 }
 
 class _OtherUserProfileState extends State<OtherUserProfile> {
-  bool addedUser = true;
+  List<DocumentSnapshot> usersConnections = [];
+  QuerySnapshot connectionsSnapShot;
+  DocumentSnapshot userDoc;
+
+  _OtherUserProfileState(DocumentSnapshot doc) {
+    userDoc = doc;
+  }
 
   void connectWithUser() {
     DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .connectWithUser(widget.userDoc);
+        .connectWithUser(userDoc);
   }
 
   void disconnectWithUser() {
     DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .disconnectWithUser(widget.userDoc);
+        .disconnectWithUser(userDoc);
+  }
+
+  @override
+  void initState() {
+    DatabaseService(uid: widget.userDoc.id).addedUsersSnapShot.listen((event) {
+      connectionsSnapShot = event;
+      usersConnections = event.docs;
+      setState(() {});
+    });
+    DatabaseService(uid: widget.userDoc.id).anyUserData.listen((event) {
+      userDoc = event;
+      setState(() {});
+    });
+    super.initState();
   }
 
   bool isUserAdded(QuerySnapshot snapshot) {
     bool userAdded = false;
     snapshot.docs.forEach((doc) {
-      if (widget.userDoc.id == doc.id) {
+      if (UserSingleton.userSingleton.userID == doc.id) {
         userAdded = true;
       }
     });
     return userAdded;
   }
 
+  void getUsersConnections() {
+    DatabaseService()
+        .usersCollection
+        .doc(userDoc.id)
+        .collection(DatabaseService().addedUsers)
+        .get()
+        .then((value) {
+      setState(() {
+        usersConnections = value.docs; //this
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-        stream: DatabaseService(uid: UserSingleton.userSingleton.userID)
-            .addedUsersSnapShot,
-        builder: (context, snapshot) {
-          if (snapshot != null && snapshot.hasData) {
-            addedUser = isUserAdded(snapshot.data);
-          }
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(widget.userDoc.data()["First Name"]) ??
-                  Text(
-                    "Error Name",
-                    style: TextStyle(color: elementColorWhiteBackground),
-                  ),
-              backgroundColor: Colors.white,
-              iconTheme: IconThemeData(color: elementColorWhiteBackground),
-            ),
-            body: Center(
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          userDoc.data()["First Name"] ?? "Error Name",
+          style: TextStyle(color: elementColorWhiteBackground),
+        ),
+        backgroundColor: Colors.white,
+        iconTheme: IconThemeData(
+          color: elementColorWhiteBackground,
+        ),
+        actions: [
+          Container(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: connectionsSnapShot != null
+                ? isUserAdded(connectionsSnapShot)
+                    ? Row(
                         children: [
-                          Container(
-                            child: CircleAvatar(
-                              child: widget.userDoc
-                                          .data()["Profile Picture Url"] !=
-                                      null
-                                  ? null
-                                  : Text(
-                                      widget.userDoc.data()["First Name"][0]),
-                              backgroundImage: widget.userDoc
-                                          .data()["Profile Picture Url"] !=
-                                      null
-                                  ? NetworkImage(widget.userDoc
-                                      .data()["Profile Picture Url"])
-                                  : null,
-                              radius: 40,
+                          TextButton(
+                            onPressed: disconnectWithUser,
+                            child: Text(
+                              "Disconnect",
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                child: addedUser
-                                    ? Row(
-                                        children: [
-                                          TextButton(
-                                            onPressed: disconnectWithUser,
-                                            child: Text(
-                                              "Disconnect",
-                                              style:
-                                                  TextStyle(color: Colors.blue),
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    : Row(
-                                        children: [
-                                          TextButton(
-                                            onPressed: connectWithUser,
-                                            child: Text(
-                                              "Connect",
-                                              style:
-                                                  TextStyle(color: Colors.blue),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                              ),
-                              Container(
-                                child: Text(
-                                  widget.userDoc.data()["First Name"] +
-                                      "\n " +
-                                      widget.userDoc.data()["Last Name"],
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ],
-                          )
                         ],
-                      ),
-                    )
-                  ],
-                ),
+                      )
+                    : Row(
+                        children: [
+                          TextButton(
+                            onPressed: connectWithUser,
+                            child: Text(
+                              "Connect",
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      )
+                : SizedBox(),
+          ),
+        ],
+      ),
+      body: Container(
+        padding: EdgeInsets.only(left: 10, right: 10),
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.only(top: 10, bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    child: CircleAvatar(
+                      radius: 50,
+                      child: userDoc.data()["Profile Picture Url"] == null
+                          ? Text(userDoc.data()["First Name"][0])
+                          : null,
+                      backgroundImage: userDoc.data()["Profile Picture Url"] !=
+                              null
+                          ? NetworkImage(userDoc.data()["Profile Picture Url"])
+                          : null,
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          userDoc.data()["First Name"],
+                          style: TextStyle(
+                            color: elementColorWhiteBackground,
+                            fontSize: fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          userDoc.data()["Last Name"],
+                          style: TextStyle(
+                            color: elementColorWhiteBackground,
+                            fontSize: fontSize,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            usersConnections != null
+                                ? Text(
+                                    usersConnections.length.toString(),
+                                    style: TextStyle(
+                                      color: elementColorWhiteBackground,
+                                      fontSize: fontSize,
+                                    ),
+                                  )
+                                : SizedBox(),
+                            Icon(Icons.people)
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-          );
-        });
+            Container(
+              padding: EdgeInsets.only(left: 10, right: 10),
+              child: Row(
+                children: [
+                  userDoc.data()["About"] != null
+                      ? Expanded(
+                          child: Text(userDoc.data()["About"],
+                              style: TextStyle(
+                                color: elementColorWhiteBackground,
+                                fontSize: fontSizeBody,
+                              ),
+                              textAlign: TextAlign.justify),
+                        )
+                      : Text(
+                          "Who am I,\nwhat am I,\nWhere am I?",
+                          style: TextStyle(
+                            color: elementColorWhiteBackground,
+                            fontSize: fontSizeBody,
+                          ),
+                          textAlign: TextAlign.justify,
+                        ),
+                ],
+              ),
+            ),
+            Divider(
+              color: Colors.black26,
+            ),
+            IntrinsicHeight(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    child: Text(
+                      "Schedules",
+                      style: TextStyle(fontSize: fontSize, color: Colors.blue),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: AddedSchedules(userDoc),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

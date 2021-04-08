@@ -21,6 +21,7 @@ class ScheduleCard extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(10))),
       child: Container(
         child: ListTile(
+          contentPadding: EdgeInsets.all(20),
           trailing: CircleAvatar(
             child: creatorDoc.data()["Profile Picture Url"] == null
                 ? Text(creatorDoc.data()["First Name"][0])
@@ -43,9 +44,10 @@ class ScheduleCard extends StatelessWidget {
           subtitle: Text(
             description,
             style: TextStyle(
-                color: Color.fromRGBO(21, 33, 47, 1),
-                fontWeight: FontWeight.w300,
-                fontSize: 12),
+              color: Color.fromRGBO(21, 33, 47, 1),
+              fontWeight: FontWeight.w300,
+              fontSize: 12,
+            ),
           ),
         ),
       ),

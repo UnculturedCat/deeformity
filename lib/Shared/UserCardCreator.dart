@@ -7,7 +7,6 @@ class UserCardCreator extends StatelessWidget {
   UserCardCreator({this.userDoc, this.mark = false});
   @override
   Widget build(BuildContext context) {
-    print(userDoc.data()["Profile Picture Url"]);
     String firstName = userDoc.data()["First Name"];
     String lastName = userDoc.data()["Last Name"];
     String profession = userDoc.data()["Profession"] ?? "Private user";

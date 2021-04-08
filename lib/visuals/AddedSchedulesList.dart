@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Services/database.dart';
-import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/Shared/ScheduleCardCreator.dart';
 
 class AddedSchedules extends StatefulWidget {
+  final DocumentSnapshot userDoc;
+  AddedSchedules(this.userDoc);
   @override
   _AddedSchedulesState createState() => _AddedSchedulesState();
 }
@@ -18,9 +19,7 @@ class _AddedSchedulesState extends State<AddedSchedules> {
 
   @override
   void initState() {
-    DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .addedSchedules
-        .listen((event) {
+    DatabaseService(uid: widget.userDoc.id).addedSchedules.listen((event) {
       scheduleCards = [];
       addedSchedules = event.docs;
       event.docs.forEach((element) {

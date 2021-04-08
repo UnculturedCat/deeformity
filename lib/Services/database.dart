@@ -28,14 +28,11 @@ class DatabaseService {
   }
 
   Stream<QuerySnapshot> get addedUsersSnapShot {
-    return usersCollection
-        .doc(UserSingleton.userSingleton.userID)
-        .collection(addedUsers)
-        .snapshots();
+    return usersCollection.doc(uid).collection(addedUsers).snapshots();
   }
 
   Stream<QuerySnapshot> get addedSchedules => scheduleCollection
-      .doc(UserSingleton.userSingleton.currentUSer.uid)
+      .doc(uid)
       .collection(addedWorkOutScheduleSubCollectionName)
       .snapshots();
 
@@ -49,6 +46,9 @@ class DatabaseService {
   Stream<DocumentSnapshot> get userData => usersCollection
       .doc(UserSingleton.userSingleton.currentUSer.uid)
       .snapshots();
+//Get snapshot of any user
+  Stream<DocumentSnapshot> get anyUserData =>
+      usersCollection.doc(uid).snapshots();
 
   Stream<QuerySnapshot> get allUsers => usersCollection.snapshots();
 
@@ -73,7 +73,7 @@ class DatabaseService {
     return doc;
   }
 
-  Future<void> connectWithUser(QueryDocumentSnapshot userToAdd) async {
+  Future<void> connectWithUser(DocumentSnapshot userToAdd) async {
     await usersCollection
         .doc(uid)
         .collection(addedUsers)
@@ -82,7 +82,8 @@ class DatabaseService {
       "User Id": userToAdd.id,
       "First Name": userToAdd.data()["First Name"],
       "Last Name": userToAdd.data()["Last Name"],
-      "Profile Picture Url": userToAdd.data()["Profile Picture Url"]
+      "Profile Picture Url": userToAdd.data()["Profile Picture Url"],
+      "About": userToAdd.data()["About"]
     });
 
     //add to other user's addedUsers collection
@@ -101,7 +102,7 @@ class DatabaseService {
     });
   }
 
-  Future<void> disconnectWithUser(QueryDocumentSnapshot userToRemove) async {
+  Future<void> disconnectWithUser(DocumentSnapshot userToRemove) async {
     await usersCollection
         .doc(uid)
         .collection(addedUsers)

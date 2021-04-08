@@ -369,12 +369,15 @@ class ProfilePageState extends State<ProfilePage>
                             : Row(
                                 children: [
                                   userDoc.data()["About"] != null
-                                      ? Text(userDoc.data()["About"],
-                                          style: TextStyle(
-                                            color: elementColorWhiteBackground,
-                                            fontSize: fontSizeBody,
-                                          ),
-                                          textAlign: TextAlign.justify)
+                                      ? Expanded(
+                                          child: Text(userDoc.data()["About"],
+                                              style: TextStyle(
+                                                color:
+                                                    elementColorWhiteBackground,
+                                                fontSize: fontSizeBody,
+                                              ),
+                                              textAlign: TextAlign.justify),
+                                        )
                                       : Text(
                                           "Who am I,\nwhat am I,\nWhere am I?",
                                           style: TextStyle(
@@ -397,14 +400,21 @@ class ProfilePageState extends State<ProfilePage>
                         color: Colors.black26,
                       ),
                       IntrinsicHeight(
+                        //added intrinsicHeight order to have a proper height for the vertical divider
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Container(
                               child: TextButton(
-                                child: Text(
-                                  "Connections",
-                                ),
+                                child: Text("Connections",
+                                    style: TextStyle(
+                                        fontSize:
+                                            currentpage != Pages.connections
+                                                ? 15
+                                                : fontSize,
+                                        color: currentpage != Pages.connections
+                                            ? Colors.grey
+                                            : Colors.blue)),
                                 onPressed: () {
                                   setState(
                                     () {
@@ -415,13 +425,20 @@ class ProfilePageState extends State<ProfilePage>
                               ),
                             ),
                             VerticalDivider(
-                              width: 30,
+                              //width: 30,
                               color: Colors.black26,
                             ),
                             Container(
                               child: TextButton(
                                 child: Text(
                                   "Schedules",
+                                  style: TextStyle(
+                                      fontSize: currentpage != Pages.schedules
+                                          ? 15
+                                          : fontSize,
+                                      color: currentpage != Pages.schedules
+                                          ? Colors.grey
+                                          : Colors.blue),
                                 ),
                                 onPressed: () {
                                   setState(
@@ -444,7 +461,7 @@ class ProfilePageState extends State<ProfilePage>
                                 sharingItem: false,
                               )
                             : currentpage == Pages.schedules
-                                ? AddedSchedules()
+                                ? AddedSchedules(userDoc)
                                 : Container(),
                       ),
                     ],
