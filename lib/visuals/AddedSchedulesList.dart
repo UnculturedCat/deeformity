@@ -98,14 +98,24 @@ class _AddedSchedulesState extends State<AddedSchedules> {
               ],
             )
           : Center(
-              child: Text(
-                "Whoops, you have no schedules.",
-                style: TextStyle(
-                  color: Colors.black38,
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.pending_actions,
+                    color: Colors.black38,
+                    size: fontSize,
+                  ),
+                  Text(
+                    "Whoops, nothing to see here.",
+                    style: TextStyle(
+                      color: Colors.black38,
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
     );

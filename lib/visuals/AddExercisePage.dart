@@ -696,7 +696,7 @@ class _AddExercisePageState extends State<AddExercisePage>
                         //bottom: 30,
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Container(
                             padding: EdgeInsets.all(5).copyWith(top: 2),
