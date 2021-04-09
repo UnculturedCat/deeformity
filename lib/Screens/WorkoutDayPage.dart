@@ -63,11 +63,13 @@ class WorkoutDayState extends State<WorkoutDay> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        shadowColor: Colors.white24,
+        iconTheme: IconThemeData(color: elementColorWhiteBackground),
         title: Text(
           convertDayToString(widget.dayEnum),
           style: pageHeaderStyle,
         ),
-        backgroundColor: Color.fromRGBO(21, 33, 47, 15),
       ),
       body: ListView(
         children: [
