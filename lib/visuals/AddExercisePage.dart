@@ -37,6 +37,7 @@ class _AddExercisePageState extends State<AddExercisePage>
   bool working = false;
   AppVideoPlayer _videoPlayer;
   MediaType _mediaType;
+  bool correctVideoAspectRatio = false;
   bool mondayAdded = false,
       tuesdayAdded = false,
       wedAdded = false,
@@ -116,17 +117,17 @@ class _AddExercisePageState extends State<AddExercisePage>
       String cardDocId = await DatabaseService(
               uid: UserSingleton.userSingleton.currentUSer.uid)
           .createRoutine(
-        cardId: cardId,
-        userId: userId,
-        workOutName: workOutName,
-        description: description,
-        dateTime: dateTime.toString(),
-        mediaURL: mediaURL,
-        mediaStoragePath: mediaStoragePath,
-        mediaType: _mediaType,
-        scheduleId: widget.scheduleDoc.id,
-        days: workOutDays,
-      );
+              cardId: cardId,
+              userId: userId,
+              workOutName: workOutName,
+              description: description,
+              dateTime: dateTime.toString(),
+              mediaURL: mediaURL,
+              mediaStoragePath: mediaStoragePath,
+              mediaType: _mediaType,
+              scheduleId: widget.scheduleDoc.id,
+              days: workOutDays,
+              correctedAspectRatio: correctVideoAspectRatio);
       cardDocId != null && cardDocId.isNotEmpty
           ? Navigator.pop(context)
           : setState(() {
@@ -413,20 +414,78 @@ class _AddExercisePageState extends State<AddExercisePage>
                                   Text("Nothing to show. Delete and try again"),
                             ),
                 ),
-                Container(
-                  child: IconButton(
-                    icon: Icon(
-                      CupertinoIcons.delete,
-                      color: Colors.red,
-                      size: 30,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    _videoPlayer != null
+                        ? Container(
+                            child: InkWell(
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(5),
+                                    child: Icon(
+                                      Icons.reset_tv,
+                                      color: Colors.blue,
+                                      size: 30,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Decompress Video",
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  correctVideoAspectRatio =
+                                      !correctVideoAspectRatio;
+                                  _videoPlayer = AppVideoPlayer(
+                                    assetSource: MediaAssetSource.file,
+                                    assetFile: _mediaFile,
+                                    flipHeightAndWidth: correctVideoAspectRatio,
+                                  );
+                                });
+                                final snackBar = SnackBar(
+                                    content:
+                                        Text("Video's aspect ratio corrected"));
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              },
+                            ),
+                          )
+                        : SizedBox(),
+                    Container(
+                      child: InkWell(
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(5),
+                              child: Icon(
+                                CupertinoIcons.delete,
+                                color: Colors.red,
+                                size: 30,
+                              ),
+                            ),
+                            Text(
+                              "Delete Media",
+                              style: TextStyle(
+                                color: Colors.red,
+                              ),
+                            )
+                          ],
+                        ),
+                        onTap: () {
+                          setState(() {
+                            picture = null;
+                            _videoPlayer = null;
+                          });
+                        },
+                      ),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        picture = null;
-                        _videoPlayer = null;
-                      });
-                    },
-                  ),
+                  ],
                 ),
                 Container(
                   height: 50,

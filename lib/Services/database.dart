@@ -147,7 +147,8 @@ class DatabaseService {
       bool exerciseDone,
       List<int> days,
       bool differUser = false,
-      String differUserId}) async {
+      String differUserId,
+      bool correctedAspectRatio}) async {
     DocumentReference ref = await scheduleCollection
         .doc(differUser ? differUserId : uid)
         .collection(workOutRoutinesSubCollectionName)
@@ -162,6 +163,7 @@ class DatabaseService {
       "Media type": mediaType != null ? mediaType.index : MediaType.none.index,
       "Done": exerciseDone,
       "Days": days,
+      "CorrectVideo": correctedAspectRatio
     });
     return ref.id;
   }
@@ -294,6 +296,7 @@ class DatabaseService {
           mediaStoragePath: exercise.data()["mediaStoragePath"],
           mediaType: MediaType.values[exercise.data()["Media type"]],
           days: List<int>.from(exercise.data()["Days"]),
+          correctedAspectRatio: exercise.data()["CorrectVideo"],
         );
       });
     }

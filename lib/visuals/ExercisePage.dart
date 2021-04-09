@@ -45,6 +45,7 @@ class _ExercisePageState extends State<ExercisePage> {
   Widget build(BuildContext context) {
     String mediaURL = docSnapshot.data()["MediaURL"];
     int mediaTypeIndex = docSnapshot.data()["Media type"];
+    bool correctedAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
 
     if (mediaURL != null && mediaURL.isNotEmpty) {
       if (mediaTypeIndex != MediaType.none.index) {
@@ -57,6 +58,7 @@ class _ExercisePageState extends State<ExercisePage> {
             appVideoPlayer = AppVideoPlayer(
               assetURL: mediaURL,
               assetSource: MediaAssetSource.network,
+              flipHeightAndWidth: correctedAspectRatio,
             );
             break;
           case MediaType.textDocument:
