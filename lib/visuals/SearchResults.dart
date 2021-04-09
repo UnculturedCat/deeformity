@@ -41,8 +41,7 @@ class _SearchResultsState extends State<SearchResults> {
   }
 
   Widget createUserCard(QueryDocumentSnapshot doc) {
-    if ((doc.id == UserSingleton.userSingleton.userID ||
-            doc.data()["Location"] != widget.locationQuery) &&
+    if (doc.id == UserSingleton.userSingleton.userID ||
         widget.textBoxQuery.isEmpty) return SizedBox();
     String firstName = doc.data()["First Name"];
     String lastName = doc.data()["Last Name"];

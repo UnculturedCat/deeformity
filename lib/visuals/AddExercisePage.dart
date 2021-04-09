@@ -352,16 +352,21 @@ class _AddExercisePageState extends State<AddExercisePage>
                   ),
                 ),
                 GestureDetector(
-                  child: Row(children: [
-                    //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
-                    Icon(
-                      Icons.image,
-                      size: 50,
-                    ),
-                    Text("Add Media"),
-                  ]),
+                  child: Row(
+                    children: [
+                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                      Icon(
+                        Icons.image,
+                        size: 50,
+                      ),
+                      Text("Add Media"),
+                    ],
+                  ),
                   onTap: (showMediaSelectionOption),
                 ),
+                Container(
+                  height: 50,
+                )
               ],
             ),
           )
@@ -412,7 +417,7 @@ class _AddExercisePageState extends State<AddExercisePage>
                   child: IconButton(
                     icon: Icon(
                       CupertinoIcons.delete,
-                      color: Colors.white,
+                      color: Colors.red,
                       size: 30,
                     ),
                     onPressed: () {
@@ -423,6 +428,9 @@ class _AddExercisePageState extends State<AddExercisePage>
                     },
                   ),
                 ),
+                Container(
+                  height: 50,
+                )
               ],
             ),
           );

@@ -46,21 +46,25 @@ class _AddedSchedulesState extends State<AddedSchedules> {
   }
 
   void createScheduleCard(QueryDocumentSnapshot doc) {
-    getCreatorDoc(doc).then(
-      (value) {
-        scheduleCards.add(InkWell(
-          child: ScheduleCard(scheduleDoc: doc, creatorDoc: value),
-          onTap: () {
-            openScheduleCard(doc);
-          },
-        ));
-        if (scheduleCards.length == addedSchedules.length) {
-          setState(() {
-            cardsCreated = true;
-          });
-        }
-      },
-    );
+    if (mounted) {
+      getCreatorDoc(doc).then(
+        (value) {
+          scheduleCards.add(
+            InkWell(
+              child: ScheduleCard(scheduleDoc: doc, creatorDoc: value),
+              onTap: () {
+                openScheduleCard(doc);
+              },
+            ),
+          );
+          if (scheduleCards.length == addedSchedules.length) {
+            setState(() {
+              cardsCreated = true;
+            });
+          }
+        },
+      );
+    }
   }
 
   @override

@@ -26,68 +26,102 @@ class SearchPageSate extends State<SearchPage>
     return StreamProvider<QuerySnapshot>.value(
       value: DatabaseService().allUsers,
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          shadowColor: Colors.white24,
+          title: TextFormField(
+            decoration: textInputDecorationWhite.copyWith(
+              prefixIcon: Icon(
+                CupertinoIcons.search,
+              ),
+              hintStyle: TextStyle(
+                fontSize: fontSizeInputHint,
+              ),
+              hintText: "Who are you looking for?",
+            ),
+            onChanged: (value) {
+              setState(() {
+                textBoxquery = value;
+              });
+            },
+          ),
+        ),
         body: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(left: 5),
-                          child: Text(
-                            "Search Location:",
-                            style: TextStyle(
-                              color: elementColorWhiteBackground,
-                              fontSize: fontSize,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(left: 10, right: 10),
-                          child: DropdownButton<String>(
-                            icon: Icon(Icons.location_pin),
-                            iconEnabledColor: Colors.redAccent,
-                            iconSize: 20.0,
-                            value: searchquery,
-                            dropdownColor: Colors.white,
-                            style:
-                                TextStyle(color: elementColorWhiteBackground),
-                            items: dropDownLocations,
-                            onChanged: (String currentVal) {
-                              setState(() {
-                                searchquery = currentVal;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
+          child: textBoxquery.isEmpty
+              ? Center(
+                  child: Text(
+                    "Search",
+                    style: TextStyle(
+                      color: Colors.black38,
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.w600,
                     ),
-                    TextFormField(
-                      decoration: textInputDecorationWhite.copyWith(
-                        prefixIcon: Icon(
-                          CupertinoIcons.search,
-                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              : Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      child: Column(
+                        children: [
+                          //Location not needed
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.start,
+                          //   children: [
+                          //     Container(
+                          //       padding: EdgeInsets.only(left: 5),
+                          //       child: Text(
+                          //         "Search Location:",
+                          //         style: TextStyle(
+                          //           color: elementColorWhiteBackground,
+                          //           fontSize: fontSize,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //     Container(
+                          //       padding: EdgeInsets.only(left: 10, right: 10),
+                          //       child: DropdownButton<String>(
+                          //         icon: Icon(Icons.location_pin),
+                          //         iconEnabledColor: Colors.redAccent,
+                          //         iconSize: 20.0,
+                          //         value: searchquery,
+                          //         dropdownColor: Colors.white,
+                          //         style:
+                          //             TextStyle(color: elementColorWhiteBackground),
+                          //         items: dropDownLocations,
+                          //         onChanged: (String currentVal) {
+                          //           setState(() {
+                          //             searchquery = currentVal;
+                          //           });
+                          //         },
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
+                          // TextFormField(
+                          //   decoration: textInputDecorationWhite.copyWith(
+                          //     prefixIcon: Icon(
+                          //       CupertinoIcons.search,
+                          //     ),
+                          //   ),
+                          //   onChanged: (value) {
+                          //     setState(() {
+                          //       textBoxquery = value;
+                          //     });
+                          //   },
+                          // ),
+                        ],
                       ),
-                      onChanged: (value) {
-                        setState(() {
-                          textBoxquery = value;
-                        });
-                      },
+                    ),
+                    Expanded(
+                      child: Container(
+                          padding:
+                              EdgeInsets.only(top: 10, left: 20, right: 20),
+                          child: SearchResults(searchquery, textBoxquery)),
                     ),
                   ],
                 ),
-              ),
-              Expanded(
-                child: Container(
-                    padding: EdgeInsets.only(top: 10, left: 20, right: 20),
-                    child: SearchResults(searchquery, textBoxquery)),
-              ),
-            ],
-          ),
         ),
       ),
     );

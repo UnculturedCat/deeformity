@@ -68,7 +68,7 @@ class _ExercisePageState extends State<ExercisePage> {
     }
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         //centerTitle: false,
         title: Text(
@@ -95,7 +95,7 @@ class _ExercisePageState extends State<ExercisePage> {
                 ? Container(
                     color: Colors.white,
                     alignment: Alignment.center,
-                    height: 400,
+                    height: 500,
                     child: media != null
                         ? media
                         : appVideoPlayer != null
@@ -172,6 +172,9 @@ class _ExercisePageState extends State<ExercisePage> {
                         )
                       ],
                     ),
+            ),
+            SizedBox(
+              height: 50,
             )
           ],
         ),

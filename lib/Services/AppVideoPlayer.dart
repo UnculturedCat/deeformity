@@ -4,15 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:deeformity/Shared/loading.dart';
 import 'package:deeformity/Shared/constants.dart';
-import 'package:chewie/chewie.dart';
+//import 'package:chewie/chewie.dart';
 
 class AppVideoPlayer extends StatefulWidget {
   final String assetURL;
   final File assetFile;
   final String assetName;
   final MediaAssetSource assetSource;
+  final bool flipHeightAndWidth;
   AppVideoPlayer(
-      {this.assetURL, this.assetSource, this.assetFile, this.assetName});
+      {this.assetURL,
+      this.assetSource,
+      this.assetFile,
+      this.assetName,
+      this.flipHeightAndWidth = false});
   @override
   _AppVideoPlayerState createState() {
     return _AppVideoPlayerState();
@@ -21,7 +26,7 @@ class AppVideoPlayer extends StatefulWidget {
 
 class _AppVideoPlayerState extends State<AppVideoPlayer> {
   VideoPlayerController _controller;
-  ChewieController _chewieController;
+  //ChewieController _chewieController;
   bool showControls = true;
 
   @override
@@ -42,8 +47,8 @@ class _AppVideoPlayerState extends State<AppVideoPlayer> {
         break;
     }
     _controller.initialize().then((_) {
-      _chewieController = ChewieController(videoPlayerController: _controller);
-      _chewieController.enterFullScreen();
+      // _chewieController = ChewieController(videoPlayerController: _controller);
+      // _chewieController.enterFullScreen();
       setState(() {});
     });
     // _controller = VideoPlayerController.network(widget.assetURL)
@@ -56,7 +61,7 @@ class _AppVideoPlayerState extends State<AppVideoPlayer> {
 
   @override
   dispose() {
-    _chewieController?.dispose();
+    //_chewieController?.dispose();
     _controller?.dispose();
     super.dispose();
   }
@@ -64,12 +69,15 @@ class _AppVideoPlayerState extends State<AppVideoPlayer> {
   double get aspectRatio => _controller.value?.aspectRatio;
 
   Widget build(BuildContext context) {
-    return _chewieController != null &&
-            _chewieController.videoPlayerController.value.isInitialized
+    if (_controller != null && _controller.value.isInitialized) {
+      print(_controller.value.size?.height);
+    }
+    return _controller != null && _controller.value.isInitialized
         ? GestureDetector(
             child: AspectRatio(
-              aspectRatio:
-                  _chewieController.videoPlayerController.value.aspectRatio,
+              aspectRatio: widget.flipHeightAndWidth
+                  ? _controller.value.size.height / _controller.value.size.width
+                  : _controller.value.aspectRatio,
               child: Stack(
                 alignment: AlignmentDirectional.bottomStart,
                 children: [
