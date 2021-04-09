@@ -72,26 +72,21 @@ class _ExercisePageState extends State<ExercisePage> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
+        iconTheme: IconThemeData(color: elementColorWhiteBackground),
         //centerTitle: false,
         title: Text(
           docSnapshot.data()["Name"] ?? "No name",
           style: pageHeaderStyle,
         ),
-        backgroundColor: Color.fromRGBO(21, 33, 47, 15),
+        backgroundColor: Colors.white,
+        shadowColor: Colors.white24,
       ),
       body: Container(
         padding: EdgeInsets.only(left: 10, right: 10),
-        decoration: gradientDecoration,
         child: ListView(
           children: [
-            Center(
-              child: Container(
-                padding: EdgeInsets.only(top: 20, bottom: 20),
-                child: Text(
-                  docSnapshot.data()["Name"] ?? "No name",
-                  style: cardHeaderStyle,
-                ),
-              ),
+            SizedBox(
+              height: 20,
             ),
             media != null || appVideoPlayer != null
                 ? Container(
@@ -106,18 +101,18 @@ class _ExercisePageState extends State<ExercisePage> {
                   )
                 : SizedBox(),
             Container(
-              padding: EdgeInsets.only(top: 20),
+              padding: EdgeInsets.only(top: 30),
               child: Text(
                 "Description",
                 style: TextStyle(
                   fontSize: fontSize,
-                  color: Colors.white,
+                  color: elementColorWhiteBackground,
                 ),
               ),
             ),
             Container(
               child: Divider(
-                color: Colors.white,
+                color: elementColorWhiteBackground,
               ),
             ),
             Container(
@@ -153,9 +148,9 @@ class _ExercisePageState extends State<ExercisePage> {
                         Text(
                           docSnapshot.data()["Description"] ?? "No description",
                           style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w300),
+                              fontSize: fontSizeBody,
+                              color: elementColorWhiteBackground,
+                              fontWeight: FontWeight.w600),
                         ),
                         Container(
                           child: docSnapshot.data()["Creator Id"] ==
@@ -163,7 +158,7 @@ class _ExercisePageState extends State<ExercisePage> {
                               ? IconButton(
                                   icon: Icon(Icons.edit),
                                   iconSize: iconSizeBody,
-                                  color: Colors.white,
+                                  color: elementColorWhiteBackground,
                                   onPressed: () {
                                     setState(() {
                                       editingDescription = true;

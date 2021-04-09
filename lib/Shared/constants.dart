@@ -15,8 +15,10 @@ const headerActionButtonStyle = TextStyle(
     fontSize: 17,
     fontWeight: FontWeight.w600);
 //Page Header: App bar
-const pageHeaderStyle =
-    TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold);
+const pageHeaderStyle = TextStyle(
+    color: elementColorWhiteBackground,
+    fontSize: 20,
+    fontWeight: FontWeight.bold);
 
 //Form fields
 const textInputDecoration = InputDecoration(
