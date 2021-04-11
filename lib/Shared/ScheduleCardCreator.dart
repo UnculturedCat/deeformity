@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Services/database.dart';
 
@@ -8,7 +9,7 @@ class ScheduleCard extends StatelessWidget {
   ScheduleCard({this.scheduleDoc, this.creatorDoc});
 
   Future<DocumentSnapshot> getCreatorDoc() async {
-    return await DatabaseService()
+    return await DatabaseService(uid: UserSingleton.userSingleton.userID)
         .getParticularUserDoc(scheduleDoc.data()["Creator Id"]);
   }
 

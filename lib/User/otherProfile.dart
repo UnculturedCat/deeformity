@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Services/database.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:deeformity/visuals/AddedSchedulesList.dart';
+import 'package:deeformity/visuals/createMessagePage.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Shared/constants.dart';
 
@@ -56,16 +57,26 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
   }
 
   void getUsersConnections() {
-    DatabaseService()
+    DatabaseService(uid: UserSingleton.userSingleton.userID)
         .usersCollection
         .doc(userDoc.id)
-        .collection(DatabaseService().addedUsers)
+        .collection(
+            DatabaseService(uid: UserSingleton.userSingleton.userID).addedUsers)
         .get()
         .then((value) {
       setState(() {
         usersConnections = value.docs; //this
       });
     });
+  }
+
+  void openCreateMessagePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return CreateMessage(widget.userDoc);
+      }),
+    );
   }
 
   @override
@@ -115,6 +126,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
           ),
         ],
       ),
+      backgroundColor: Colors.white,
       body: Container(
         padding: EdgeInsets.only(left: 10, right: 10),
         child: Column(
@@ -141,7 +153,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                     padding: EdgeInsets.only(left: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           userDoc.data()["First Name"],
@@ -173,6 +185,28 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                             Icon(Icons.people)
                           ],
                         ),
+                        Container(
+                          child: InkWell(
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.only(right: 5),
+                                  child: Icon(
+                                    Icons.send,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                                Text(
+                                  "Message",
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                  ),
+                                )
+                              ],
+                            ),
+                            onTap: openCreateMessagePage,
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -180,7 +214,8 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
               ),
             ),
             Container(
-              padding: EdgeInsets.only(left: 10, right: 10),
+              padding:
+                  EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
               child: Row(
                 children: [
                   userDoc.data()["About"] != null

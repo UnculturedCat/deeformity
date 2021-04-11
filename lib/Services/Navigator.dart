@@ -1,3 +1,4 @@
+import 'package:deeformity/Screens/MessagesPage.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ class NavigatorClassState extends State<NavigatorClass> {
     //FinancePage(),
     WorkoutSchedulePage(),
     SearchPage(),
-    //NotificationsPage(),
+    MessagesPage(),
     ProfilePage()
   ];
   List<String> _pageNames = <String>[
@@ -32,7 +33,7 @@ class NavigatorClassState extends State<NavigatorClass> {
     //"FinancePage",
     "SearchPage",
     "WorkoutSchedulePage",
-    //"NotificationsPage",
+    "MessagesPage",
     "ProfilePage"
   ];
 
@@ -79,8 +80,8 @@ class NavigatorClassState extends State<NavigatorClass> {
             icon: Icon(CupertinoIcons.search),
             label: "Search",
           ),
-          // BottomNavigationBarItem(
-          //     icon: Icon(CupertinoIcons.bell_solid), label: "Notifications"),
+          BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.chat_bubble), label: "Messages"),
           BottomNavigationBarItem(
               icon: Icon(CupertinoIcons.profile_circled), label: "Profile")
         ],

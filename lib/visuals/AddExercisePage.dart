@@ -587,7 +587,9 @@ class _AddExercisePageState extends State<AddExercisePage>
           "Add Exercise",
           style: pageHeaderStyle,
         ),
-        backgroundColor: Color.fromRGBO(21, 33, 47, 15),
+        backgroundColor: Colors.white,
+        shadowColor: Colors.white24,
+        iconTheme: IconThemeData(color: elementColorWhiteBackground),
         actions: [
           Container(
             padding: EdgeInsets.only(left: 5, right: 5),

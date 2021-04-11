@@ -81,7 +81,8 @@ class _AddedUsersState extends State<AddedUsers> {
 
   Future<DocumentSnapshot> retreiveUserDocument(
       QueryDocumentSnapshot doc) async {
-    return await DatabaseService().getParticularUserDoc(doc.id);
+    return await DatabaseService(uid: UserSingleton.userSingleton.userID)
+        .getParticularUserDoc(doc.id);
   }
 
   void addeToAddedUsersList(QueryDocumentSnapshot doc) async {

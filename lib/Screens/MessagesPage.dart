@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-class NotificationsPage extends StatefulWidget {
+class MessagesPage extends StatefulWidget {
   final String pageName = "Notifications Page";
-  NotificationsPage();
+  MessagesPage();
 
   State<StatefulWidget> createState() {
-    return NotificationsPageState();
+    return MessagesPageState();
   }
 }
 
-class NotificationsPageState extends State<NotificationsPage> {
-  NotificationsPageState();
+class MessagesPageState extends State<MessagesPage> {
+  MessagesPageState();
 
   Widget build(BuildContext context) {
     return Scaffold();

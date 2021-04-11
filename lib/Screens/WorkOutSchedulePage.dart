@@ -6,7 +6,7 @@ import 'package:deeformity/visuals/AddedUsersList.dart';
 import 'package:deeformity/visuals/ExercisePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:deeformity/Screens/WorkoutDayPage.dart';
+import 'package:deeformity/visuals/WorkoutDayPage.dart';
 import 'package:deeformity/Shared/UserCardCreator.dart';
 import 'package:deeformity/User/otherProfile.dart';
 

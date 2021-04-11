@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Services/database.dart';
+import 'package:deeformity/Shared/infoSingleton.dart';
+import 'package:deeformity/visuals/SchedulePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Shared/constants.dart';
@@ -29,19 +31,23 @@ class _AddedSchedulesState extends State<AddedSchedules> {
     super.initState();
   }
 
-  void openScheduleCard(QueryDocumentSnapshot doc) {
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) {
-    //       return OtherUserProfile(doc);
-    //     },
-    //   ),
-    // );
+  void openScheduleCard(
+      {DocumentSnapshot scheduleDoc, DocumentSnapshot creatorDoc}) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return SchedulePage(
+            scheduleDoc: scheduleDoc,
+            creatorDoc: creatorDoc,
+          );
+        },
+      ),
+    );
   }
 
   Future<DocumentSnapshot> getCreatorDoc(QueryDocumentSnapshot doc) async {
-    return await DatabaseService()
+    return await DatabaseService(uid: UserSingleton.userSingleton.userID)
         .getParticularUserDoc(doc.data()["Creator Id"]);
   }
 
@@ -53,7 +59,7 @@ class _AddedSchedulesState extends State<AddedSchedules> {
             InkWell(
               child: ScheduleCard(scheduleDoc: doc, creatorDoc: value),
               onTap: () {
-                openScheduleCard(doc);
+                openScheduleCard(scheduleDoc: doc, creatorDoc: value);
               },
             ),
           );

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Services/database.dart';
+import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Shared/constants.dart';
@@ -24,7 +25,7 @@ class SearchPageSate extends State<SearchPage>
   Widget build(BuildContext context) {
     super.build(context);
     return StreamProvider<QuerySnapshot>.value(
-      value: DatabaseService().allUsers,
+      value: DatabaseService(uid: UserSingleton.userSingleton.userID).allUsers,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,

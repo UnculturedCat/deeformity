@@ -110,7 +110,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
     return StreamProvider<QuerySnapshot>.value(
-      value: DatabaseService().routines,
+      value: DatabaseService(uid: UserSingleton.userSingleton.userID).routines,
       child: Scaffold(
         // appBar: AppBar(
         //   backgroundColor: Colors.white,

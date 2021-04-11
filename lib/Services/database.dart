@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 
 class DatabaseService {
   final String uid;
-  DatabaseService({this.uid});
+  DatabaseService({@required this.uid});
 
   firebase_storage.FirebaseStorage _mediaStorage =
       firebase_storage.FirebaseStorage.instance;
@@ -22,7 +22,50 @@ class DatabaseService {
   String workOutRoutinesSubCollectionName = "Workout routines";
   String addedWorkOutScheduleSubCollectionName = "Added Workout Schedule";
   String addedUsers = "Added Users";
+  String messagesSubcollection = "Messages";
 
+/*
+ Messages functions
+*/
+
+//sends and recieves messages
+  Future<String> sendMessage({
+    @required DocumentSnapshot receiverDoc,
+    @required int dateTimeNowMilli,
+    @required String message,
+  }) async {
+    String successMessage = "";
+    //write to recipients db
+    var sentIdRef = await usersCollection
+        .doc(receiverDoc.id)
+        .collection(messagesSubcollection)
+        .add({
+      "Sender": uid,
+      "Recipient": receiverDoc.id,
+      "Time": dateTimeNowMilli,
+      "Message": message
+    });
+
+    //write to my(currentUser) own db
+    var recievedIdRef =
+        await usersCollection.doc(uid).collection(messagesSubcollection).add({
+      "Sender": uid,
+      "Recipient": receiverDoc.id,
+      "Time": dateTimeNowMilli,
+      "Message": message
+    });
+    if (recievedIdRef.id.isNotEmpty && sentIdRef.id.isNotEmpty) {
+      successMessage = "Sent successfully";
+    }
+    return successMessage;
+  }
+
+  Stream<QuerySnapshot> get messages =>
+      usersCollection.doc(uid).collection(messagesSubcollection).snapshots();
+
+/*
+  user data functions
+*/
   Stream<QuerySnapshot> get currentUsers {
     return usersCollection.snapshots();
   }
@@ -34,12 +77,6 @@ class DatabaseService {
   Stream<QuerySnapshot> get addedSchedules => scheduleCollection
       .doc(uid)
       .collection(addedWorkOutScheduleSubCollectionName)
-      .snapshots();
-
-  //get routine snapshot for the current user
-  Stream<QuerySnapshot> get routines => scheduleCollection
-      .doc(UserSingleton.userSingleton.currentUSer.uid)
-      .collection(workOutRoutinesSubCollectionName)
       .snapshots();
 
 //Get snapshot of current user
@@ -134,6 +171,12 @@ class DatabaseService {
   Routine and schedule functions
 */
 
+  //get routine snapshot for the current user
+  Stream<QuerySnapshot> get routines => scheduleCollection
+      .doc(UserSingleton.userSingleton.currentUSer.uid)
+      .collection(workOutRoutinesSubCollectionName)
+      .snapshots();
+
   Future<String> createRoutine(
       {String cardId,
       String userId,
@@ -169,7 +212,7 @@ class DatabaseService {
   }
 
   Future updateRoutineField({
-    QueryDocumentSnapshot doc,
+    DocumentSnapshot doc,
     String field,
     value,
   }) async {
@@ -181,7 +224,7 @@ class DatabaseService {
   }
 
   Future deleteRoutine({
-    QueryDocumentSnapshot doc,
+    DocumentSnapshot doc,
     DaysOfTheWeek dayEnum,
     bool deletingSchedule = false,
   }) async {
@@ -215,7 +258,7 @@ class DatabaseService {
 
   Future deleteSchedule(
     QueryDocumentSnapshot doc,
-    List<QueryDocumentSnapshot> routineSnapshot,
+    List<DocumentSnapshot> routineSnapshot,
   ) async {
     if (routineSnapshot != null) {
       Future.forEach(routineSnapshot, (document) async {
@@ -237,7 +280,7 @@ class DatabaseService {
   }
 
   Future updateScheduleField({
-    QueryDocumentSnapshot doc,
+    DocumentSnapshot doc,
     String field,
     value,
   }) async {
@@ -249,9 +292,9 @@ class DatabaseService {
   }
 
   Future<String> shareSchedule({
-    @required QueryDocumentSnapshot userDoc,
-    @required QueryDocumentSnapshot schedule,
-    @required List<QueryDocumentSnapshot> schedulesExercises,
+    @required DocumentSnapshot userDoc,
+    @required DocumentSnapshot schedule,
+    @required List<DocumentSnapshot> schedulesExercises,
   }) async {
     String errorMessage = "";
     print("Sharing Schedule to " + userDoc.id);
@@ -283,8 +326,7 @@ class DatabaseService {
         "Split": schedule.data()["Split"],
         "Description": schedule.data()["Description"]
       }, SetOptions(merge: true));
-      Future.forEach(schedulesExercises,
-          (QueryDocumentSnapshot exercise) async {
+      Future.forEach(schedulesExercises, (DocumentSnapshot exercise) async {
         await createRoutine(
           differUser: true,
           differUserId: userDoc.id,
