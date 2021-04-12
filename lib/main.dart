@@ -1,11 +1,8 @@
 import 'package:deeformity/Services/Authentication.dart';
-//import 'package:firebase_auth/firebase_auth.dart';
 import "package:flutter/material.dart";
 import 'package:provider/provider.dart';
-//import 'visuals/Welcome.dart';
 import 'Screens/Profile.dart';
 import 'package:firebase_core/firebase_core.dart';
-//import 'package:deeformity/Services/Navigator.dart';
 import 'AuthenticationWrapper.dart';
 
 Future<void> main() async {

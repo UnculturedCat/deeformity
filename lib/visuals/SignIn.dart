@@ -77,7 +77,7 @@ class SignInState extends State<SignIn> {
                     child: Column(
                       //mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text("DeeFormity",
+                        Text("RepLEE",
                             style:
                                 TextStyle(color: Colors.white, fontSize: 30.0)),
                         //Form

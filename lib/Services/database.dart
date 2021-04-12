@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 
 class DatabaseService {
   final String uid;
-  DatabaseService({@required this.uid});
+  DatabaseService({this.uid});
 
   firebase_storage.FirebaseStorage _mediaStorage =
       firebase_storage.FirebaseStorage.instance;
@@ -131,14 +131,12 @@ class DatabaseService {
   Future createUserData({
     String firstName,
     String lastName,
-    bool professionalAccount,
-    String location,
+    String userName,
   }) async {
     await usersCollection.doc(uid).set({
       "First Name": firstName,
       "Last Name": lastName,
-      "Location": location,
-      "Professional Acc": professionalAccount
+      "User Name": userName,
     });
   }
 

@@ -40,17 +40,22 @@ class AuthenticationService {
     }
   }
 
-  Future<bool> signUp(
-      {String email,
-      String password,
-      String firstName,
-      String lastName,
-      String location}) async {
+  Future<bool> signUp({
+    String email,
+    String password,
+    String firstName,
+    String lastName,
+    String userName,
+  }) async {
     try {
       UserCredential userCred = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      await createNewDataBaseDocument(userCred, firstName, lastName, location);
+      await createNewDataBaseDocument(
+          userCredential: userCred,
+          firstName: firstName,
+          lastName: lastName,
+          userName: userName);
       errorMessage = "";
       return true;
     } on FirebaseAuthException catch (e) {
@@ -60,13 +65,10 @@ class AuthenticationService {
   }
 
   Future createNewDataBaseDocument(
-      UserCredential userCredential, firstName, lastName, location) async {
+      {UserCredential userCredential, firstName, lastName, userName}) async {
     User user = userCredential.user;
     await DatabaseService(uid: user.uid).createUserData(
-        firstName: firstName,
-        lastName: lastName,
-        professionalAccount: false,
-        location: location);
+        firstName: firstName, lastName: lastName, userName: userName);
   }
 
   String giveErrorMessage() {
