@@ -24,7 +24,7 @@ class _AddExercisePageState extends State<AddExercisePage>
   String date = UserSingleton.userSingleton.selectedStringDate;
   DateTime dateTime = UserSingleton.userSingleton.dateTime;
   String cardId;
-  String userId = UserSingleton.userSingleton.currentUSer.uid;
+  String userId = UserSingleton.userSingleton.userID;
   String category;
   String workOutName;
   String description;
@@ -114,20 +114,20 @@ class _AddExercisePageState extends State<AddExercisePage>
         mediaStoragePath = mediaFields["fullPath"];
       }
 
-      String cardDocId = await DatabaseService(
-              uid: UserSingleton.userSingleton.currentUSer.uid)
-          .createRoutine(
-              cardId: cardId,
-              userId: userId,
-              workOutName: workOutName,
-              description: description,
-              dateTime: dateTime.toString(),
-              mediaURL: mediaURL,
-              mediaStoragePath: mediaStoragePath,
-              mediaType: _mediaType,
-              scheduleId: widget.scheduleDoc.id,
-              days: workOutDays,
-              correctedAspectRatio: correctVideoAspectRatio);
+      String cardDocId =
+          await DatabaseService(uid: UserSingleton.userSingleton.userID)
+              .createRoutine(
+                  cardId: cardId,
+                  userId: userId,
+                  workOutName: workOutName,
+                  description: description,
+                  dateTime: dateTime.toString(),
+                  mediaURL: mediaURL,
+                  mediaStoragePath: mediaStoragePath,
+                  mediaType: _mediaType,
+                  scheduleId: widget.scheduleDoc.id,
+                  days: workOutDays,
+                  correctedAspectRatio: correctVideoAspectRatio);
       cardDocId != null && cardDocId.isNotEmpty
           ? Navigator.pop(context)
           : setState(() {
@@ -431,7 +431,7 @@ class _AddExercisePageState extends State<AddExercisePage>
                                     ),
                                   ),
                                   Text(
-                                    "Decompress Video",
+                                    "Fix Video",
                                     style: TextStyle(
                                       color: Colors.blue,
                                     ),

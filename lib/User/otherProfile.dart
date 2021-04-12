@@ -88,6 +88,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
           style: TextStyle(color: elementColorWhiteBackground),
         ),
         backgroundColor: Colors.white,
+        shadowColor: Colors.white24,
         iconTheme: IconThemeData(
           color: elementColorWhiteBackground,
         ),

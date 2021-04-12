@@ -17,6 +17,9 @@ class _ExercisePageState extends State<ExercisePage> {
   AppVideoPlayer appVideoPlayer;
   bool editingMedia = false;
   bool editingDescription = false;
+  String mediaURL;
+  bool correctVideoAspectRatio = false;
+
   String description;
   final _formKey = GlobalKey<FormState>();
   var media;
@@ -24,6 +27,31 @@ class _ExercisePageState extends State<ExercisePage> {
 
   @override
   void initState() {
+    mediaURL = docSnapshot.data()["MediaURL"];
+    int mediaTypeIndex = docSnapshot.data()["Media type"];
+    correctVideoAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
+
+    if (mediaURL != null && mediaURL.isNotEmpty) {
+      if (mediaTypeIndex != MediaType.none.index) {
+        MediaType mediaType = MediaType.values[mediaTypeIndex];
+        switch (mediaType) {
+          case MediaType.photo:
+            media = Image.network(mediaURL);
+            break;
+          case MediaType.video:
+            appVideoPlayer = AppVideoPlayer(
+              assetURL: mediaURL,
+              assetSource: MediaAssetSource.network,
+              flipHeightAndWidth: correctVideoAspectRatio,
+            );
+            break;
+          case MediaType.textDocument:
+            break;
+          case MediaType.none:
+            break;
+        }
+      }
+    }
     super.initState();
   }
 
@@ -43,32 +71,6 @@ class _ExercisePageState extends State<ExercisePage> {
 
   @override
   Widget build(BuildContext context) {
-    String mediaURL = docSnapshot.data()["MediaURL"];
-    int mediaTypeIndex = docSnapshot.data()["Media type"];
-    bool correctedAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
-
-    if (mediaURL != null && mediaURL.isNotEmpty) {
-      if (mediaTypeIndex != MediaType.none.index) {
-        MediaType mediaType = MediaType.values[mediaTypeIndex];
-        switch (mediaType) {
-          case MediaType.photo:
-            media = Image.network(mediaURL);
-            break;
-          case MediaType.video:
-            appVideoPlayer = AppVideoPlayer(
-              assetURL: mediaURL,
-              assetSource: MediaAssetSource.network,
-              flipHeightAndWidth: correctedAspectRatio,
-            );
-            break;
-          case MediaType.textDocument:
-            break;
-          case MediaType.none:
-            break;
-        }
-      }
-    }
-
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -98,6 +100,43 @@ class _ExercisePageState extends State<ExercisePage> {
                         : appVideoPlayer != null
                             ? appVideoPlayer
                             : SizedBox(),
+                  )
+                : SizedBox(),
+            appVideoPlayer != null
+                ? Container(
+                    child: InkWell(
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(5),
+                            child: Icon(
+                              Icons.reset_tv,
+                              color: Colors.blue,
+                              size: 30,
+                            ),
+                          ),
+                          Text(
+                            "Fix Video",
+                            style: TextStyle(
+                              color: Colors.blue,
+                            ),
+                          )
+                        ],
+                      ),
+                      onTap: () {
+                        setState(() {
+                          correctVideoAspectRatio = !correctVideoAspectRatio;
+                          appVideoPlayer = AppVideoPlayer(
+                            assetSource: MediaAssetSource.network,
+                            assetURL: mediaURL,
+                            flipHeightAndWidth: correctVideoAspectRatio,
+                          );
+                        });
+                        final snackBar = SnackBar(
+                            content: Text("Video's aspect ratio corrected"));
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      },
+                    ),
                   )
                 : SizedBox(),
             Container(

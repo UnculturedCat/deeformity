@@ -23,6 +23,7 @@ class DatabaseService {
   String addedWorkOutScheduleSubCollectionName = "Added Workout Schedule";
   String addedUsers = "Added Users";
   String messagesSubcollection = "Messages";
+  String messagesUsersSubcollection = "Messages Users";
 
 /*
  Messages functions
@@ -43,7 +44,17 @@ class DatabaseService {
       "Sender": uid,
       "Recipient": receiverDoc.id,
       "Time": dateTimeNowMilli,
-      "Message": message
+      "Message": message,
+      "Users": [receiverDoc.id, uid]
+    });
+
+    await usersCollection
+        .doc(receiverDoc.id)
+        .collection(messagesUsersSubcollection)
+        .doc(uid)
+        .set({
+      "User Id": uid,
+      "Time": dateTimeNowMilli,
     });
 
     //write to my(currentUser) own db
@@ -52,16 +63,45 @@ class DatabaseService {
       "Sender": uid,
       "Recipient": receiverDoc.id,
       "Time": dateTimeNowMilli,
-      "Message": message
+      "Message": message,
+      "Users": [receiverDoc.id, uid]
     });
+
+    await usersCollection
+        .doc(uid)
+        .collection(messagesUsersSubcollection)
+        .doc(receiverDoc.id)
+        .set({
+      "User Id": receiverDoc.id,
+      "Time": dateTimeNowMilli,
+    });
+
     if (recievedIdRef.id.isNotEmpty && sentIdRef.id.isNotEmpty) {
       successMessage = "Sent successfully";
     }
+
     return successMessage;
   }
 
+//user messages stream
   Stream<QuerySnapshot> get messages =>
       usersCollection.doc(uid).collection(messagesSubcollection).snapshots();
+
+//users who messaged stream
+  Stream<QuerySnapshot> get messagesUsers => usersCollection
+      .doc(uid)
+      .collection(messagesUsersSubcollection)
+      .orderBy("Time", descending: false)
+      .snapshots();
+
+//Messages stream from a particular user
+  Stream<QuerySnapshot> particularUserMessagesStream(String id) {
+    return usersCollection
+        .doc(uid)
+        .collection(messagesSubcollection)
+        .orderBy("Time", descending: false)
+        .snapshots();
+  }
 
 /*
   user data functions
@@ -80,9 +120,8 @@ class DatabaseService {
       .snapshots();
 
 //Get snapshot of current user
-  Stream<DocumentSnapshot> get userData => usersCollection
-      .doc(UserSingleton.userSingleton.currentUSer.uid)
-      .snapshots();
+  Stream<DocumentSnapshot> get userData =>
+      usersCollection.doc(UserSingleton.userSingleton.userID).snapshots();
 //Get snapshot of any user
   Stream<DocumentSnapshot> get anyUserData =>
       usersCollection.doc(uid).snapshots();
@@ -173,7 +212,7 @@ class DatabaseService {
 
   //get routine snapshot for the current user
   Stream<QuerySnapshot> get routines => scheduleCollection
-      .doc(UserSingleton.userSingleton.currentUSer.uid)
+      .doc(UserSingleton.userSingleton.userID)
       .collection(workOutRoutinesSubCollectionName)
       .snapshots();
 
