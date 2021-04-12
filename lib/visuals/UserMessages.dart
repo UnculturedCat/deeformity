@@ -98,7 +98,7 @@ class _UserMessagesPageState extends State<UserMessagesPage> {
                                   controller: textEditingController,
                                   maxLines: null,
                                   decoration: textInputDecorationWhite.copyWith(
-                                    hintText: "Write stuff to " + "This guy",
+                                    hintText: "Write stuff here",
                                     hintStyle:
                                         TextStyle(fontSize: fontSizeInputHint),
                                   ),
