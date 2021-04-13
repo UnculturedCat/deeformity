@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../Services/Authentication.dart';
-//import 'Welcome.dart';
 import 'package:deeformity/Shared/constants.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -44,7 +43,7 @@ class SignUpPageState extends State<SignUpPage> {
       formState.save();
 
       //verify email before creating user
-      //Do it here
+      //Do it here. This will be the ideal implementation
 
       success = await context.read<AuthenticationService>().signUp(
             email: email,
@@ -56,7 +55,9 @@ class SignUpPageState extends State<SignUpPage> {
     }
     if (!success) {
       setState(() => loading = false);
-      showErrorMessage(context.read<AuthenticationService>().errorMessage);
+      SnackBar snackBar = SnackBar(
+          content: Text(context.read<AuthenticationService>().errorMessage));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
@@ -70,31 +71,13 @@ class SignUpPageState extends State<SignUpPage> {
   //   print("Sign up Success");
   // }
 
-  void showErrorMessage(String errorMessage) {
-    showCupertinoDialog(
-        context: context,
-        builder: (context) {
-          return CupertinoAlertDialog(
-            title: Text("Error"),
-            content: Text(errorMessage),
-            actions: [
-              CupertinoActionSheetAction(
-                child: Text("Ok"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
-  }
-
   void getAllCurrentlyTakenNames() {}
 
   bool checkIfUsernameTaken(String username) {
     bool nameTaken = false;
     allUsersSnapShot.docs.forEach((doc) {
-      if (doc.data()["User Name"] ?? " " == username) {
+      String name = doc.data()["User Name"] ?? " ";
+      if (name.toUpperCase() == username.toUpperCase()) {
         nameTaken = true;
       }
     });
@@ -103,7 +86,7 @@ class SignUpPageState extends State<SignUpPage> {
 
   Widget build(context) {
     return StreamBuilder<QuerySnapshot>(
-        stream: DatabaseService().addedSchedules,
+        stream: DatabaseService().currentUsers,
         builder: (context, snapshot) {
           if (snapshot != null && snapshot.data != null) {
             allUsersSnapShot = snapshot.data;
@@ -174,6 +157,7 @@ class SignUpPageState extends State<SignUpPage> {
                                   padding: EdgeInsets.only(
                                       left: 10, right: 10, top: 50),
                                   child: TextFormField(
+                                    maxLength: 20,
                                     decoration: textInputDecoration.copyWith(
                                         hintText: "User name"),
                                     style: TextStyle(color: Colors.white),

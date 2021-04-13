@@ -50,13 +50,19 @@ class AuthenticationService {
     try {
       UserCredential userCred = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
-
+      if (userCred != null) {
+        await userCred.user.sendEmailVerification().catchError((error) {
+          errorMessage = "Could not send verification link to your email";
+        }).then((value) {
+          errorMessage = "Verification link sent to " + email;
+        });
+      }
       await createNewDataBaseDocument(
-          userCredential: userCred,
-          firstName: firstName,
-          lastName: lastName,
-          userName: userName);
-      errorMessage = "";
+        userCredential: userCred,
+        firstName: firstName,
+        lastName: lastName,
+        userName: userName,
+      );
       return true;
     } on FirebaseAuthException catch (e) {
       errorMessage = e.toString();
@@ -64,8 +70,12 @@ class AuthenticationService {
     }
   }
 
-  Future createNewDataBaseDocument(
-      {UserCredential userCredential, firstName, lastName, userName}) async {
+  Future createNewDataBaseDocument({
+    UserCredential userCredential,
+    firstName,
+    lastName,
+    userName,
+  }) async {
     User user = userCredential.user;
     await DatabaseService(uid: user.uid).createUserData(
         firstName: firstName, lastName: lastName, userName: userName);

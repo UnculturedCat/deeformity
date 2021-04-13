@@ -65,7 +65,7 @@ class _UserMessagesPageState extends State<UserMessagesPage> {
               shadowColor: Colors.white24,
               iconTheme: IconThemeData(color: elementColorWhiteBackground),
               title: Text(
-                widget.userDoc.data()["First Name"] ?? "Who this?",
+                widget.userDoc.data()["User Name"] ?? "Who this?",
                 style: pageHeaderStyle,
               ),
             ),
@@ -84,7 +84,7 @@ class _UserMessagesPageState extends State<UserMessagesPage> {
                                     (message) => MessageTile(
                                       messageDoc: message,
                                       otherUserName:
-                                          widget.userDoc.data()["First Name"],
+                                          widget.userDoc.data()["User Name"],
                                     ),
                                   )
                                   .toList(),
@@ -98,7 +98,8 @@ class _UserMessagesPageState extends State<UserMessagesPage> {
                                   controller: textEditingController,
                                   maxLines: null,
                                   decoration: textInputDecorationWhite.copyWith(
-                                    hintText: "Write stuff here",
+                                    hintText: "Write stuff to " +
+                                        widget.userDoc.data()["User Name"],
                                     hintStyle:
                                         TextStyle(fontSize: fontSizeInputHint),
                                   ),

@@ -251,6 +251,10 @@ class ProfilePageState extends State<ProfilePage>
                   ),
                   backgroundColor: Colors.white,
                   shadowColor: Colors.white24,
+                  title: Text(
+                    userDoc.data()["User Name"] ?? "Error Name",
+                    style: TextStyle(color: elementColorWhiteBackground),
+                  ),
                 ),
                 endDrawer: createDrawer(),
                 backgroundColor: Colors.white,

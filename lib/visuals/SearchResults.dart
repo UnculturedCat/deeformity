@@ -46,12 +46,14 @@ class _SearchResultsState extends State<SearchResults> {
     String firstName = doc.data()["First Name"];
     String lastName = doc.data()["Last Name"];
     String userFullName = firstName + " " + lastName;
+    String userName = doc.data()["User Name"];
 
     //Fliters displayed users according to textForm input
     if (widget.textBoxQuery.isNotEmpty) {
       int iterationPos = 0;
       for (var s in widget.textBoxQuery.characters) {
-        if (s.toUpperCase() != userFullName[iterationPos].toUpperCase())
+        if (s.toUpperCase() != userFullName[iterationPos].toUpperCase() &&
+            s.toUpperCase() != userName[iterationPos].toUpperCase())
           return SizedBox();
         iterationPos += 1;
       }

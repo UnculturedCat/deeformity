@@ -9,7 +9,7 @@ class UserCardCreator extends StatelessWidget {
   Widget build(BuildContext context) {
     String firstName = userDoc.data()["First Name"];
     String lastName = userDoc.data()["Last Name"];
-    String profession = userDoc.data()["Profession"] ?? "Private user";
+    String userName = userDoc.data()["User Name"] ?? "Private user";
     String userFullName = firstName + " " + lastName;
     return Card(
       color: mark == true ? Colors.blue[200] : null,
@@ -35,7 +35,7 @@ class UserCardCreator extends StatelessWidget {
                 ),
               ),
               Text(
-                profession,
+                userName,
                 style: TextStyle(
                     color: Color.fromRGBO(21, 33, 47, 1),
                     fontWeight: FontWeight.w300,

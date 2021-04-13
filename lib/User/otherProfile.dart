@@ -84,7 +84,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          userDoc.data()["First Name"] ?? "Error Name",
+          userDoc.data()["User Name"] ?? "Error Name",
           style: TextStyle(color: elementColorWhiteBackground),
         ),
         backgroundColor: Colors.white,

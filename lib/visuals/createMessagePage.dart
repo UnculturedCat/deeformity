@@ -25,11 +25,16 @@ class _CreateMessageState extends State<CreateMessage> {
         dateTimeNowMilli: DateTime.now().millisecondsSinceEpoch,
         message: message,
       );
+      bool pop = true;
       if (snackBarMessage.isEmpty) {
         snackBarMessage = "Could not send message";
+        pop = false;
       }
       final snackBar = SnackBar(content: Text(snackBarMessage));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (pop) {
+        Navigator.pop(context);
+      }
     }
   }
 
@@ -58,7 +63,7 @@ class _CreateMessageState extends State<CreateMessage> {
                 minLines: 12,
                 decoration: textInputDecorationWhite.copyWith(
                   hintText: "Write stuff to " +
-                          widget.recipientDoc.data()["First Name"] ??
+                          widget.recipientDoc.data()["User Name"] ??
                       "This guy",
                   hintStyle: TextStyle(fontSize: fontSizeInputHint),
                 ),
