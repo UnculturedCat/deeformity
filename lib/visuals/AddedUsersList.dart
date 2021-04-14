@@ -89,9 +89,11 @@ class _AddedUsersState extends State<AddedUsers> {
     retreiveUserDocument(doc).then((value) {
       addedUsers.add(value);
       if (addedUsers.length == addedUsersSnapshot.length) {
-        setState(() {
-          fullDetailsGotten = true;
-        });
+        if (mounted) {
+          setState(() {
+            fullDetailsGotten = true;
+          });
+        }
       }
     });
   }

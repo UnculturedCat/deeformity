@@ -17,10 +17,9 @@ class SignUpPage extends StatefulWidget {
 
 class SignUpPageState extends State<SignUpPage> {
   final formKey = GlobalKey<FormState>();
-  String firstName, lastName, email, password, repeatedPassword, userName;
+  String email, password, repeatedPassword;
   String location = dropDownLocations.first.value;
   bool loading = false;
-  QuerySnapshot allUsersSnapShot;
 
   @override
   void dispose() {
@@ -48,9 +47,6 @@ class SignUpPageState extends State<SignUpPage> {
       success = await context.read<AuthenticationService>().signUp(
             email: email,
             password: password,
-            userName: userName,
-            lastName: lastName,
-            firstName: firstName,
           );
     }
     if (!success) {
@@ -71,27 +67,10 @@ class SignUpPageState extends State<SignUpPage> {
   //   print("Sign up Success");
   // }
 
-  void getAllCurrentlyTakenNames() {}
-
-  bool checkIfUsernameTaken(String username) {
-    bool nameTaken = false;
-    allUsersSnapShot.docs.forEach((doc) {
-      String name = doc.data()["User Name"] ?? " ";
-      if (name.toUpperCase() == username.toUpperCase()) {
-        nameTaken = true;
-      }
-    });
-    return nameTaken;
-  }
-
   Widget build(context) {
     return StreamBuilder<QuerySnapshot>(
         stream: DatabaseService().currentUsers,
         builder: (context, snapshot) {
-          if (snapshot != null && snapshot.data != null) {
-            allUsersSnapShot = snapshot.data;
-          }
-
           return loading
               ? Loading()
               : GestureDetector(
@@ -115,7 +94,7 @@ class SignUpPageState extends State<SignUpPage> {
                           Container(
                             padding: EdgeInsets.only(left: 10),
                             child: Text(
-                              "Create Profile",
+                              "Sign Up",
                               style:
                                   TextStyle(color: Colors.white, fontSize: 30),
                             ),
@@ -125,51 +104,6 @@ class SignUpPageState extends State<SignUpPage> {
                             key: formKey,
                             child: Column(
                               children: <Widget>[
-                                Container(
-                                  padding: EdgeInsets.only(
-                                      left: 10, right: 10, top: 10),
-                                  child: TextFormField(
-                                    decoration: textInputDecoration.copyWith(
-                                        hintText: "First Name"),
-                                    style: TextStyle(color: Colors.white),
-                                    validator: (input) => input.isEmpty
-                                        ? "Enter First Name"
-                                        : null,
-                                    //onEditingComplete: handleDone,
-                                    onSaved: (input) => firstName = input,
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.only(
-                                      left: 10, right: 10, top: 10),
-                                  child: TextFormField(
-                                    decoration: textInputDecoration.copyWith(
-                                        hintText: "Last Name"),
-                                    style: TextStyle(color: Colors.white),
-                                    onSaved: (input) => lastName = input,
-                                    validator: (input) => input.isEmpty
-                                        ? "Enter Last Name"
-                                        : null,
-                                    //onEditingComplete: handleDone,
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.only(
-                                      left: 10, right: 10, top: 50),
-                                  child: TextFormField(
-                                    maxLength: 20,
-                                    decoration: textInputDecoration.copyWith(
-                                        hintText: "User name"),
-                                    style: TextStyle(color: Colors.white),
-                                    onSaved: (input) => userName = input,
-                                    validator: (input) => input.isEmpty
-                                        ? "User name"
-                                        : checkIfUsernameTaken(input)
-                                            ? "Username taken"
-                                            : null,
-                                    //onEditingComplete: handleDone,
-                                  ),
-                                ),
                                 // Container(
                                 //   padding:
                                 //       EdgeInsets.only(left: 10, right: 10, top: 10),

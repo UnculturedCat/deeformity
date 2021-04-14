@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Services/database.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:deeformity/visuals/AddedSchedulesList.dart';
-import 'package:deeformity/visuals/createMessagePage.dart';
+import 'package:deeformity/Messages/createMessagePage.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Shared/constants.dart';
 
@@ -37,11 +37,15 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
     DatabaseService(uid: widget.userDoc.id).addedUsersSnapShot.listen((event) {
       connectionsSnapShot = event;
       usersConnections = event.docs;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
     DatabaseService(uid: widget.userDoc.id).anyUserData.listen((event) {
       userDoc = event;
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
     super.initState();
   }

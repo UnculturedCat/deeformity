@@ -39,24 +39,32 @@ class MessageTile extends StatelessWidget {
                   ),
                 ),
               ),
-              trailing: messageDoc.data()["Sender"] ==
-                      UserSingleton.userSingleton.userID
-                  ? Text(
-                      "You",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w300,
-                        fontSize: 12,
-                      ),
-                    )
-                  : Text(
-                      otherUserName,
-                      style: TextStyle(
-                        color: Color.fromRGBO(21, 33, 47, 1),
-                        fontWeight: FontWeight.w300,
-                        fontSize: 12,
-                      ),
-                    ),
+              trailing: Container(
+                padding: EdgeInsets.only(bottom: 3),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    messageDoc.data()["Sender"] ==
+                            UserSingleton.userSingleton.userID
+                        ? Text(
+                            "You",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w300,
+                              fontSize: 12,
+                            ),
+                          )
+                        : Text(
+                            otherUserName,
+                            style: TextStyle(
+                              color: Color.fromRGBO(21, 33, 47, 1),
+                              fontWeight: FontWeight.w300,
+                              fontSize: 12,
+                            ),
+                          ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),

@@ -57,12 +57,7 @@ class AuthenticationService {
           errorMessage = "Verification link sent to " + email;
         });
       }
-      await createNewDataBaseDocument(
-        userCredential: userCred,
-        firstName: firstName,
-        lastName: lastName,
-        userName: userName,
-      );
+      //create and auth user without creating a db for the user.
       return true;
     } on FirebaseAuthException catch (e) {
       errorMessage = e.toString();
@@ -70,15 +65,20 @@ class AuthenticationService {
     }
   }
 
-  Future createNewDataBaseDocument({
-    UserCredential userCredential,
+  Future<bool> createNewDataBaseDocument({
+    User user,
     firstName,
     lastName,
     userName,
   }) async {
-    User user = userCredential.user;
-    await DatabaseService(uid: user.uid).createUserData(
-        firstName: firstName, lastName: lastName, userName: userName);
+    try {
+      await DatabaseService(uid: user.uid).createUserData(
+          firstName: firstName, lastName: lastName, userName: userName);
+      return true;
+    } on FirebaseAuthException catch (e) {
+      errorMessage = e.toString();
+      return false;
+    }
   }
 
   String giveErrorMessage() {

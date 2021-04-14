@@ -30,7 +30,9 @@ class AuthenticationWrapper extends StatelessWidget {
             .listen((doc) {
           UserSingleton.userSingleton.userDataSnapShot = doc;
         });
-        return NavigatorClass();
+        return NavigatorClass(
+          user: firebaseUser,
+        );
       } else if (!firebaseUser.emailVerified) {
         return VerificationPage(firebaseUser, firebaseUser.email);
       }
