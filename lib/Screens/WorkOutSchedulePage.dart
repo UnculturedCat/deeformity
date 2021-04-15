@@ -40,7 +40,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
   final _formkey = GlobalKey<FormState>();
   final _discriptionFormKey = GlobalKey<FormState>();
   DocumentSnapshot scheduleCreator;
-  UserCardCreator creatorUserCard;
+  InkWell creatorUserCard;
 
   @override
   void initState() {
@@ -125,7 +125,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     }
   }
 
-  void openCreatorCard(QueryDocumentSnapshot doc) {
+  void openCreatorCard(DocumentSnapshot doc) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -425,7 +425,14 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
         .then((value) {
       setState(() {
         scheduleCreator = value;
-        creatorUserCard = UserCardCreator(userDoc: value);
+        creatorUserCard = InkWell(
+          child: UserCardCreator(
+            userDoc: value,
+          ),
+          onTap: () {
+            openCreatorCard(value);
+          },
+        );
         //signalFromDropDown = false;
       });
     });
