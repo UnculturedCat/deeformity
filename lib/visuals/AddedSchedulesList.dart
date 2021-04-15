@@ -64,9 +64,11 @@ class _AddedSchedulesState extends State<AddedSchedules> {
             ),
           );
           if (scheduleCards.length == addedSchedules.length) {
-            setState(() {
-              cardsCreated = true;
-            });
+            if (mounted) {
+              setState(() {
+                cardsCreated = true;
+              });
+            }
           }
         },
       );
