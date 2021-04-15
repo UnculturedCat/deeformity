@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
+import 'package:deeformity/Shared/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Services/database.dart';
@@ -580,211 +581,217 @@ class _AddExercisePageState extends State<AddExercisePage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        //centerTitle: false,
-        title: Text(
-          "Add Exercise",
-          style: pageHeaderStyle,
-        ),
-        backgroundColor: Colors.white,
-        shadowColor: Colors.white24,
-        iconTheme: IconThemeData(color: elementColorWhiteBackground),
-        actions: [
-          Container(
-            padding: EdgeInsets.only(left: 5, right: 5),
-            child: !working
-                ? TextButton(
-                    onPressed: addExercise,
-                    child: Text(
-                      "Create",
-                      style: headerActionButtonStyle,
-                    ),
-                  )
-                : SizedBox(),
-          ),
-        ],
-      ),
-      body: GestureDetector(
-        child: Center(
-          child: Container(
-            padding: EdgeInsets.only(top: 20, left: 20, right: 20),
-            child: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                child: Column(
-                  //children: [
-                  // Expanded(
-                  //   //height: MediaQuery.of(context).size.height * 0.70,
-                  //   child: ListView(
-                  children: [
-                    Container(
-                        padding: EdgeInsets.only(left: 10, bottom: 20),
-                        child: Text(
-                          convertDayToString(widget.dayEnum),
-                          style: TextStyle(
-                              fontSize: 30, fontWeight: FontWeight.bold),
-                        )),
-                    Container(
+    return working
+        ? Loading()
+        : Scaffold(
+            appBar: AppBar(
+              //centerTitle: false,
+              title: Text(
+                "Add Exercise",
+                style: pageHeaderStyle,
+              ),
+              backgroundColor: Colors.white,
+              shadowColor: Colors.white24,
+              iconTheme: IconThemeData(color: elementColorWhiteBackground),
+              actions: [
+                Container(
+                  padding: EdgeInsets.only(left: 5, right: 5),
+                  child: !working
+                      ? TextButton(
+                          onPressed: addExercise,
+                          child: Text(
+                            "Create",
+                            style: headerActionButtonStyle,
+                          ),
+                        )
+                      : SizedBox(),
+                ),
+              ],
+            ),
+            body: GestureDetector(
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+                  child: Form(
+                    key: _formKey,
+                    child: SingleChildScrollView(
                       child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(5).copyWith(top: 2),
+                        //children: [
+                        // Expanded(
+                        //   //height: MediaQuery.of(context).size.height * 0.70,
+                        //   child: ListView(
+                        children: [
+                          Container(
+                              padding: EdgeInsets.only(left: 10, bottom: 20),
                               child: Text(
-                                "Give your exercise a clear and succint name",
+                                convertDayToString(widget.dayEnum),
                                 style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: elementColorWhiteBackground,
-                                  // /fontSize: 15,
-                                ),
-                              ),
-                            ),
-                            Container(
-                              child: TextFormField(
-                                maxLength: 20,
-                                decoration: textInputDecorationWhite.copyWith(
-                                  hintStyle:
-                                      TextStyle(fontSize: fontSizeInputHint),
-                                  hintText: "Workout Name",
-                                ),
-                                onSaved: (input) => workOutName = input,
-                                // validator: (input) => input.isEmpty
-                                //     ? "Enter exercise name"
-                                //     : null,
-                              ),
-                            ),
-                          ]),
-                    ),
-                    Container(
-                      //height: 300,
-                      padding: EdgeInsets.only(top: 30),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                                    fontSize: 30, fontWeight: FontWeight.bold),
+                              )),
                           Container(
-                            padding: EdgeInsets.all(5).copyWith(top: 2),
-                            child: Text(
-                              "Describe the flow of the exercise. From sets, reps, rest time etc",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: elementColorWhiteBackground,
-                                //fontSize: 12,
-                              ),
-                            ),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(5).copyWith(top: 2),
+                                    child: Text(
+                                      "Give your exercise a clear and succint name",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        color: elementColorWhiteBackground,
+                                        // /fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    child: TextFormField(
+                                      maxLength: 20,
+                                      decoration:
+                                          textInputDecorationWhite.copyWith(
+                                        hintStyle: TextStyle(
+                                            fontSize: fontSizeInputHint),
+                                        hintText: "Workout Name",
+                                      ),
+                                      onSaved: (input) => workOutName = input,
+                                      // validator: (input) => input.isEmpty
+                                      //     ? "Enter exercise name"
+                                      //     : null,
+                                    ),
+                                  ),
+                                ]),
                           ),
                           Container(
-                            child: TextFormField(
-                              maxLines: null,
-                              minLines: 12,
-                              //textInputAction: TextInputAction.newline,
+                            //height: 300,
+                            padding: EdgeInsets.only(top: 30),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(5).copyWith(top: 2),
+                                  child: Text(
+                                    "Describe the flow of the exercise. From sets, reps, rest time etc",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: elementColorWhiteBackground,
+                                      //fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  child: TextFormField(
+                                    maxLines: null,
+                                    minLines: 12,
+                                    //textInputAction: TextInputAction.newline,
 
-                              decoration: textInputDecorationWhite.copyWith(
-                                hintText: "Description",
-                                hintStyle:
-                                    TextStyle(fontSize: fontSizeInputHint),
-                              ),
-                              onSaved: (input) => description = input,
-                              //validator: (input) => input.isEmpty? "Enter",
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    //Days Container
-                    Container(
-                      padding: EdgeInsets.only(
-                        top: 30,
-                        //bottom: 30,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(5).copyWith(top: 2),
-                            child: Text(
-                              "Select the days to repeat this exercise",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: elementColorWhiteBackground,
-                                //fontSize: 12,
-                              ),
-                            ),
-                          ),
-                          Container(
-                            // height:
-                            //     MediaQuery.of(context).size.height / 7.5,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                createDayCard(DaysOfTheWeek.monday),
-                                createDayCard(DaysOfTheWeek.tuesday),
-                                createDayCard(DaysOfTheWeek.wednesday)
+                                    decoration:
+                                        textInputDecorationWhite.copyWith(
+                                      hintText: "Description",
+                                      hintStyle: TextStyle(
+                                          fontSize: fontSizeInputHint),
+                                    ),
+                                    onSaved: (input) => description = input,
+                                    //validator: (input) => input.isEmpty? "Enter",
+                                  ),
+                                ),
                               ],
                             ),
                           ),
+                          //Days Container
                           Container(
-                            // height:
-                            //     MediaQuery.of(context).size.height / 7.5,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            padding: EdgeInsets.only(
+                              top: 30,
+                              //bottom: 30,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                createDayCard(DaysOfTheWeek.thursday),
-                                createDayCard(DaysOfTheWeek.friday),
-                                createDayCard(DaysOfTheWeek.saturday)
+                                Container(
+                                  padding: EdgeInsets.all(5).copyWith(top: 2),
+                                  child: Text(
+                                    "Select the days to repeat this exercise",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: elementColorWhiteBackground,
+                                      //fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  // height:
+                                  //     MediaQuery.of(context).size.height / 7.5,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      createDayCard(DaysOfTheWeek.monday),
+                                      createDayCard(DaysOfTheWeek.tuesday),
+                                      createDayCard(DaysOfTheWeek.wednesday)
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  // height:
+                                  //     MediaQuery.of(context).size.height / 7.5,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      createDayCard(DaysOfTheWeek.thursday),
+                                      createDayCard(DaysOfTheWeek.friday),
+                                      createDayCard(DaysOfTheWeek.saturday)
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  child: createDayCard(DaysOfTheWeek.sunday),
+                                )
                               ],
                             ),
                           ),
-                          Container(
-                            child: createDayCard(DaysOfTheWeek.sunday),
-                          )
+                          Align(
+                              alignment: Alignment.center,
+                              child: displayMediaWidget())
                         ],
+                        //   ),
+                        // ),
+                        // Container(
+                        //   padding: EdgeInsets.only(bottom: 50),
+                        //   child: working
+                        //       ? SizedBox()
+                        //       // : ElevatedButton(
+                        //       //     child: Text(
+                        //       //       "Create Exercise",
+                        //       //       style: TextStyle(
+                        //       //           fontSize: fontSizeButton,
+                        //       //           fontWeight: FontWeight.normal,
+                        //       //           color: Colors.white),
+                        //       //     ),
+                        //       //     style: ElevatedButton.styleFrom(
+                        //       //         primary: Color.fromRGBO(27, 98, 40, 1)),
+                        //       //     onPressed: addExercise),
+                        //       : TextButton(
+                        //           onPressed: addExercise,
+                        //           child: Text(
+                        //             "DONE",
+                        //             style: TextStyle(
+                        //                 color: Color.fromRGBO(27, 98, 40, 1),
+                        //                 fontSize: 15),
+                        //           ),
+                        //         ),
+                        // ),
+                        //],
                       ),
                     ),
-                    Align(
-                        alignment: Alignment.center,
-                        child: displayMediaWidget())
-                  ],
-                  //   ),
-                  // ),
-                  // Container(
-                  //   padding: EdgeInsets.only(bottom: 50),
-                  //   child: working
-                  //       ? SizedBox()
-                  //       // : ElevatedButton(
-                  //       //     child: Text(
-                  //       //       "Create Exercise",
-                  //       //       style: TextStyle(
-                  //       //           fontSize: fontSizeButton,
-                  //       //           fontWeight: FontWeight.normal,
-                  //       //           color: Colors.white),
-                  //       //     ),
-                  //       //     style: ElevatedButton.styleFrom(
-                  //       //         primary: Color.fromRGBO(27, 98, 40, 1)),
-                  //       //     onPressed: addExercise),
-                  //       : TextButton(
-                  //           onPressed: addExercise,
-                  //           child: Text(
-                  //             "DONE",
-                  //             style: TextStyle(
-                  //                 color: Color.fromRGBO(27, 98, 40, 1),
-                  //                 fontSize: 15),
-                  //           ),
-                  //         ),
-                  // ),
-                  //],
+                  ),
                 ),
               ),
+              onTap: () {
+                FocusScopeNode currentFocus = FocusScope.of(context);
+                if (!currentFocus.hasPrimaryFocus) {
+                  currentFocus.unfocus();
+                }
+              },
             ),
-          ),
-        ),
-        onTap: () {
-          FocusScopeNode currentFocus = FocusScope.of(context);
-          if (!currentFocus.hasPrimaryFocus) {
-            currentFocus.unfocus();
-          }
-        },
-      ),
-    );
+          );
   }
 }

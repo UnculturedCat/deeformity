@@ -110,24 +110,27 @@ class WorkoutDayState extends State<WorkoutDay> {
               scheduleDoc: widget.scheduleDoc,
             ),
           ),
-          Container(
-            padding: EdgeInsets.only(top: 20, right: 20, left: 20),
-            child: FloatingActionButton.extended(
-                label: Text(
-                  "Add exercise",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: fontSizeButton,
-                  ),
-                ),
-                backgroundColor: Color.fromRGBO(27, 98, 49, 1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(3)),
-                ),
-                onPressed: () {
-                  openCreateExercisePage();
-                }),
-          ),
+          widget.scheduleDoc.data()["Creator Id"] ==
+                  UserSingleton.userSingleton.userID
+              ? Container(
+                  padding: EdgeInsets.only(top: 20, right: 20, left: 20),
+                  child: FloatingActionButton.extended(
+                      label: Text(
+                        "Add exercise",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: fontSizeButton,
+                        ),
+                      ),
+                      backgroundColor: Color.fromRGBO(27, 98, 49, 1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(3)),
+                      ),
+                      onPressed: () {
+                        openCreateExercisePage();
+                      }),
+                )
+              : SizedBox(),
         ],
       ),
     );
