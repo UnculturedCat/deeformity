@@ -19,7 +19,7 @@ class DatabaseService {
   final CollectionReference scheduleCollection =
       FirebaseFirestore.instance.collection("Schedules");
 
-  String workOutRoutinesSubCollectionName = "Workout routines";
+  String workOutRoutinesSubCollectionName = "Workout Routines";
   String addedWorkOutScheduleSubCollectionName = "Added Workout Schedule";
   String addedUsers = "Added Users";
   String messagesSubcollection = "Messages";
@@ -114,11 +114,6 @@ class DatabaseService {
     return usersCollection.doc(uid).collection(addedUsers).snapshots();
   }
 
-  Stream<QuerySnapshot> get addedSchedules => scheduleCollection
-      .doc(uid)
-      .collection(addedWorkOutScheduleSubCollectionName)
-      .snapshots();
-
 //Get snapshot of current user
   Stream<DocumentSnapshot> get userData =>
       usersCollection.doc(UserSingleton.userSingleton.userID).snapshots();
@@ -212,6 +207,12 @@ class DatabaseService {
   Stream<QuerySnapshot> get routines => scheduleCollection
       .doc(UserSingleton.userSingleton.userID)
       .collection(workOutRoutinesSubCollectionName)
+      .snapshots();
+
+//get schedules snapshot for the current user
+  Stream<QuerySnapshot> get addedSchedules => scheduleCollection
+      .doc(uid)
+      .collection(addedWorkOutScheduleSubCollectionName)
       .snapshots();
 
   Future<String> createRoutine(
