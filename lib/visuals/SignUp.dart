@@ -103,6 +103,7 @@ class SignUpPageState extends State<SignUpPage> {
                           Form(
                             key: formKey,
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 // Container(
                                 //   padding:
