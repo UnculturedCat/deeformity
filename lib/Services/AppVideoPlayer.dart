@@ -123,7 +123,11 @@ class _AppVideoPlayerState extends State<AppVideoPlayer> {
                           ),
                         )
                       : SizedBox(),
-                  VideoProgressIndicator(_controller, allowScrubbing: true)
+                  VideoProgressIndicator(
+                    _controller,
+                    allowScrubbing: true,
+                    colors: VideoProgressColors(playedColor: Colors.blue),
+                  )
                 ],
               ),
             ),

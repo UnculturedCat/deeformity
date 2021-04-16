@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deeformity/Messages/messageDaniel.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:deeformity/visuals/AddedSchedulesList.dart';
 import 'package:deeformity/visuals/AddedUsersList.dart';
+import 'package:deeformity/visuals/DeleteAccountPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/Shared/constants.dart';
@@ -38,32 +40,47 @@ class ProfilePageState extends State<ProfilePage>
 
   @override
   void initState() {
-    DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .addedUsersSnapShot
-        .listen((event) {
-      usersConnections = event.docs;
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .anyUserData
-        .listen((event) {
-      userDoc = event;
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    if (mounted) {
+      DatabaseService(uid: UserSingleton.userSingleton.userID)
+          .addedUsersSnapShot
+          .listen((event) {
+        usersConnections = event.docs;
+        if (mounted) {
+          setState(() {});
+        }
+      });
+      DatabaseService(uid: UserSingleton.userSingleton.userID)
+          .anyUserData
+          .listen((event) {
+        userDoc = event;
+        if (mounted) {
+          setState(() {});
+        }
+      });
+    }
     super.initState();
   }
 
   void logOut() {
     context.read<AuthenticationService>().signOut();
-    Navigator.pop(context);
+    Navigator.popUntil(context, (route) => route.isFirst);
+    // Navigator.pop(context);
+  }
+
+  void deleteAccountPage() {
+    Navigator.push(context, MaterialPageRoute(
+      builder: (context) {
+        return DeleteAccountPage(userDoc);
+      },
+    ));
   }
 
   void messageDaniel() {
-    //open message Daniel page
+    Navigator.push(context, MaterialPageRoute(
+      builder: (context) {
+        return MessageDaniel(userDoc);
+      },
+    ));
   }
 
   Future<bool> checkAndRequestMediaPermission(ImageSource source) async {
@@ -216,11 +233,10 @@ class ProfilePageState extends State<ProfilePage>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.logout, color: Colors.redAccent),
+                      Icon(Icons.logout, color: Colors.red),
                       Text(
                         "Log out",
-                        style: TextStyle(
-                            color: Colors.redAccent, fontSize: fontSize),
+                        style: TextStyle(color: Colors.red, fontSize: fontSize),
                       ),
                     ],
                   ),
@@ -248,6 +264,27 @@ class ProfilePageState extends State<ProfilePage>
                   ),
                 ),
                 onTap: messageDaniel,
+              ),
+              Container(
+                child: Divider(
+                  color: Colors.black26,
+                ),
+              ),
+              InkWell(
+                child: Container(
+                  padding: EdgeInsets.all(6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(CupertinoIcons.delete, color: Colors.red),
+                      Text(
+                        "Delete Account",
+                        style: TextStyle(color: Colors.red, fontSize: fontSize),
+                      ),
+                    ],
+                  ),
+                ),
+                onTap: deleteAccountPage,
               ),
             ],
           ),

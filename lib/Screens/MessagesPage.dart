@@ -20,11 +20,13 @@ class MessagesPageState extends State<MessagesPage> {
   bool cardsCreated = false;
   @override
   void initState() {
-    DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .messagesUsers
-        .listen((snapShot) {
-      initializeCorrespondenceCards(snapShot);
-    });
+    if (mounted) {
+      DatabaseService(uid: UserSingleton.userSingleton.userID)
+          .messagesUsers
+          .listen((snapShot) {
+        initializeCorrespondenceCards(snapShot);
+      });
+    }
     super.initState();
   }
 

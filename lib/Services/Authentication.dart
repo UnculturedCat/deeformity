@@ -1,5 +1,6 @@
 import 'package:deeformity/Services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:deeformity/Shared/infoSingleton.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -17,10 +18,23 @@ class AuthenticationService {
   Future<bool> signOut() async {
     try {
       await _firebaseAuth.signOut();
+      UserSingleton.analytics.logEvent(name: "Signed_out");
       return true;
     } on FirebaseAuthException catch (e) {
       errorMessage = e.toString();
       return false;
+    }
+  }
+
+  Future deleteAccount() async {
+    try {
+      await DatabaseService(uid: _firebaseAuth.currentUser.uid).deleteUser();
+      UserSingleton.analytics.logEvent(name: "Account_deleted");
+      await _firebaseAuth.signOut();
+      //Uncomment for account delete automation
+      //await _firebaseAuth.currentUser.delete();
+    } on FirebaseAuthException catch (e) {
+      errorMessage = e.toString();
     }
   }
 
@@ -57,6 +71,7 @@ class AuthenticationService {
           errorMessage = "Verification link sent to " + email;
         });
       }
+      UserSingleton.analytics.logEvent(name: "SignUp_Completed");
       //create and auth user without creating a db for the user.
       return true;
     } on FirebaseAuthException catch (e) {

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Services/database.dart';
+import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:deeformity/Shared/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ class SignUpPageState extends State<SignUpPage> {
 
   void handlCancelled() {
     //Navigator.pop(context);
+    UserSingleton.analytics.logEvent(name: "SignUp canceled");
     widget.showsigninPage(true);
   }
 

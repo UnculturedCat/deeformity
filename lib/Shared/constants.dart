@@ -194,7 +194,7 @@ String convertDayToString(DaysOfTheWeek dayEnum) {
       dayString = "Tuesday";
       break;
     case DaysOfTheWeek.wednesday:
-      dayString = "Wednesday";
+      dayString = "Wed";
       break;
     case DaysOfTheWeek.thursday:
       dayString = "Thursday";

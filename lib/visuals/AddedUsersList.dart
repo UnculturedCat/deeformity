@@ -67,15 +67,17 @@ class _AddedUsersState extends State<AddedUsers> {
 
   @override
   void initState() {
-    DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .addedUsersSnapShot
-        .listen((snapShot) {
-      addedUsers = [];
-      addedUsersSnapshot = snapShot.docs;
-      snapShot.docs.forEach((doc) {
-        addeToAddedUsersList(doc);
+    if (mounted) {
+      DatabaseService(uid: UserSingleton.userSingleton.userID)
+          .addedUsersSnapShot
+          .listen((snapShot) {
+        addedUsers = [];
+        addedUsersSnapshot = snapShot.docs;
+        snapShot.docs.forEach((doc) {
+          addeToAddedUsersList(doc);
+        });
       });
-    });
+    }
     super.initState();
   }
 

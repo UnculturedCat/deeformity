@@ -31,6 +31,15 @@ class _ExercisePageState extends State<ExercisePage> {
     int mediaTypeIndex = docSnapshot.data()["Media type"];
     correctVideoAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
 
+//log events
+    if (docSnapshot.data()["Creator Id"] ==
+        UserSingleton.userSingleton.userID) {
+      UserSingleton.analytics.logEvent(name: "Exercise_viewed_by_creator");
+    } else if (docSnapshot.data()["Creator Id"] !=
+        UserSingleton.userSingleton.userID) {
+      UserSingleton.analytics.logEvent(name: "Exercise_viewed_by_subcriber");
+    }
+
     if (mediaURL != null && mediaURL.isNotEmpty) {
       if (mediaTypeIndex != MediaType.none.index) {
         MediaType mediaType = MediaType.values[mediaTypeIndex];
@@ -62,6 +71,9 @@ class _ExercisePageState extends State<ExercisePage> {
         DatabaseService(uid: UserSingleton.userSingleton.userID)
             .updateRoutineField(
                 doc: docSnapshot, field: "Description", value: description);
+
+        //log event
+        UserSingleton.analytics.logEvent(name: "Exercise Discription Edited");
       }
     }
     setState(() {

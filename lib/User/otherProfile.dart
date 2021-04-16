@@ -20,33 +20,40 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
 
   _OtherUserProfileState(DocumentSnapshot doc) {
     userDoc = doc;
+    UserSingleton.analytics.logEvent(name: "another user profile viewed");
   }
 
   void connectWithUser() {
     DatabaseService(uid: UserSingleton.userSingleton.userID)
         .connectWithUser(userDoc);
+    UserSingleton.analytics.logEvent(name: "connected with another user");
   }
 
   void disconnectWithUser() {
     DatabaseService(uid: UserSingleton.userSingleton.userID)
         .disconnectWithUser(userDoc);
+    UserSingleton.analytics.logEvent(name: "disconnected with another user");
   }
 
   @override
   void initState() {
-    DatabaseService(uid: widget.userDoc.id).addedUsersSnapShot.listen((event) {
-      connectionsSnapShot = event;
-      usersConnections = event.docs;
-      if (mounted) {
-        setState(() {});
-      }
-    });
-    DatabaseService(uid: widget.userDoc.id).anyUserData.listen((event) {
-      userDoc = event;
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    if (mounted) {
+      DatabaseService(uid: widget.userDoc.id)
+          .addedUsersSnapShot
+          .listen((event) {
+        connectionsSnapShot = event;
+        usersConnections = event.docs;
+        if (mounted) {
+          setState(() {});
+        }
+      });
+      DatabaseService(uid: widget.userDoc.id).anyUserData.listen((event) {
+        userDoc = event;
+        if (mounted) {
+          setState(() {});
+        }
+      });
+    }
     super.initState();
   }
 

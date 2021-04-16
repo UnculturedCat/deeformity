@@ -4,33 +4,27 @@ import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:flutter/material.dart';
 
-class CreateMessage extends StatefulWidget {
+class MessageDaniel extends StatefulWidget {
   final DocumentSnapshot recipientDoc;
-  CreateMessage(this.recipientDoc);
+  MessageDaniel(this.recipientDoc);
   @override
-  _CreateMessageState createState() => _CreateMessageState();
+  _MessageDanielState createState() => _MessageDanielState();
 }
 
-class _CreateMessageState extends State<CreateMessage> {
+class _MessageDanielState extends State<MessageDaniel> {
   final _formKey = GlobalKey<FormState>();
   String message = "";
 
   Future sendMessage() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      String snackBarMessage =
-          await DatabaseService(uid: UserSingleton.userSingleton.userID)
-              .sendMessage(
-        receiverDoc: widget.recipientDoc,
-        dateTimeNowMilli: DateTime.now().millisecondsSinceEpoch,
+      await DatabaseService(uid: UserSingleton.userSingleton.userID)
+          .messageDaniel(
+        recipientDoc: widget.recipientDoc,
         message: message,
       );
       bool pop = true;
-      if (snackBarMessage.isEmpty) {
-        snackBarMessage = "Could not send message";
-        pop = false;
-      }
-      final snackBar = SnackBar(content: Text(snackBarMessage));
+      final snackBar = SnackBar(content: Text("Daniel got the message"));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       if (pop) {
         Navigator.pop(context);
@@ -47,10 +41,11 @@ class _CreateMessageState extends State<CreateMessage> {
         shadowColor: Colors.white24,
         iconTheme: IconThemeData(color: elementColorWhiteBackground),
         title: Text(
-          "Send Message",
+          "Developer Table",
           style: pageHeaderStyle,
         ),
       ),
+      backgroundColor: Colors.white,
       body: GestureDetector(
         child: SingleChildScrollView(
           child: Container(
@@ -60,13 +55,33 @@ class _CreateMessageState extends State<CreateMessage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Container(
+                    padding: EdgeInsets.all(5).copyWith(top: 10, bottom: 20),
+                    child: Text(
+                      "Hi,\nHow can I help you? :)".toUpperCase(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: elementColorWhiteBackground,
+                        fontSize: 30,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(5).copyWith(top: 10, bottom: 20),
+                    child: Text(
+                      "Tell me anything. Feedback is really appreciated.",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: elementColorWhiteBackground,
+                        // /fontSize: 15,
+                      ),
+                    ),
+                  ),
                   TextFormField(
                     maxLines: null,
                     minLines: 12,
                     decoration: textInputDecorationWhite.copyWith(
-                      hintText: "Write stuff to " +
-                              widget.recipientDoc.data()["User Name"] ??
-                          "This guy",
+                      hintText: "Write stuff to Daniel",
                       hintStyle: TextStyle(fontSize: fontSizeInputHint),
                     ),
                     onSaved: (input) => message = input,

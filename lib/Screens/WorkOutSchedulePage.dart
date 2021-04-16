@@ -44,25 +44,27 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
 
   @override
   void initState() {
-    DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .addedSchedules
-        .listen((schedulesSnapshot) {
-      bool initializeSelectedSchedule = true;
-      schedules = [];
-      schedules = schedulesSnapshot.docs;
-      if (selectedSchedule != null) {
-        schedules.forEach((schedule) {
-          if (schedule.id == selectedSchedule.id) {
-            selectedSchedule = schedule;
-            initializeSelectedSchedule = false;
-          }
-        });
-      }
-      if (initializeSelectedSchedule && schedules.isNotEmpty) {
-        selectedSchedule = schedules[0];
-        getScheduleCreatorCard();
-      }
-    });
+    if (mounted) {
+      DatabaseService(uid: UserSingleton.userSingleton.userID)
+          .addedSchedules
+          .listen((schedulesSnapshot) {
+        bool initializeSelectedSchedule = true;
+        schedules = [];
+        schedules = schedulesSnapshot.docs;
+        if (selectedSchedule != null) {
+          schedules.forEach((schedule) {
+            if (schedule.id == selectedSchedule.id) {
+              selectedSchedule = schedule;
+              initializeSelectedSchedule = false;
+            }
+          });
+        }
+        if (initializeSelectedSchedule && schedules.isNotEmpty) {
+          selectedSchedule = schedules[0];
+          getScheduleCreatorCard();
+        }
+      });
+    }
     super.initState();
   }
 
@@ -400,7 +402,10 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                 "?"),
             actions: [
               CupertinoActionSheetAction(
-                child: Text("Yes"),
+                child: Text(
+                  "Yes",
+                  style: TextStyle(color: Colors.red),
+                ),
                 onPressed: () async {
                   await DatabaseService(uid: UserSingleton.userSingleton.userID)
                       .deleteSchedule(selectedSchedule, _schedulesExercises);

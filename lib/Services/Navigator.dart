@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Screens/MessagesPage.dart';
 import 'package:deeformity/Services/database.dart';
+//import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:deeformity/Shared/loading.dart';
 import 'package:deeformity/User/CreateUserPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,11 +10,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../Screens/WorkOutSchedulePage.dart';
 import '../Screens/SearhPage.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import '../Screens/Profile.dart';
 
 class NavigatorClass extends StatefulWidget {
-  static FirebaseAnalytics analytics = new FirebaseAnalytics();
   final User user;
   //static FirebaseAnalyticsObserver observer = new FirebaseAnalyticsObserver(analytics: analytics);
   NavigatorClass({Key key, this.user}) : super(key: key);
@@ -48,12 +47,10 @@ class NavigatorClassState extends State<NavigatorClass> {
     setState(() {
       _currentIndex = index;
     });
-    print('page change, current index: $_currentIndex');
-    print(_pageNames[_currentIndex]);
     DatabaseReference _testRef =
         FirebaseDatabase.instance.reference().child("Navigation");
     _testRef.set(_pageNames[_currentIndex]);
-    NavigatorClass.analytics.logEvent(name: "pageChanged");
+    // UserSingleton.analytics.logEvent(name: "pageChanged");
   }
 
   void _itemTapped(int index) {
