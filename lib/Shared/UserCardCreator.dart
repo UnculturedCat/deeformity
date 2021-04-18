@@ -7,6 +7,29 @@ class UserCardCreator extends StatelessWidget {
   UserCardCreator({this.userDoc, this.mark = false});
   @override
   Widget build(BuildContext context) {
+    if (userDoc.data() == null) {
+      return Card(
+        color: mark == true ? Colors.blue[200] : null,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        child: Container(
+          child: ListTile(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "MISSING USER",
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     String firstName = userDoc.data()["First Name"];
     String lastName = userDoc.data()["Last Name"];
     String userName = userDoc.data()["User Name"] ?? "Private user";

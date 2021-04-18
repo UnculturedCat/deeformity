@@ -67,14 +67,22 @@ class MessagesPageState extends State<MessagesPage> {
   }
 
   void openMessages(DocumentSnapshot userDoc) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return UserMessagesPage(userDoc);
-        },
-      ),
-    );
+    if (userDoc.data() != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return UserMessagesPage(userDoc);
+          },
+        ),
+      );
+    } else {
+      SnackBar snackBar = SnackBar(
+        content: Text("Can not open: USER DELETED"),
+        duration: Duration(seconds: 10),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 
   MessagesPageState();

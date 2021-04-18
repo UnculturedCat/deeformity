@@ -45,12 +45,12 @@ class _AddedUsersState extends State<AddedUsers> {
         message,
       ),
       duration: Duration(seconds: 60),
-      action: SnackBarAction(
-        label: "DISMISS",
-        onPressed: () {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        },
-      ),
+      // action: SnackBarAction(
+      //   label: "DISMISS",
+      //   onPressed: () {
+      //     ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      //   },
+      // ),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
     Navigator.pop(context);
