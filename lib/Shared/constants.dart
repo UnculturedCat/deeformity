@@ -292,3 +292,9 @@ final List<DropdownMenuItem<WorkoutSplits>> dropDownWorkOutSplits =
     child: Text(convertWorkoutSplitsToString(value)),
   );
 }).toList();
+
+const String userAgreement =
+    "The privacy policy is used when you plan to gather any kind of user information. In this part, you mention the type of data gathered, how it is stored, and its intended use. If the information is to be shared with any third parties, you will need to mention how and why as well";
+
+const String welcomeMessage =
+    "Hello and welcome to the very first iteration of this initiative. I am really grateful for your participation and with your help we can archeive a healthy, strong and youthful society. During the course of your experience you might hit some speed bumps, do not hesitate to hit me up directly stating where your issues lie and I will ensure that each and every one of them are smoothed out.\nUse the bottom form to finish up your account.\n\nThanks once again and NEVER STOP PUSHING!\n\nAlways,\nDaniel\n\nP.S Pick a cool UserName.";

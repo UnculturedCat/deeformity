@@ -135,6 +135,7 @@ class DatabaseService {
       "First Name": firstName,
       "Last Name": lastName,
       "User Name": userName,
+      "Time": DateTime.now().millisecondsSinceEpoch
     });
     UserSingleton.analytics.logEvent(name: "Account_created");
   }

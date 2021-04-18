@@ -40,7 +40,18 @@ class _AddedUsersState extends State<AddedUsers> {
       }
     });
     if (message.isEmpty) message = "Shared successfully";
-    final snackBar = SnackBar(content: Text(message));
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+      ),
+      duration: Duration(seconds: 60),
+      action: SnackBarAction(
+        label: "DISMISS",
+        onPressed: () {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+      ),
+    );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
     Navigator.pop(context);
   }
@@ -101,6 +112,9 @@ class _AddedUsersState extends State<AddedUsers> {
   }
 
   Widget createUserCard(DocumentSnapshot doc) {
+    if (doc == null || doc.data() == null) {
+      return SizedBox();
+    }
     bool markedForShare = false;
     String firstName = doc.data()["First Name"] ?? "Error";
     String lastName = doc.data()["Last Name"] ?? "Error";

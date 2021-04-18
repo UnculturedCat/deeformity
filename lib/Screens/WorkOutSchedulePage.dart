@@ -304,8 +304,10 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                       Icon(CupertinoIcons.floppy_disk, color: Colors.blue),
                       Text(
                         "New Schedule",
-                        style:
-                            TextStyle(color: Colors.blue, fontSize: fontSize),
+                        style: TextStyle(
+                            color: elementColorWhiteBackground,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -331,8 +333,10 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                       Icon(Icons.offline_share, color: Colors.blue),
                       Text(
                         "Share Schedule",
-                        style:
-                            TextStyle(color: Colors.blue, fontSize: fontSize),
+                        style: TextStyle(
+                            color: elementColorWhiteBackground,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -356,8 +360,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                       ),
                       Text(
                         "Delete Schedule",
-                        style: TextStyle(
-                            color: Colors.redAccent, fontSize: fontSize),
+                        style: TextStyle(color: Colors.redAccent, fontSize: 15),
                       )
                     ],
                   ),

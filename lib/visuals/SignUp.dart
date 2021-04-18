@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deeformity/Services/AgreementPage.dart';
 import 'package:deeformity/Services/database.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:deeformity/Shared/loading.dart';
@@ -21,6 +22,7 @@ class SignUpPageState extends State<SignUpPage> {
   String email, password, repeatedPassword;
   String location = dropDownLocations.first.value;
   bool loading = false;
+  bool agreed = false;
 
   @override
   void dispose() {
@@ -33,14 +35,24 @@ class SignUpPageState extends State<SignUpPage> {
     widget.showsigninPage(true);
   }
 
+  void openAgreement() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return AgreementPage();
+    }));
+  }
+
   void handleDone() async {
     setState(() {
       loading = true;
     });
     //String errorMessage;
     dynamic success = false;
+    String errorMessage;
     final formState = formKey.currentState;
-    if (formState.validate()) {
+    if (!agreed) {
+      errorMessage = "Please check the \"Beta Testing Agreement\" box";
+    }
+    if (formState.validate() && agreed) {
       formState.save();
 
       //verify email before creating user
@@ -50,11 +62,15 @@ class SignUpPageState extends State<SignUpPage> {
             email: email,
             password: password,
           );
+      if (!success) {
+        errorMessage = errorMessage +
+            "\n" +
+            context.read<AuthenticationService>().errorMessage;
+      }
     }
-    if (!success) {
+    if (!success || !agreed) {
       setState(() => loading = false);
-      SnackBar snackBar = SnackBar(
-          content: Text(context.read<AuthenticationService>().errorMessage));
+      SnackBar snackBar = SnackBar(content: Text(errorMessage));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
@@ -202,6 +218,29 @@ class SignUpPageState extends State<SignUpPage> {
                             ),
                           ),
                           Container(
+                            child: Theme(
+                              data: ThemeData(
+                                  unselectedWidgetColor: Colors.white),
+                              child: CheckboxListTile(
+                                contentPadding: EdgeInsets.all(10),
+                                title: TextButton(
+                                  child: Text(
+                                    "Beta Testing Agreement",
+                                    style: TextStyle(
+                                        decoration: TextDecoration.underline),
+                                  ),
+                                  onPressed: openAgreement,
+                                ),
+                                value: agreed,
+                                onChanged: (value) {
+                                  setState(() {
+                                    agreed = value;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                          Container(
                             padding: EdgeInsets.only(
                               left: 10,
                               right: 10,
@@ -211,14 +250,18 @@ class SignUpPageState extends State<SignUpPage> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: <Widget>[
                                 TextButton(
-                                    onPressed: handlCancelled,
-                                    child: Text(
-                                      "Cancel",
-                                      style: TextStyle(
-                                          fontSize: fontSizeButton,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.normal),
-                                    )),
+                                  onPressed: handlCancelled,
+                                  child: Text(
+                                    "Cancel",
+                                    style: TextStyle(
+                                        fontSize: fontSizeButton,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
                                 ElevatedButton(
                                   onPressed: handleDone,
                                   child: Text(

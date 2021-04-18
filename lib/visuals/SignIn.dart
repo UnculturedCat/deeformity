@@ -32,22 +32,23 @@ class SignInState extends State<SignIn> {
   }
 
   void showErrorMessage(String errorMessage) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Error"),
-            content: Text(errorMessage),
-            contentPadding: EdgeInsets.all(5),
-          );
-        });
+    SnackBar snackBar = SnackBar(
+      content: Text(errorMessage),
+      duration: Duration(seconds: 60),
+      action: SnackBarAction(
+        label: "DISMISS",
+        onPressed: () {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void validateInput() {
     final formState = _formkey.currentState;
     if (formState.validate()) {
       formState.save();
-      print("Handled Login");
       handleLogin();
     }
   }
@@ -57,7 +58,6 @@ class SignInState extends State<SignIn> {
     //   return SignUpPage();
     // }));
     widget.showsigninPage(false);
-    print("Handled Create");
   }
 
   @override

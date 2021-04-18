@@ -22,8 +22,17 @@ class _VerificationPageState extends State<VerificationPage> {
     });
     String message;
     widget.user.sendEmailVerification().catchError((error) {
-      message = "Could not send verification link to your email";
-      SnackBar snackBar = SnackBar(content: Text(message));
+      message = "Could not send verification link to " + widget.email;
+      SnackBar snackBar = SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 60),
+        action: SnackBarAction(
+          label: "DISMISS",
+          onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+        ),
+      );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       setState(() {
         loading = false;
@@ -31,7 +40,16 @@ class _VerificationPageState extends State<VerificationPage> {
     }).then((value) {
       if (message.isEmpty) {
         message = "Verification link sent to " + widget.email;
-        SnackBar snackBar = SnackBar(content: Text(message));
+        SnackBar snackBar = SnackBar(
+          content: Text(message),
+          duration: Duration(seconds: 60),
+          action: SnackBarAction(
+            label: "DISMISS",
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
       setState(() {

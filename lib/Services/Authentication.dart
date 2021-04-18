@@ -21,7 +21,7 @@ class AuthenticationService {
       UserSingleton.analytics.logEvent(name: "Signed_out");
       return true;
     } on FirebaseAuthException catch (e) {
-      errorMessage = e.toString();
+      errorMessage = e.message.trim();
       return false;
     }
   }
@@ -34,7 +34,7 @@ class AuthenticationService {
       //Uncomment for account delete automation
       //await _firebaseAuth.currentUser.delete();
     } on FirebaseAuthException catch (e) {
-      errorMessage = e.toString();
+      errorMessage = e.message.trim();
     }
   }
 
@@ -49,7 +49,7 @@ class AuthenticationService {
       // }
       return true;
     } on FirebaseAuthException catch (e) {
-      errorMessage = e.toString();
+      errorMessage = e.message.trim();
       return false;
     }
   }
@@ -66,7 +66,7 @@ class AuthenticationService {
           .createUserWithEmailAndPassword(email: email, password: password);
       if (userCred != null) {
         await userCred.user.sendEmailVerification().catchError((error) {
-          errorMessage = "Could not send verification link to your email";
+          errorMessage = "Could not send verification link to " + email;
         }).then((value) {
           errorMessage = "Verification link sent to " + email;
         });
@@ -75,7 +75,7 @@ class AuthenticationService {
       //create and auth user without creating a db for the user.
       return true;
     } on FirebaseAuthException catch (e) {
-      errorMessage = e.toString();
+      errorMessage = e.message.trim();
       return false;
     }
   }
@@ -91,7 +91,7 @@ class AuthenticationService {
           firstName: firstName, lastName: lastName, userName: userName);
       return true;
     } on FirebaseAuthException catch (e) {
-      errorMessage = e.toString();
+      errorMessage = e.message.trim();
       return false;
     }
   }

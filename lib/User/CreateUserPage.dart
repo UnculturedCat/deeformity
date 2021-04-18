@@ -83,7 +83,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
                       Container(
                         padding: EdgeInsets.only(left: 10),
                         child: Text(
-                          "Create Profile",
+                          "Welcome",
                           style: TextStyle(color: Colors.white, fontSize: 30),
                         ),
                       ),
@@ -93,12 +93,27 @@ class _CreateUserPageState extends State<CreateUserPage> {
                         child: Column(
                           children: <Widget>[
                             Container(
+                              padding: EdgeInsets.only(
+                                  left: 10, right: 10, top: 10, bottom: 20),
+                              child: Text(
+                                welcomeMessage,
+                                textAlign: TextAlign.justify,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "Romanesco",
+                                  fontSize: 30,
+                                ),
+                              ),
+                            ),
+                            Container(
                               padding:
                                   EdgeInsets.only(left: 10, right: 10, top: 10),
                               child: TextFormField(
                                 decoration: textInputDecoration.copyWith(
                                     hintText: "First Name"),
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
                                 validator: (input) =>
                                     input.isEmpty ? "Enter First Name" : null,
                                 //onEditingComplete: handleDone,
@@ -147,7 +162,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
                                   ElevatedButton(
                                     onPressed: handleDone,
                                     child: Text(
-                                      "DONE",
+                                      "I\'M DONE",
                                       style: TextStyle(
                                         fontSize: fontSizeButton,
                                         color: Colors.white,
