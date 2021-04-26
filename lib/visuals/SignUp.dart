@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Services/AgreementPage.dart';
-import 'package:deeformity/Services/database.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:deeformity/Shared/loading.dart';
 import 'package:flutter/cupertino.dart';
@@ -86,212 +84,206 @@ class SignUpPageState extends State<SignUpPage> {
   // }
 
   Widget build(context) {
-    return StreamBuilder<QuerySnapshot>(
-        stream: DatabaseService().currentUsers,
-        builder: (context, snapshot) {
-          return loading
-              ? Loading()
-              : GestureDetector(
-                  child: Scaffold(
-                    // appBar: AppBar(
-                    //   backgroundColor: Color.fromRGBO(21, 33, 47, 15),
-                    //   title: Text(
-                    //     "Create Profile",
-                    //     style: TextStyle(color: Colors.white, fontSize: 20),
-                    //   ),
-                    // ),
-                    //backgroundColor: Color.fromRGBO(21, 33, 47,100),
-                    //body: SafeArea(
-                    body: Container(
-                      padding: EdgeInsets.only(left: 10, right: 10),
-                      decoration: gradientDecoration,
-                      child: ListView(
-                        //crossAxisAlignment: CrossAxisAlignment.start,
+    return loading
+        ? Loading()
+        : GestureDetector(
+            child: Scaffold(
+              // appBar: AppBar(
+              //   backgroundColor: Color.fromRGBO(21, 33, 47, 15),
+              //   title: Text(
+              //     "Create Profile",
+              //     style: TextStyle(color: Colors.white, fontSize: 20),
+              //   ),
+              // ),
+              //backgroundColor: Color.fromRGBO(21, 33, 47,100),
+              //body: SafeArea(
+              body: Container(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                decoration: gradientDecoration,
+                child: ListView(
+                  //crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(height: 40.0),
+                    Container(
+                      padding: EdgeInsets.only(left: 10),
+                      child: Text(
+                        "Sign Up",
+                        style: TextStyle(color: Colors.white, fontSize: 30),
+                      ),
+                    ),
+                    SizedBox(height: 20.0),
+                    Form(
+                      key: formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          SizedBox(height: 40.0),
+                          // Container(
+                          //   padding:
+                          //       EdgeInsets.only(left: 10, right: 10, top: 10),
+                          //   // child: TextFormField(
+                          //   //   decoration: textInputDecoration.copyWith(
+                          //   //       hintText: "Repeat Password"),
+                          //   //   style: TextStyle(color: Colors.white),
+                          //   //   obscureText: true,
+                          //   //   onSaved: (input) => repeatedPassword = input,
+                          //   //   //validator: (input){},
+                          //   // ),
+                          //   child: Row(
+                          //     mainAxisAlignment: MainAxisAlignment.start,
+                          //     children: [
+                          //       Container(
+                          //         padding: EdgeInsets.only(left: 5),
+                          //         child: Text(
+                          //           "Location:",
+                          //           style: TextStyle(color: Colors.white),
+                          //         ),
+                          //       ),
+                          //       Container(
+                          //         padding: EdgeInsets.only(left: 10, right: 10),
+                          //         child: DropdownButton<String>(
+                          //           icon: Icon(Icons.location_pin),
+                          //           iconEnabledColor: Colors.redAccent,
+                          //           iconSize: 20.0,
+                          //           value: location,
+                          //           dropdownColor:
+                          //               Color.fromRGBO(24, 41, 57, 1),
+                          //           style: TextStyle(color: Colors.white),
+                          //           items: dropDownLocations,
+                          //           onChanged: (String currentVal) {
+                          //             setState(() {
+                          //               location = currentVal;
+                          //             });
+                          //           },
+                          //         ),
+                          //       )
+                          //     ],
+                          //   ),
+                          // ),
+                          // Container(
+                          //   child: Divider(
+                          //     color: Colors.white,
+                          //   ),
+                          // ),
                           Container(
-                            padding: EdgeInsets.only(left: 10),
+                            padding:
+                                EdgeInsets.only(left: 10, right: 10, top: 50),
+                            child: TextFormField(
+                              decoration: textInputDecoration.copyWith(
+                                  hintText: "Email"),
+                              style: TextStyle(color: Colors.white),
+                              onSaved: (input) => email = input,
+                              validator: (input) =>
+                                  input.isEmpty ? "Enter Email" : null,
+                            ),
+                          ),
+                          Container(
+                            padding:
+                                EdgeInsets.only(left: 10, right: 10, top: 10),
+                            child: TextFormField(
+                              decoration: textInputDecoration.copyWith(
+                                  hintText: "Password"),
+                              style: TextStyle(color: Colors.white),
+                              obscureText: true,
+                              onSaved: (input) => password = input,
+                              onChanged: (input) {
+                                setState(() {
+                                  password = input;
+                                });
+                              },
+                              validator: (input) =>
+                                  input.isEmpty ? "Enter Password" : null,
+                            ),
+                          ),
+                          Container(
+                            padding:
+                                EdgeInsets.only(left: 10, right: 10, top: 10),
+                            child: TextFormField(
+                              decoration: textInputDecoration.copyWith(
+                                  hintText: "Repeat Password"),
+                              style: TextStyle(color: Colors.white),
+                              obscureText: true,
+                              onSaved: (input) => password = input,
+                              validator: (input) => input != password
+                                  ? "Does not match provided password"
+                                  : null,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      child: Theme(
+                        data: ThemeData(unselectedWidgetColor: Colors.white),
+                        child: CheckboxListTile(
+                          contentPadding: EdgeInsets.all(10),
+                          title: TextButton(
                             child: Text(
-                              "Sign Up",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 30),
+                              "Beta Testing Agreement",
+                              style: TextStyle(
+                                  decoration: TextDecoration.underline),
                             ),
+                            onPressed: openAgreement,
                           ),
-                          SizedBox(height: 20.0),
-                          Form(
-                            key: formKey,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                // Container(
-                                //   padding:
-                                //       EdgeInsets.only(left: 10, right: 10, top: 10),
-                                //   // child: TextFormField(
-                                //   //   decoration: textInputDecoration.copyWith(
-                                //   //       hintText: "Repeat Password"),
-                                //   //   style: TextStyle(color: Colors.white),
-                                //   //   obscureText: true,
-                                //   //   onSaved: (input) => repeatedPassword = input,
-                                //   //   //validator: (input){},
-                                //   // ),
-                                //   child: Row(
-                                //     mainAxisAlignment: MainAxisAlignment.start,
-                                //     children: [
-                                //       Container(
-                                //         padding: EdgeInsets.only(left: 5),
-                                //         child: Text(
-                                //           "Location:",
-                                //           style: TextStyle(color: Colors.white),
-                                //         ),
-                                //       ),
-                                //       Container(
-                                //         padding: EdgeInsets.only(left: 10, right: 10),
-                                //         child: DropdownButton<String>(
-                                //           icon: Icon(Icons.location_pin),
-                                //           iconEnabledColor: Colors.redAccent,
-                                //           iconSize: 20.0,
-                                //           value: location,
-                                //           dropdownColor:
-                                //               Color.fromRGBO(24, 41, 57, 1),
-                                //           style: TextStyle(color: Colors.white),
-                                //           items: dropDownLocations,
-                                //           onChanged: (String currentVal) {
-                                //             setState(() {
-                                //               location = currentVal;
-                                //             });
-                                //           },
-                                //         ),
-                                //       )
-                                //     ],
-                                //   ),
-                                // ),
-                                // Container(
-                                //   child: Divider(
-                                //     color: Colors.white,
-                                //   ),
-                                // ),
-                                Container(
-                                  padding: EdgeInsets.only(
-                                      left: 10, right: 10, top: 50),
-                                  child: TextFormField(
-                                    decoration: textInputDecoration.copyWith(
-                                        hintText: "Email"),
-                                    style: TextStyle(color: Colors.white),
-                                    onSaved: (input) => email = input,
-                                    validator: (input) =>
-                                        input.isEmpty ? "Enter Email" : null,
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.only(
-                                      left: 10, right: 10, top: 10),
-                                  child: TextFormField(
-                                    decoration: textInputDecoration.copyWith(
-                                        hintText: "Password"),
-                                    style: TextStyle(color: Colors.white),
-                                    obscureText: true,
-                                    onSaved: (input) => password = input,
-                                    onChanged: (input) {
-                                      setState(() {
-                                        password = input;
-                                      });
-                                    },
-                                    validator: (input) =>
-                                        input.isEmpty ? "Enter Password" : null,
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.only(
-                                      left: 10, right: 10, top: 10),
-                                  child: TextFormField(
-                                    decoration: textInputDecoration.copyWith(
-                                        hintText: "Repeat Password"),
-                                    style: TextStyle(color: Colors.white),
-                                    obscureText: true,
-                                    onSaved: (input) => password = input,
-                                    validator: (input) => input != password
-                                        ? "Does not match provided password"
-                                        : null,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            child: Theme(
-                              data: ThemeData(
-                                  unselectedWidgetColor: Colors.white),
-                              child: CheckboxListTile(
-                                contentPadding: EdgeInsets.all(10),
-                                title: TextButton(
-                                  child: Text(
-                                    "Beta Testing Agreement",
-                                    style: TextStyle(
-                                        decoration: TextDecoration.underline),
-                                  ),
-                                  onPressed: openAgreement,
-                                ),
-                                value: agreed,
-                                onChanged: (value) {
-                                  setState(() {
-                                    agreed = value;
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(
-                              left: 10,
-                              right: 10,
-                              top: 50,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                TextButton(
-                                  onPressed: handlCancelled,
-                                  child: Text(
-                                    "Cancel",
-                                    style: TextStyle(
-                                        fontSize: fontSizeButton,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.normal),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                ElevatedButton(
-                                  onPressed: handleDone,
-                                  child: Text(
-                                    "DONE",
-                                    style: TextStyle(
-                                      fontSize: fontSizeButton,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Color.fromRGBO(36, 36, 36, 100)),
-                                )
-                              ],
+                          value: agreed,
+                          onChanged: (value) {
+                            setState(() {
+                              agreed = value;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(
+                        left: 10,
+                        right: 10,
+                        top: 50,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          TextButton(
+                            onPressed: handlCancelled,
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(
+                                  fontSize: fontSizeButton,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.normal),
                             ),
                           ),
                           SizedBox(
-                            height: 100,
+                            width: 10,
+                          ),
+                          ElevatedButton(
+                            onPressed: handleDone,
+                            child: Text(
+                              "DONE",
+                              style: TextStyle(
+                                fontSize: fontSizeButton,
+                                color: Colors.white,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                                primary: Color.fromRGBO(36, 36, 36, 100)),
                           )
                         ],
                       ),
                     ),
-                    //),
-                  ),
-                  onTap: () {
-                    FocusScopeNode currentFocus = FocusScope.of(context);
-                    if (!currentFocus.hasPrimaryFocus) {
-                      currentFocus.unfocus();
-                    }
-                  },
-                );
-        });
+                    SizedBox(
+                      height: 100,
+                    )
+                  ],
+                ),
+              ),
+              //),
+            ),
+            onTap: () {
+              FocusScopeNode currentFocus = FocusScope.of(context);
+              if (!currentFocus.hasPrimaryFocus) {
+                currentFocus.unfocus();
+              }
+            },
+          );
   }
 }

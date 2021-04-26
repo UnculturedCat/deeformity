@@ -28,6 +28,7 @@ class Deeformity extends StatelessWidget {
         )
       ],
       child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           // theme: ThemeData(
           //   // iconTheme: IconThemeData(
           //   //   color: Colors.black,

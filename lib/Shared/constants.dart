@@ -226,6 +226,7 @@ enum WorkoutSplits {
   legs,
   cardio,
   rest,
+  fullbody
 }
 
 String convertWorkoutSplitsToString(WorkoutSplits splits) {
@@ -258,6 +259,9 @@ String convertWorkoutSplitsToString(WorkoutSplits splits) {
     case WorkoutSplits.legs:
       split = "Legs";
       break;
+    case WorkoutSplits.fullbody:
+      split = "Full Body";
+      break;
     default:
       split = "Unknown Split";
       break;
@@ -277,15 +281,16 @@ Map<String, int> daysFocusDefaults = {
 
 final List<DropdownMenuItem<WorkoutSplits>> dropDownWorkOutSplits =
     <WorkoutSplits>[
-  WorkoutSplits.arms,
-  WorkoutSplits.back,
+  WorkoutSplits.rest,
   WorkoutSplits.cardio,
+  WorkoutSplits.back,
   WorkoutSplits.chest,
   WorkoutSplits.legs,
-  WorkoutSplits.lowerbody,
-  WorkoutSplits.rest,
+  WorkoutSplits.arms,
   WorkoutSplits.shoulders,
   WorkoutSplits.upperbody,
+  WorkoutSplits.lowerbody,
+  WorkoutSplits.fullbody
 ].map((value) {
   return DropdownMenuItem<WorkoutSplits>(
     value: value,
@@ -297,4 +302,4 @@ const String userAgreement =
     "The privacy policy is used when you plan to gather any kind of user information. In this part, you mention the type of data gathered, how it is stored, and its intended use. If the information is to be shared with any third parties, you will need to mention how and why as well";
 
 const String welcomeMessage =
-    "Hello and welcome to the very first iteration of this initiative. I am really grateful for your participation and with your help we can archeive a healthy, strong and youthful society. During the course of your experience you might hit some speed bumps, do not hesitate to hit me up directly stating where your issues lie and I will ensure that each and every one of them are smoothed out.\nUse the bottom form to finish up your account.\n\nThanks once again and NEVER STOP PUSHING!\n\nAlways,\nDaniel\n\nP.S Pick a cool UserName.";
+    "Hello and welcome to the very first iteration of this initiative. I am really grateful for your participation, with your help we can archeive a healthy, strong and youthful society.\nDuring the course of your experience you might encounter some inconveniences in form of bugs or unexpected behaviour, do not hesitate to hit me up directly stating where your issues lie and I will ensure that each and every one of them are smoothed out.\nPlease, use the form at the bottom of the page to finish up your account.\n\nThanks once again and NEVER STOP PUSHING!\n\nAlways,\nDaniel\n\nP.S Pick a cool UserName.";

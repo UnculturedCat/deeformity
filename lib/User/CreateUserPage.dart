@@ -32,6 +32,13 @@ class _CreateUserPageState extends State<CreateUserPage> {
     return nameTaken;
   }
 
+  void signOut() async {
+    setState(() {
+      loading = true;
+    });
+    await context.read<AuthenticationService>().signOut();
+  }
+
   void handleDone() async {
     setState(() {
       loading = true;
@@ -157,8 +164,19 @@ class _CreateUserPageState extends State<CreateUserPage> {
                                 top: 50,
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
+                                  TextButton(
+                                    onPressed: signOut,
+                                    child: Text(
+                                      "SIGN OUT",
+                                      style: TextStyle(
+                                          fontSize: fontSizeButton,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.normal),
+                                    ),
+                                  ),
                                   ElevatedButton(
                                     onPressed: handleDone,
                                     child: Text(
@@ -171,7 +189,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
                                     style: ElevatedButton.styleFrom(
                                         primary:
                                             Color.fromRGBO(36, 36, 36, 100)),
-                                  )
+                                  ),
                                 ],
                               ),
                             ),

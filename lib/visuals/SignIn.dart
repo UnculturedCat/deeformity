@@ -77,9 +77,19 @@ class SignInState extends State<SignIn> {
                     child: Column(
                       //mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text("RepLEE",
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 30.0)),
+                        Text("REPLEE",
+                            style: TextStyle(
+                                decorationThickness: 3,
+                                //decorationColor: elementColorWhiteBackground,
+                                decoration: TextDecoration.combine([
+                                  //TextDecoration.lineThrough,
+                                  TextDecoration.overline,
+                                  //TextDecoration.underline
+                                ]),
+                                color: Colors.white,
+                                fontSize: 40.0,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: "ZenDots")),
                         //Form
                         Form(
                             key: _formkey,
@@ -136,17 +146,28 @@ class SignInState extends State<SignIn> {
                               ),
                               SizedBox(width: 20),
                               Container(
-                                  child: TextButton(
-                                onPressed: handleSignUp,
                                 child: Text(
-                                  "Create an account",
+                                  "or",
                                   style: TextStyle(
                                       fontSize: 15,
                                       color: Colors.white,
                                       fontWeight: FontWeight.normal),
                                 ),
-                                // color: Color.fromRGBO(36, 36, 36, 100),
-                              ))
+                              ),
+                              Container(
+                                child: TextButton(
+                                  onPressed: handleSignUp,
+                                  child: Text(
+                                    "Create an account",
+                                    style: TextStyle(
+                                        decoration: TextDecoration.underline,
+                                        fontSize: 15,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                  // color: Color.fromRGBO(36, 36, 36, 100),
+                                ),
+                              )
                             ],
                           ),
                         )

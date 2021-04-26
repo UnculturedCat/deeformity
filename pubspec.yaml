@@ -96,6 +96,9 @@ flutter:
     - family: JimNightshade
       fonts:
         - asset: fonts/JimNightshade-Regular.ttf
+    - family: ZenDots
+      fonts:
+        - asset: fonts/ZenDots-Regular.ttf
     # - family: Trajan Pro
     #   fonts:
     #     - asset: fonts/TrajanPro.ttf
