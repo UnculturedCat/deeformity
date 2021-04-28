@@ -76,34 +76,43 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
 
   Widget createExerciseCard(QueryDocumentSnapshot doc, DaysOfTheWeek dayEnum) {
     return Container(
+      padding: EdgeInsets.only(left: 5, right: 5),
       color: Colors.white,
       key: Key(doc.id),
-      width: largUI
-          ? MediaQuery.of(context).size.width / 2.2
-          : MediaQuery.of(context).size.height / 7.5,
-      child: InkWell(
-        child: Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(10),
-            ),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
+      child: Container(
+        width: largUI
+            ? MediaQuery.of(context).size.width / 2.2
+            : MediaQuery.of(context).size.height / 7.5,
+        child: InkWell(
+          child: Card(
+            elevation: 5,
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(10),
               ),
             ),
-            padding: EdgeInsets.all(4),
-            child: Center(
-              child: Text(doc.data()["Name"] ?? "Error name"),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(10),
+                ),
+              ),
+              padding: EdgeInsets.all(4),
+              child: Center(
+                child: Text(
+                  doc.data()["Name"] ?? "Error name",
+                  style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.height * 0.015,
+                  ),
+                ),
+              ),
             ),
           ),
+          onLongPress: () {},
+          onTap: () {
+            openExerciseCard(doc);
+          },
         ),
-        onLongPress: () {},
-        onTap: () {
-          openExerciseCard(doc);
-        },
       ),
     );
   }
@@ -165,56 +174,69 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
         selectedSchedule.data()["Split"][dayEnum.index.toString()] ??
             WorkoutSplits.rest];
     return Container(
+      padding: EdgeInsets.only(top: 10, bottom: 10),
       key: Key(day),
       child: Row(
         children: [
-          Container(
-            child: InkWell(
-              child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-                child: Container(
-                  height: largUI
-                      ? MediaQuery.of(context).size.height / 4
-                      : MediaQuery.of(context).size.height / 7.5,
-                  width: largUI
-                      ? MediaQuery.of(context).size.width / 2.2
-                      : MediaQuery.of(context).size.height / 7.5,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Color.fromRGBO(47, 72, 100, 1),
-                            Color.fromRGBO(24, 41, 57, 1)
-                          ])),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.only(top: 4),
-                        child: Text(day,
-                            style: largUI
-                                ? cardHeaderStyle
-                                : cardHeaderStyle.copyWith(fontSize: 20)),
-                      ),
-                      Container(
-                        //insert Icon
-                        child: Text(
-                          convertWorkoutSplitsToString(workoutSplit),
-                          style: TextStyle(
-                              color: Colors.white, fontSize: fontSizeBody),
-                        ),
-                      )
+          InkWell(
+            child: Card(
+              elevation: 10,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(10),
+                ),
+              ),
+              child: Container(
+                height: largUI
+                    ? MediaQuery.of(context).size.height / 4
+                    : MediaQuery.of(context).size.height / 7.5,
+                width: largUI
+                    ? MediaQuery.of(context).size.width / 2.2
+                    : MediaQuery.of(context).size.height / 7.5,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color.fromRGBO(47, 72, 100, 1),
+                      Color.fromRGBO(24, 41, 57, 1),
                     ],
                   ),
                 ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(top: 4),
+                      child: Text(
+                        day,
+                        style: largUI
+                            ? cardHeaderStyle
+                            : cardHeaderStyle.copyWith(
+                                fontSize:
+                                    MediaQuery.of(context).size.height * 0.02),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Container(
+                      //insert Icon
+                      child: Text(
+                        convertWorkoutSplitsToString(workoutSplit),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: fontSizeBody,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  ],
+                ),
               ),
-              onTap: () {
-                openDay(dayEnum, workoutSplit);
-              },
             ),
+            onTap: () {
+              openDay(dayEnum, workoutSplit);
+            },
           ),
           Expanded(
             child: Container(
@@ -276,6 +298,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
         "New Schedule",
         // style: TextStyle(color: Color.fromRGBO(66, 133, 244, 40)),
         //style: headerActionButtonStyle,
+        //
       ),
     );
   }
@@ -284,30 +307,80 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     return Container(
       width: MediaQuery.of(context).size.width * 0.55,
       //height: MediaQuery.of(context).size.height * 0.45,
+
       child: Drawer(
         child: Container(
+          padding: EdgeInsets.only(left: 20, right: 20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color.fromRGBO(47, 72, 100, 1),
+                Color.fromRGBO(24, 41, 57, 1),
+              ],
+            ),
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+
             //padding: EdgeInsets.zero,
             children: [
-              Container(
-                child: Divider(
-                  color: Colors.black26,
+              // Container(
+              //   child: Divider(
+              //     color: Colors.white,
+              //   ),
+              // ),
+              Flexible(
+                child: Container(
+                  padding: EdgeInsets.only(bottom: 30),
+                  child: Text(
+                    "REPLEE",
+                    style: TextStyle(
+                      decorationThickness: 3,
+                      //decorationColor: elementColorWhiteBackground,
+                      decoration: TextDecoration.combine(
+                        [
+                          //TextDecoration.lineThrough,
+                          //TextDecoration.overline,
+                          //TextDecoration.underline
+                        ],
+                      ),
+                      color: Colors.white,
+                      fontSize: MediaQuery.of(context).size.height * 0.04,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "ZenDots",
+                    ),
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.visible,
+                  ),
                 ),
               ),
               InkWell(
                 child: Container(
                   padding: EdgeInsets.all(6),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Icon(CupertinoIcons.floppy_disk, color: Colors.blue),
-                      Text(
-                        "New Schedule",
-                        style: TextStyle(
-                            color: elementColorWhiteBackground,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold),
+                      Icon(
+                        CupertinoIcons.floppy_disk,
+                        color: Colors.white,
+                        size: MediaQuery.of(context).size.height * 0.02,
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                            "New Schedule",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize:
+                                  MediaQuery.of(context).size.height * 0.02,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -319,48 +392,83 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                   });
                 },
               ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.02,
+              ),
               Container(
                 child: Divider(
-                  color: Colors.black26,
+                  color: Colors.white,
                 ),
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.02,
               ),
               InkWell(
                 child: Container(
                   padding: EdgeInsets.all(6),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Icon(Icons.offline_share, color: Colors.blue),
-                      Text(
-                        "Share Schedule",
-                        style: TextStyle(
-                            color: elementColorWhiteBackground,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold),
+                      Icon(
+                        Icons.offline_share,
+                        color: Colors.white,
+                        size: MediaQuery.of(context).size.height * 0.02,
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                            "Share Schedule",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize:
+                                  MediaQuery.of(context).size.height * 0.02,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.visible,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
                 onTap: shareSchedule,
               ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.02,
+              ),
               Container(
                 child: Divider(
-                  color: Colors.black26,
+                  color: Colors.white,
                 ),
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.02,
               ),
               InkWell(
                 child: Container(
                   padding: EdgeInsets.all(6),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Icon(
                         CupertinoIcons.delete,
                         color: Colors.redAccent,
+                        size: MediaQuery.of(context).size.height * 0.02,
                       ),
-                      Text(
-                        "Delete Schedule",
-                        style: TextStyle(color: Colors.redAccent, fontSize: 15),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                            "Delete Schedule",
+                            style: TextStyle(
+                                color: Colors.redAccent,
+                                fontSize:
+                                    MediaQuery.of(context).size.height * 0.02),
+                          ),
+                        ),
                       )
                     ],
                   ),
