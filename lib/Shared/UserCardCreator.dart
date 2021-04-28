@@ -35,6 +35,7 @@ class UserCardCreator extends StatelessWidget {
     String userName = userDoc.data()["User Name"] ?? "Private user";
     String userFullName = firstName + " " + lastName;
     return Card(
+      elevation: 5,
       color: mark == true ? Colors.blue[200] : null,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10))),
