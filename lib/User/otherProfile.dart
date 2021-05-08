@@ -167,21 +167,25 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          userDoc.data()["First Name"],
-                          style: TextStyle(
-                            color: elementColorWhiteBackground,
-                            fontSize: fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          userDoc.data()["Last Name"],
-                          style: TextStyle(
-                            color: elementColorWhiteBackground,
-                            fontSize: fontSize,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              userDoc.data()["First Name"] + " ",
+                              style: TextStyle(
+                                color: elementColorWhiteBackground,
+                                fontSize: fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              userDoc.data()["Last Name"],
+                              style: TextStyle(
+                                color: elementColorWhiteBackground,
+                                fontSize: fontSize,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                         Row(
                           children: [
@@ -260,14 +264,17 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                   Container(
                     child: Text(
                       "Schedules",
-                      style: TextStyle(fontSize: fontSize, color: Colors.blue),
+                      style: TextStyle(fontSize: fontSize, color: themeColor),
                     ),
                   ),
                 ],
               ),
             ),
             Expanded(
-              child: AddedSchedules(userDoc),
+              child: Container(
+                color: Colors.grey[50],
+                child: AddedSchedules(userDoc),
+              ),
             ),
           ],
         ),

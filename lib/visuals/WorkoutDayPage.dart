@@ -10,10 +10,11 @@ class WorkoutDay extends StatefulWidget {
   final DaysOfTheWeek dayEnum;
   final QueryDocumentSnapshot scheduleDoc;
   final WorkoutSplits workoutSplit;
-  WorkoutDay(
-      {@required this.dayEnum,
-      @required this.scheduleDoc,
-      @required this.workoutSplit});
+  WorkoutDay({
+    @required this.dayEnum,
+    @required this.scheduleDoc,
+    @required this.workoutSplit,
+  });
   @override
   State<StatefulWidget> createState() {
     return WorkoutDayState();

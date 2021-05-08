@@ -107,19 +107,20 @@ class MessagesPageState extends State<MessagesPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Expanded(
-                      child: correspondenceCards.isNotEmpty
-                          ? ListView(
-                              children: correspondenceCards,
-                            )
-                          : Text(
-                              "Fetching messages.",
-                              style: TextStyle(
-                                color: Colors.black38,
-                                fontSize: fontSize,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              textAlign: TextAlign.center,
-                            ))
+                    child: correspondenceCards.isNotEmpty
+                        ? ListView(
+                            children: correspondenceCards,
+                          )
+                        : Text(
+                            "Fetching messages.",
+                            style: TextStyle(
+                              color: Colors.black38,
+                              fontSize: fontSize,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                  )
                 ],
               )
             : Center(

@@ -47,84 +47,103 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     if (mounted) {
       DatabaseService(uid: UserSingleton.userSingleton.userID)
           .addedSchedules
-          .listen((schedulesSnapshot) {
-        bool initializeSelectedSchedule = true;
-        schedules = [];
-        schedules = schedulesSnapshot.docs;
-        if (selectedSchedule != null) {
-          schedules.forEach((schedule) {
-            if (schedule.id == selectedSchedule.id) {
-              selectedSchedule = schedule;
-              initializeSelectedSchedule = false;
-            }
-          });
-        }
-        if (initializeSelectedSchedule && schedules.isNotEmpty) {
-          selectedSchedule = schedules[0];
-          getScheduleCreatorCard();
-        }
-      });
+          .listen(
+        (schedulesSnapshot) {
+          bool initializeSelectedSchedule = true;
+          schedules = [];
+          schedules = schedulesSnapshot.docs;
+          if (selectedSchedule != null) {
+            schedules.forEach((schedule) {
+              if (schedule.id == selectedSchedule.id) {
+                selectedSchedule = schedule;
+                initializeSelectedSchedule = false;
+              }
+            });
+          }
+          if (initializeSelectedSchedule && schedules.isNotEmpty) {
+            selectedSchedule = schedules[0];
+            getScheduleCreatorCard();
+          }
+        },
+      );
     }
     super.initState();
   }
 
   void openExerciseCard(QueryDocumentSnapshot doc) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return ExercisePage(doc);
-    }));
-  }
-
-  Widget createExerciseCard(QueryDocumentSnapshot doc, DaysOfTheWeek dayEnum) {
-    return Container(
-      padding: EdgeInsets.only(left: 5, right: 5),
-      color: Colors.white,
-      key: Key(doc.id),
-      child: Container(
-        width: largUI
-            ? MediaQuery.of(context).size.width / 2.2
-            : MediaQuery.of(context).size.height / 7.5,
-        child: InkWell(
-          child: Card(
-            elevation: 5,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(10),
-              ),
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(10),
-                ),
-              ),
-              padding: EdgeInsets.all(4),
-              child: Center(
-                child: Text(
-                  doc.data()["Name"] ?? "Error name",
-                  style: TextStyle(
-                    fontSize: MediaQuery.of(context).size.height * 0.015,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          onLongPress: () {},
-          onTap: () {
-            openExerciseCard(doc);
-          },
-        ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return ExercisePage(doc);
+        },
       ),
     );
   }
 
+  Widget createExerciseCard(QueryDocumentSnapshot doc, DaysOfTheWeek dayEnum) {
+    return InkWell(
+      child: Card(
+        key: Key(doc.id),
+        color: Colors.white,
+        elevation: 5,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(10),
+          ),
+        ),
+        child: Container(
+          width: largUI
+              ? MediaQuery.of(context).size.width / 2.2
+              : MediaQuery.of(context).size.height / 7.5,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10),
+            ),
+            // gradient: LinearGradient(
+            //   begin: Alignment.topCenter,
+            //   end: Alignment.bottomCenter,
+            //   colors: [
+            //     Color.fromRGBO(47, 72, 100, 1),
+            //     Color.fromRGBO(24, 41, 57, 1),
+            //   ],
+            // ),
+          ),
+          padding: EdgeInsets.all(4),
+          child: Center(
+            child: Text(
+              doc.data()["Name"] ?? "Error name",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: largUI
+                      ? MediaQuery.of(context).size.height * 0.02
+                      : MediaQuery.of(context).size.height * 0.017,
+                  color: elementColorWhiteBackground,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+        ),
+      ),
+      onLongPress: () {},
+      onTap: () {
+        openExerciseCard(doc);
+      },
+    );
+  }
+
   void openDay(DaysOfTheWeek dayEnum, WorkoutSplits workoutSplit) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return WorkoutDay(
-        dayEnum: dayEnum,
-        scheduleDoc: selectedSchedule,
-        workoutSplit: workoutSplit,
-      );
-    }));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return WorkoutDay(
+            dayEnum: dayEnum,
+            scheduleDoc: selectedSchedule,
+            workoutSplit: workoutSplit,
+          );
+        },
+      ),
+    );
   }
 
   void addScheduleToDataBase() async {
@@ -133,6 +152,9 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
 
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
           .createSchedule(scheduleToCreate, daysFocusDefaults);
+      setState(() {
+        creatingSchedule = false;
+      });
     }
   }
 
@@ -176,86 +198,166 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     return Container(
       padding: EdgeInsets.only(top: 10, bottom: 10),
       key: Key(day),
-      child: Row(
+      child: Column(
         children: [
+          // InkWell(
+          //   child: Card(
+          //     elevation: 10,
+          //     shape: RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.all(
+          //         Radius.circular(10),
+          //       ),
+          //     ),
+          //     child: Container(
+          //       height: largUI
+          //           ? MediaQuery.of(context).size.height / 4
+          //           : MediaQuery.of(context).size.height / 7.5,
+          //       width: largUI
+          //           ? MediaQuery.of(context).size.width / 2.2
+          //           : MediaQuery.of(context).size.height / 7.5,
+          //       decoration: BoxDecoration(
+          //         borderRadius: BorderRadius.all(
+          //           Radius.circular(10),
+          //         ),
+          //         gradient: LinearGradient(
+          //           begin: Alignment.topCenter,
+          //           end: Alignment.bottomCenter,
+          //           colors: [
+          //             Color.fromRGBO(47, 72, 100, 1),
+          //             Color.fromRGBO(24, 41, 57, 1),
+          //           ],
+          //         ),
+          //       ),
+          //       child: Column(
+          //         mainAxisAlignment: MainAxisAlignment.center,
+          //         children: [
+          //           Container(
+          //             padding: EdgeInsets.only(top: 4),
+          //             child: Text(
+          //               day,
+          //               style: largUI
+          //                   ? cardHeaderStyle
+          //                   : cardHeaderStyle.copyWith(
+          //                       fontSize:
+          //                           MediaQuery.of(context).size.height * 0.02),
+          //               textAlign: TextAlign.center,
+          //             ),
+          //           ),
+          //           Container(
+          //             //insert Icon
+          //             child: Text(
+          //               convertWorkoutSplitsToString(workoutSplit),
+          //               style: TextStyle(
+          //                 color: Colors.white,
+          //                 fontSize: fontSizeBody,
+          //               ),
+          //               textAlign: TextAlign.center,
+          //             ),
+          //           )
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          //   onTap: () {
+          //     openDay(dayEnum, workoutSplit);
+          //   },
+          // ),
           InkWell(
-            child: Card(
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(10),
-                ),
-              ),
-              child: Container(
-                height: largUI
-                    ? MediaQuery.of(context).size.height / 4
-                    : MediaQuery.of(context).size.height / 7.5,
-                width: largUI
-                    ? MediaQuery.of(context).size.width / 2.2
-                    : MediaQuery.of(context).size.height / 7.5,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color.fromRGBO(47, 72, 100, 1),
-                      Color.fromRGBO(24, 41, 57, 1),
-                    ],
+            child: Container(
+              padding: EdgeInsets.only(top: 4, bottom: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    day.toUpperCase() + "| ",
+                    style: largUI
+                        ? cardHeaderStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: elementColorWhiteBackground)
+                        : cardHeaderStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: elementColorWhiteBackground,
+                            fontSize:
+                                MediaQuery.of(context).size.height * 0.02),
+                    textAlign: TextAlign.center,
                   ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(top: 4),
-                      child: Text(
-                        day,
-                        style: largUI
-                            ? cardHeaderStyle
-                            : cardHeaderStyle.copyWith(
-                                fontSize:
-                                    MediaQuery.of(context).size.height * 0.02),
-                        textAlign: TextAlign.center,
+                  Container(
+                    //insert Icon
+                    child: Text(
+                      convertWorkoutSplitsToString(workoutSplit),
+                      style: TextStyle(
+                        color: elementColorWhiteBackground,
+                        fontSize: fontSizeBody,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    Container(
-                      //insert Icon
-                      child: Text(
-                        convertWorkoutSplitsToString(workoutSplit),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: fontSizeBody,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    )
-                  ],
-                ),
+                  )
+                ],
               ),
             ),
             onTap: () {
               openDay(dayEnum, workoutSplit);
             },
           ),
-          Expanded(
-            child: Container(
-              height: largUI
-                  ? MediaQuery.of(context).size.height / 4
-                  : MediaQuery.of(context).size.height / 7.5,
-              child: (_exercisesSnapshot != null &&
-                          _exercisesSnapshot.docs.isNotEmpty) &&
-                      checkForTheDaysExercise(_exercisesSnapshot, dayEnum)
-                  ? ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: _exercisesForTheDay
-                          .map((doc) => createExerciseCard(doc, dayEnum))
-                          .toList(),
-                    )
-                  : ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        Row(
+          // Container(
+          //   padding: EdgeInsets.only(left: 20, right: 20),
+          //   child: ElevatedButton(
+          //     style:
+          //         ElevatedButton.styleFrom(primary: Colors.white, elevation: 5),
+          //     onPressed: () {
+          //       openDay(dayEnum, workoutSplit);
+          //     },
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: [
+          //         Text(
+          //           day.toUpperCase() + "| ",
+          //           style: largUI
+          //               ? cardHeaderStyle.copyWith(
+          //                   fontWeight: FontWeight.bold,
+          //                   color: elementColorWhiteBackground)
+          //               : cardHeaderStyle.copyWith(
+          //                   fontWeight: FontWeight.bold,
+          //                   color: elementColorWhiteBackground,
+          //                   fontSize:
+          //                       MediaQuery.of(context).size.height * 0.02),
+          //           textAlign: TextAlign.center,
+          //         ),
+          //         Container(
+          //           //insert Icon
+          //           child: Text(
+          //             convertWorkoutSplitsToString(workoutSplit),
+          //             style: TextStyle(
+          //               color: elementColorWhiteBackground,
+          //               fontSize: fontSizeBody,
+          //             ),
+          //             textAlign: TextAlign.center,
+          //           ),
+          //         )
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: largUI
+                      ? MediaQuery.of(context).size.height / 4
+                      : MediaQuery.of(context).size.height / 7.5,
+                  child: (_exercisesSnapshot != null &&
+                              _exercisesSnapshot.docs.isNotEmpty) &&
+                          checkForTheDaysExercise(_exercisesSnapshot, dayEnum)
+                      ? ListView(
+                          clipBehavior: Clip.none,
+                          scrollDirection: Axis.horizontal,
+                          children: _exercisesForTheDay
+                              .map(
+                                (doc) => createExerciseCard(doc, dayEnum),
+                              )
+                              .toList(),
+                        )
+                      : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
@@ -277,9 +379,9 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                             ),
                           ],
                         ),
-                      ],
-                    ),
-            ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -290,9 +392,11 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     return TextButton(
       onPressed: () {
         if (popContext) Navigator.pop(context);
-        setState(() {
-          creatingSchedule = true;
-        });
+        setState(
+          () {
+            creatingSchedule = true;
+          },
+        );
       },
       child: Text(
         "New Schedule",
@@ -437,7 +541,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                 onTap: shareSchedule,
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
+                height: 20,
               ),
               Container(
                 child: Divider(
@@ -445,35 +549,44 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                 ),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
+                height: 20,
               ),
-              InkWell(
-                child: Container(
-                  padding: EdgeInsets.all(6),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Icon(
-                        CupertinoIcons.delete,
-                        color: Colors.redAccent,
-                        size: MediaQuery.of(context).size.height * 0.02,
-                      ),
-                      Expanded(
+              Container(
+                child: selectedSchedule.data()["Creator Id"] ==
+                        UserSingleton.userSingleton.userID
+                    ? InkWell(
                         child: Container(
-                          padding: EdgeInsets.only(left: 20),
-                          child: Text(
-                            "Delete Schedule",
-                            style: TextStyle(
+                          padding: EdgeInsets.all(6),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(
+                                CupertinoIcons.delete,
                                 color: Colors.redAccent,
-                                fontSize:
-                                    MediaQuery.of(context).size.height * 0.02),
+                                size: MediaQuery.of(context).size.height * 0.02,
+                              ),
+                              Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.only(left: 20),
+                                  child: Text(
+                                    "Delete Schedule",
+                                    style: TextStyle(
+                                        color: Colors.redAccent,
+                                        fontSize:
+                                            MediaQuery.of(context).size.height *
+                                                0.02),
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
                         ),
+                        onTap: selectedSchedule.data()["Creator Id"] ==
+                                UserSingleton.userSingleton.userID
+                            ? deleteSchedule
+                            : null,
                       )
-                    ],
-                  ),
-                ),
-                onTap: deleteSchedule,
+                    : SizedBox(),
               ),
             ],
           ),
@@ -504,34 +617,35 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
 
   void deleteSchedule() {
     showCupertinoDialog(
-        context: context,
-        builder: (context) {
-          return CupertinoAlertDialog(
-            title: Text("Warning"),
-            content: Text("Are you sure you want permanently delete " +
-                selectedSchedule.data()["Name"] +
-                "?"),
-            actions: [
-              CupertinoActionSheetAction(
-                child: Text(
-                  "Yes",
-                  style: TextStyle(color: Colors.red),
-                ),
-                onPressed: () async {
-                  await DatabaseService(uid: UserSingleton.userSingleton.userID)
-                      .deleteSchedule(selectedSchedule, _schedulesExercises);
-                  Navigator.pop(context);
-                },
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text("Warning"),
+          content: Text("Are you sure you want permanently delete " +
+              selectedSchedule.data()["Name"] +
+              "?"),
+          actions: [
+            CupertinoActionSheetAction(
+              child: Text(
+                "Yes",
+                style: TextStyle(color: Colors.red),
               ),
-              CupertinoActionSheetAction(
-                child: Text("No"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
-        });
+              onPressed: () async {
+                await DatabaseService(uid: UserSingleton.userSingleton.userID)
+                    .deleteSchedule(selectedSchedule, _schedulesExercises);
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoActionSheetAction(
+              child: Text("No"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future getScheduleCreatorCard() async {
@@ -539,18 +653,20 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     await DatabaseService(uid: UserSingleton.userSingleton.userID)
         .getParticularUserDoc(creatorId)
         .then((value) {
-      setState(() {
-        scheduleCreator = value;
-        creatorUserCard = InkWell(
-          child: UserCardCreator(
-            userDoc: value,
-          ),
-          onTap: () {
-            openCreatorCard(value);
-          },
-        );
-        //signalFromDropDown = false;
-      });
+      setState(
+        () {
+          scheduleCreator = value;
+          creatorUserCard = InkWell(
+            child: UserCardCreator(
+              userDoc: value,
+            ),
+            onTap: () {
+              openCreatorCard(value);
+            },
+          );
+          //signalFromDropDown = false;
+        },
+      );
     });
   }
 
@@ -579,11 +695,13 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
         if (routinesSnapshot != null && routinesSnapshot.hasData) {
           _exercisesSnapshot = routinesSnapshot.data;
           _schedulesExercises = [];
-          _exercisesSnapshot.docs.forEach((exerciseDoc) {
-            if (exerciseDoc.data()["Schedule Id"] == selectedSchedule.id) {
-              _schedulesExercises.add(exerciseDoc);
-            }
-          });
+          _exercisesSnapshot.docs.forEach(
+            (exerciseDoc) {
+              if (exerciseDoc.data()["Schedule Id"] == selectedSchedule.id) {
+                _schedulesExercises.add(exerciseDoc);
+              }
+            },
+          );
         }
         return GestureDetector(
           child: Scaffold(
@@ -592,210 +710,321 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                   IconThemeData(color: elementColorWhiteBackground),
               backgroundColor: Colors.white,
               shadowColor: Colors.white24,
-              title: creatingSchedule //check if user clicked create schedule
-                  ? Form(
-                      key: _formkey,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.5,
-                            child: TextFormField(
-                              decoration: textInputDecorationWhite.copyWith(
-                                prefixIcon: Icon(CupertinoIcons.tags),
-                                hintStyle: TextStyle(
-                                  fontSize: fontSizeInputHint,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  schedules == null ||
+                          schedules
+                              .isEmpty //check if user has saved any schedules
+                      ? SizedBox()
+                      : DropdownButton<QueryDocumentSnapshot>(
+                          value: selectedSchedule,
+                          items: schedules
+                              .map(
+                                (value) =>
+                                    DropdownMenuItem<QueryDocumentSnapshot>(
+                                  value: value,
+                                  child: Text(
+                                      value.data()["Name"] ?? "Error Name"),
                                 ),
-                                hintText: "Name schedule",
-                              ),
-                              onSaved: (input) => scheduleToCreate = input,
-                              validator: (input) =>
-                                  input.isEmpty ? "Enter a name" : null,
-                            ),
-                          ),
-                          Container(
-                            child: TextButton(
-                              child: Text("Done"),
-                              onPressed: () {
-                                addScheduleToDataBase();
-                                setState(() {
-                                  creatingSchedule = false;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        schedules == null ||
-                                schedules
-                                    .isEmpty //check if user has saved any schedules
-                            ? Container(
-                                child: createScheduleButton(),
                               )
-                            : DropdownButton<QueryDocumentSnapshot>(
-                                value: selectedSchedule,
-                                items: schedules
-                                    .map(
-                                      (value) => DropdownMenuItem<
-                                          QueryDocumentSnapshot>(
-                                        value: value,
-                                        child: Text(value.data()["Name"] ??
-                                            "Error Name"),
-                                      ),
-                                    )
-                                    .toList(),
-                                onChanged: (QueryDocumentSnapshot currentVal) {
-                                  setState(
-                                    () {
-                                      selectedSchedule = currentVal;
-                                      getScheduleCreatorCard();
-                                    },
-                                  );
-                                },
-                              ),
-                      ],
-                    ),
+                              .toList(),
+                          onChanged: (QueryDocumentSnapshot currentVal) {
+                            setState(
+                              () {
+                                selectedSchedule = currentVal;
+                                getScheduleCreatorCard();
+                              },
+                            );
+                          },
+                        ),
+                ],
+              ),
             ),
             backgroundColor: Colors.white,
             endDrawer:
                 schedules == null || schedules.isEmpty ? null : createDrawer(),
             body: schedules == null || schedules.isEmpty
-                ? Container(
-                    padding: EdgeInsets.only(left: 10, right: 10),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                ? creatingSchedule
+                    ? Center(
+                        child: Form(
+                          key: _formkey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.75,
+                                child: TextFormField(
+                                  decoration: textInputDecorationWhite.copyWith(
+                                    prefixIcon: Icon(CupertinoIcons.tags),
+                                    hintStyle: TextStyle(
+                                      fontSize: fontSizeInputHint,
+                                    ),
+                                    hintText: "Name schedule",
+                                  ),
+                                  onSaved: (input) => scheduleToCreate = input,
+                                  validator: (input) =>
+                                      input.isEmpty ? "Enter a name" : null,
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(top: 10),
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      primary: themeColor),
+                                  child:
+                                      Container(child: Text("Create Schedule")),
+                                  onPressed: addScheduleToDataBase,
+                                ),
+                              ),
+                              Container(
+                                child: TextButton(
+                                  child: Text("Cancel"),
+                                  onPressed: () {
+                                    setState(() {
+                                      creatingSchedule = false;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : Container(
+                        padding: EdgeInsets.only(left: 10, right: 10),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                child: Text(
+                                  "Whoops, you have no schedule. \nTap on \"New Schedule\" to create a schedule or request a schedule from another user",
+                                  style: TextStyle(
+                                    color: elementColorWhiteBackground,
+                                    fontSize: fontSize,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(top: 20),
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Color.fromRGBO(47, 72, 100, 1),
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  child: Container(
+                                    padding: EdgeInsets.all(5),
+                                    child: Text(
+                                      "New Schedule",
+                                      style: TextStyle(
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.019),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      creatingSchedule = true;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                : creatingSchedule
+                    ? Center(
+                        child: Form(
+                          key: _formkey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.75,
+                                child: TextFormField(
+                                  decoration: textInputDecorationWhite.copyWith(
+                                    prefixIcon: Icon(CupertinoIcons.tags),
+                                    hintStyle: TextStyle(
+                                      fontSize: fontSizeInputHint,
+                                    ),
+                                    hintText: "Name schedule",
+                                  ),
+                                  onSaved: (input) => scheduleToCreate = input,
+                                  validator: (input) =>
+                                      input.isEmpty ? "Enter a name" : null,
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(top: 10),
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      primary: themeColor),
+                                  child:
+                                      Container(child: Text("Create Schedule")),
+                                  onPressed: addScheduleToDataBase,
+                                ),
+                              ),
+                              Container(
+                                child: TextButton(
+                                  child: Text("Cancel"),
+                                  onPressed: () {
+                                    setState(() {
+                                      creatingSchedule = false;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : Column(
                         children: [
                           Container(
-                            child: Text(
-                              "Whoops, you have no schedule. \nTap on \"New Schedule\" to create a schedule. \n You can also save a schedule from another user",
-                              style: TextStyle(
-                                color: elementColorWhiteBackground,
-                                fontSize: fontSize,
-                                fontWeight: FontWeight.w600,
+                            padding: EdgeInsets.only(top: 10),
+                            child: Column(
+                              children: [
+                                Text("Created by"),
+                                selectedSchedule.data()["Creator Id"] ==
+                                        UserSingleton.userSingleton.userID
+                                    ? Text("You")
+                                    : creatorUserCard == null
+                                        ? Text("Fetching Creator")
+                                        : creatorUserCard,
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(left: 10, right: 10),
+                            child: editingDescription
+                                ? Row(
+                                    //crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.70,
+                                        child: Form(
+                                          key: _discriptionFormKey,
+                                          child: TextFormField(
+                                            maxLines: null,
+                                            minLines: 3,
+                                            decoration: textInputDecorationWhite
+                                                .copyWith(
+                                                    hintText: "Description",
+                                                    hintStyle: TextStyle(
+                                                        fontSize:
+                                                            fontSizeInputHint)),
+                                            onSaved: (input) =>
+                                                scheduleDescription = input,
+                                          ),
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed:
+                                            setSelectedScheduleDescription,
+                                        child: Text("Done"),
+                                      ),
+                                    ],
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          selectedSchedule
+                                                  .data()["Description"] ??
+                                              "No schedule Description",
+                                          overflow: TextOverflow.clip,
+                                          style: TextStyle(
+                                            color: elementColorWhiteBackground,
+                                            fontSize: fontSizeBody,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        child: selectedSchedule
+                                                    .data()["Creator Id"] ==
+                                                UserSingleton
+                                                    .userSingleton.userID
+                                            ? IconButton(
+                                                icon: Icon(Icons.edit),
+                                                iconSize: iconSizeBody,
+                                                onPressed: () {
+                                                  setState(() {
+                                                    editingDescription = true;
+                                                  });
+                                                },
+                                              )
+                                            : SizedBox(),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              color: Colors.grey[50],
+                              padding:
+                                  EdgeInsets.only(top: 10, left: 20, right: 20),
+                              child: ListView(
+                                children: DaysOfTheWeek.values
+                                    .map(
+                                      (day) => createDayRow(
+                                          convertDayToString(day), day),
+                                    )
+                                    .toList(),
                               ),
-                              textAlign: TextAlign.center,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  )
-                : Column(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.only(top: 10),
-                        child: Column(
-                          children: [
-                            Text("Created by"),
-                            selectedSchedule.data()["Creator Id"] ==
-                                    UserSingleton.userSingleton.userID
-                                ? Text("You")
-                                : creatorUserCard == null
-                                    ? Text("Fetching Creator")
-                                    : creatorUserCard,
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(left: 10, right: 10),
-                        child: editingDescription
-                            ? Row(
-                                //crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.70,
-                                    child: Form(
-                                      key: _discriptionFormKey,
-                                      child: TextFormField(
-                                        maxLines: null,
-                                        minLines: 3,
-                                        decoration:
-                                            textInputDecorationWhite.copyWith(
-                                                hintText: "Description",
-                                                hintStyle: TextStyle(
-                                                    fontSize:
-                                                        fontSizeInputHint)),
-                                        onSaved: (input) =>
-                                            scheduleDescription = input,
-                                      ),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: setSelectedScheduleDescription,
-                                    child: Text("Done"),
-                                  ),
-                                ],
-                              )
-                            : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      selectedSchedule.data()["Description"] ??
-                                          "No schedule Description",
-                                      overflow: TextOverflow.clip,
-                                      style: TextStyle(
-                                        color: elementColorWhiteBackground,
-                                        fontSize: fontSizeBody,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    child: selectedSchedule
-                                                .data()["Creator Id"] ==
-                                            UserSingleton.userSingleton.userID
-                                        ? IconButton(
-                                            icon: Icon(Icons.edit),
-                                            iconSize: iconSizeBody,
-                                            onPressed: () {
-                                              setState(() {
-                                                editingDescription = true;
-                                              });
-                                            },
-                                          )
-                                        : SizedBox(),
-                                  ),
-                                ],
-                              ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding:
-                              EdgeInsets.only(top: 10, left: 10, right: 10),
-                          child: ListView(
-                            children: DaysOfTheWeek.values
-                                .map((day) =>
-                                    createDayRow(convertDayToString(day), day))
-                                .toList(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
             floatingActionButton: IconButton(
-                iconSize: 45,
-                icon: largUI
-                    ? Icon(
-                        Icons.zoom_out,
-                        color: Color.fromRGBO(21, 33, 47, 1),
-                      )
-                    : Icon(
-                        CupertinoIcons.zoom_in,
-                        color: Color.fromRGBO(21, 33, 47, 1),
-                      ),
-                onPressed: () {
-                  setState(() {
-                    largUI = !largUI;
-                  });
-                }),
+              iconSize: 45,
+              icon: largUI
+                  ? Icon(
+                      Icons.zoom_out,
+                      color: themeColor,
+                    )
+                  : Icon(
+                      CupertinoIcons.zoom_in,
+                      color: themeColor,
+                    ),
+              onPressed: () {
+                setState(() {
+                  largUI = !largUI;
+                });
+              },
+            ),
+            // floatingActionButton: Container(
+            //   child: ElevatedButton(
+            //     style: ElevatedButton.styleFrom(
+            //       primary: Color.fromRGBO(47, 72, 100, 1),
+            //       elevation: 5,
+            //       shape: RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.circular(10),
+            //       ),
+            //     ),
+            //     child: Container(
+            //       padding: EdgeInsets.all(5),
+            //       child: Text(
+            //         "New Schedule",
+            //         style: TextStyle(
+            //             fontSize: MediaQuery.of(context).size.height * 0.019),
+            //       ),
+            //     ),
+            //     onPressed: () {},
+            //   ),
+            // ),
           ),
           onTap: () {
             FocusScopeNode currentFocus = FocusScope.of(context);

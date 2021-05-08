@@ -21,7 +21,7 @@ class MessageTile extends StatelessWidget {
           child: Card(
             color: messageDoc.data()["Sender"] ==
                     UserSingleton.userSingleton.userID
-                ? Colors.blue[200]
+                ? themeColor
                 : null,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(10))),

@@ -5,6 +5,7 @@ const double fontSize = 20;
 const double fontSizeInputHint = 12;
 const double fontSizeButton = 15;
 const Color elementColorWhiteBackground = Color.fromRGBO(21, 33, 47, 1);
+const Color themeColor = Color.fromRGBO(47, 72, 100, 1);
 const double fontSizeBody = 15;
 const double iconSizeBody = 15;
 
@@ -194,7 +195,7 @@ String convertDayToString(DaysOfTheWeek dayEnum) {
       dayString = "Tuesday";
       break;
     case DaysOfTheWeek.wednesday:
-      dayString = "Wed";
+      dayString = "Wednesday";
       break;
     case DaysOfTheWeek.thursday:
       dayString = "Thursday";

@@ -316,6 +316,12 @@ class ProfilePageState extends State<ProfilePage>
               child: Column(
                 children: [
                   Container(
+                    child: Container(
+                      color: Colors.blue,
+                      height: 35,
+                    ),
+                  ),
+                  Container(
                     padding: EdgeInsets.only(top: 10, bottom: 10),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -354,21 +360,25 @@ class ProfilePageState extends State<ProfilePage>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Text(
-                                userDoc.data()["First Name"],
-                                style: TextStyle(
-                                  color: elementColorWhiteBackground,
-                                  fontSize: fontSize,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                userDoc.data()["Last Name"],
-                                style: TextStyle(
-                                  color: elementColorWhiteBackground,
-                                  fontSize: fontSize,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              Row(
+                                children: [
+                                  Text(
+                                    userDoc.data()["First Name"] + " ",
+                                    style: TextStyle(
+                                      color: elementColorWhiteBackground,
+                                      fontSize: fontSize,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    userDoc.data()["Last Name"],
+                                    style: TextStyle(
+                                      color: elementColorWhiteBackground,
+                                      fontSize: fontSize,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                               Row(
                                 children: [
@@ -467,7 +477,7 @@ class ProfilePageState extends State<ProfilePage>
                                         : fontSize,
                                     color: currentpage != Pages.connections
                                         ? Colors.grey
-                                        : Colors.blue)),
+                                        : themeColor)),
                             onPressed: () {
                               setState(
                                 () {
@@ -491,7 +501,7 @@ class ProfilePageState extends State<ProfilePage>
                                       : fontSize,
                                   color: currentpage != Pages.schedules
                                       ? Colors.grey
-                                      : Colors.blue),
+                                      : themeColor),
                             ),
                             onPressed: () {
                               setState(
@@ -509,13 +519,16 @@ class ProfilePageState extends State<ProfilePage>
                     height: 20,
                   ),
                   Expanded(
-                    child: currentpage == Pages.connections
-                        ? AddedUsers(
-                            sharingItem: false,
-                          )
-                        : currentpage == Pages.schedules
-                            ? AddedSchedules(userDoc)
-                            : Container(),
+                    child: Container(
+                      color: Colors.grey[50],
+                      child: currentpage == Pages.connections
+                          ? AddedUsers(
+                              sharingItem: false,
+                            )
+                          : currentpage == Pages.schedules
+                              ? AddedSchedules(userDoc)
+                              : Container(),
+                    ),
                   ),
                 ],
               ),

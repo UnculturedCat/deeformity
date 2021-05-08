@@ -18,6 +18,7 @@ class ScheduleCard extends StatelessWidget {
     String name = scheduleDoc.data()["Name"];
     String description = scheduleDoc.data()["Description"] ?? "No description";
     return Card(
+      elevation: 3,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10))),
       child: Container(
