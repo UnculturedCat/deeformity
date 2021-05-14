@@ -7,8 +7,9 @@ import 'package:deeformity/visuals/ExercisePage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deeformity/visuals/WorkoutDayPage.dart';
-import 'package:deeformity/Shared/UserCardCreator.dart';
-import 'package:deeformity/User/otherProfile.dart';
+import 'package:deeformity/visuals/AboutSchedule.dart';
+
+enum Pages { about, schedule }
 
 class WorkoutSchedulePage extends StatefulWidget {
   final String pageName = "WorkoutSchedulePage";
@@ -36,9 +37,10 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
   List<QueryDocumentSnapshot> _exercisesForTheDay = [];
   List<QueryDocumentSnapshot> _schedulesExercises = [];
   List<QueryDocumentSnapshot> schedules;
+  Pages currentPage = Pages.schedule;
+  AboutSchedulePage aboutPage;
 
   final _formkey = GlobalKey<FormState>();
-  final _discriptionFormKey = GlobalKey<FormState>();
   DocumentSnapshot scheduleCreator;
   InkWell creatorUserCard;
 
@@ -62,7 +64,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
           }
           if (initializeSelectedSchedule && schedules.isNotEmpty) {
             selectedSchedule = schedules[0];
-            getScheduleCreatorCard();
+            aboutPage = AboutSchedulePage(selectedSchedule);
           }
         },
       );
@@ -156,17 +158,6 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
         creatingSchedule = false;
       });
     }
-  }
-
-  void openCreatorCard(DocumentSnapshot doc) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return OtherUserProfile(doc);
-        },
-      ),
-    );
   }
 
   bool checkForTheDaysExercise(
@@ -408,6 +399,10 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
   }
 
   Widget createDrawer() {
+    // FocusScopeNode currentFocus = FocusScope.of(context);
+    // if (!currentFocus.hasPrimaryFocus) {
+    //   currentFocus.unfocus();
+    // }
     return Container(
       width: MediaQuery.of(context).size.width * 0.55,
       //height: MediaQuery.of(context).size.height * 0.45,
@@ -648,45 +643,6 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     );
   }
 
-  Future getScheduleCreatorCard() async {
-    String creatorId = selectedSchedule.data()["Creator Id"];
-    await DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .getParticularUserDoc(creatorId)
-        .then((value) {
-      setState(
-        () {
-          scheduleCreator = value;
-          creatorUserCard = InkWell(
-            child: UserCardCreator(
-              userDoc: value,
-            ),
-            onTap: () {
-              openCreatorCard(value);
-            },
-          );
-          //signalFromDropDown = false;
-        },
-      );
-    });
-  }
-
-  void setSelectedScheduleDescription() async {
-    if (_discriptionFormKey.currentState.validate()) {
-      _discriptionFormKey.currentState.save();
-      if (scheduleDescription.isNotEmpty) {
-        await DatabaseService(uid: UserSingleton.userSingleton.userID)
-            .updateScheduleField(
-                field: "Description",
-                value: scheduleDescription,
-                doc: selectedSchedule);
-        updateSchedule = true;
-      }
-    }
-    setState(() {
-      editingDescription = false;
-    });
-  }
-
   Widget build(BuildContext context) {
     super.build(context);
     return StreamBuilder<QuerySnapshot>(
@@ -733,7 +689,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                             setState(
                               () {
                                 selectedSchedule = currentVal;
-                                getScheduleCreatorCard();
+                                aboutPage = AboutSchedulePage(currentVal);
                               },
                             );
                           },
@@ -888,123 +844,96 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                       )
                     : Column(
                         children: [
-                          Container(
-                            padding: EdgeInsets.only(top: 10),
-                            child: Column(
+                          IntrinsicHeight(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Text("Created by"),
-                                selectedSchedule.data()["Creator Id"] ==
-                                        UserSingleton.userSingleton.userID
-                                    ? Text("You")
-                                    : creatorUserCard == null
-                                        ? Text("Fetching Creator")
-                                        : creatorUserCard,
+                                Container(
+                                  child: TextButton(
+                                    child: Text(
+                                      "Schedule",
+                                      style: TextStyle(
+                                          fontSize:
+                                              currentPage != Pages.schedule
+                                                  ? 15
+                                                  : fontSize,
+                                          color: currentPage != Pages.schedule
+                                              ? Colors.grey
+                                              : themeColor),
+                                    ),
+                                    onPressed: () {
+                                      setState(
+                                        () {
+                                          currentPage = Pages.schedule;
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                                VerticalDivider(
+                                  //width: 30,
+                                  color: Colors.black26,
+                                ),
+                                Container(
+                                  child: TextButton(
+                                    child: Text("About",
+                                        style: TextStyle(
+                                            fontSize: currentPage != Pages.about
+                                                ? 15
+                                                : fontSize,
+                                            color: currentPage != Pages.about
+                                                ? Colors.grey
+                                                : themeColor)),
+                                    onPressed: () {
+                                      setState(
+                                        () {
+                                          currentPage = Pages.about;
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
                               ],
                             ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(left: 10, right: 10),
-                            child: editingDescription
-                                ? Row(
-                                    //crossAxisAlignment: CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.70,
-                                        child: Form(
-                                          key: _discriptionFormKey,
-                                          child: TextFormField(
-                                            maxLines: null,
-                                            minLines: 3,
-                                            decoration: textInputDecorationWhite
-                                                .copyWith(
-                                                    hintText: "Description",
-                                                    hintStyle: TextStyle(
-                                                        fontSize:
-                                                            fontSizeInputHint)),
-                                            onSaved: (input) =>
-                                                scheduleDescription = input,
-                                          ),
-                                        ),
-                                      ),
-                                      TextButton(
-                                        onPressed:
-                                            setSelectedScheduleDescription,
-                                        child: Text("Done"),
-                                      ),
-                                    ],
-                                  )
-                                : Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          selectedSchedule
-                                                  .data()["Description"] ??
-                                              "No schedule Description",
-                                          overflow: TextOverflow.clip,
-                                          style: TextStyle(
-                                            color: elementColorWhiteBackground,
-                                            fontSize: fontSizeBody,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        child: selectedSchedule
-                                                    .data()["Creator Id"] ==
-                                                UserSingleton
-                                                    .userSingleton.userID
-                                            ? IconButton(
-                                                icon: Icon(Icons.edit),
-                                                iconSize: iconSizeBody,
-                                                onPressed: () {
-                                                  setState(() {
-                                                    editingDescription = true;
-                                                  });
-                                                },
-                                              )
-                                            : SizedBox(),
-                                      ),
-                                    ],
-                                  ),
                           ),
                           Expanded(
                             child: Container(
                               color: Colors.grey[50],
                               padding:
                                   EdgeInsets.only(top: 10, left: 20, right: 20),
-                              child: ListView(
-                                children: DaysOfTheWeek.values
-                                    .map(
-                                      (day) => createDayRow(
-                                          convertDayToString(day), day),
+                              child: currentPage == Pages.schedule
+                                  ? ListView(
+                                      children: DaysOfTheWeek.values
+                                          .map(
+                                            (day) => createDayRow(
+                                                convertDayToString(day), day),
+                                          )
+                                          .toList(),
                                     )
-                                    .toList(),
-                              ),
+                                  : aboutPage,
                             ),
                           ),
                         ],
                       ),
-            floatingActionButton: IconButton(
-              iconSize: 45,
-              icon: largUI
-                  ? Icon(
-                      Icons.zoom_out,
-                      color: themeColor,
-                    )
-                  : Icon(
-                      CupertinoIcons.zoom_in,
-                      color: themeColor,
-                    ),
-              onPressed: () {
-                setState(() {
-                  largUI = !largUI;
-                });
-              },
-            ),
+            floatingActionButton: currentPage == Pages.schedule
+                ? IconButton(
+                    iconSize: 45,
+                    icon: largUI
+                        ? Icon(
+                            Icons.zoom_out,
+                            color: themeColor,
+                          )
+                        : Icon(
+                            CupertinoIcons.zoom_in,
+                            color: themeColor,
+                          ),
+                    onPressed: () {
+                      setState(() {
+                        largUI = !largUI;
+                      });
+                    },
+                  )
+                : null,
             // floatingActionButton: Container(
             //   child: ElevatedButton(
             //     style: ElevatedButton.styleFrom(

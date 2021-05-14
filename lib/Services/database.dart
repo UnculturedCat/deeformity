@@ -285,9 +285,8 @@ class DatabaseService {
         "Name": workOutName,
         "Description": description,
         "MediaURL": mediaURL,
-        "Media Path": mediaStoragePath,
-        "Media type":
-            mediaType != null ? mediaType.index : MediaType.none.index,
+        "MediaPath": mediaStoragePath,
+        "Mediatype": mediaType != null ? mediaType.index : MediaType.none.index,
         "Done": exerciseDone,
         "Days": days,
         "CorrectVideo": correctedAspectRatio
@@ -320,6 +319,22 @@ class DatabaseService {
         .update({field: value});
     UserSingleton.analytics
         .logEvent(name: "Exercise_" + field.trim() + "_Updated");
+  }
+
+  Future<DocumentSnapshot> getRoutineDoc(String docId) async {
+    return await scheduleCollection
+        .doc(uid)
+        .collection(workOutRoutinesSubCollectionName)
+        .doc(docId)
+        .get();
+  }
+
+  Future<DocumentSnapshot> getScheduleDoc(String docId) async {
+    return await scheduleCollection
+        .doc(uid)
+        .collection(addedWorkOutScheduleSubCollectionName)
+        .doc(docId)
+        .get();
   }
 
   Future deleteRoutine({
@@ -441,7 +456,8 @@ class DatabaseService {
           description: exercise.data()["Description"],
           mediaURL: exercise.data()["MediaURL"],
           mediaStoragePath: exercise.data()["mediaStoragePath"],
-          mediaType: MediaType.values[exercise.data()["Media type"]],
+          mediaType: MediaType.values[
+              exercise.data()["Mediatype"] ?? exercise.data()["Media type"]],
           days: List<int>.from(exercise.data()["Days"]),
           correctedAspectRatio: exercise.data()["CorrectVideo"],
         );

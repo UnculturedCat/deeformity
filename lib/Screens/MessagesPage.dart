@@ -14,7 +14,8 @@ class MessagesPage extends StatefulWidget {
   }
 }
 
-class MessagesPageState extends State<MessagesPage> {
+class MessagesPageState extends State<MessagesPage>
+    with AutomaticKeepAliveClientMixin {
   List<Widget> correspondenceCards = [];
   List<DocumentSnapshot> allMessageUsers = [];
   bool cardsCreated = false;
@@ -88,6 +89,7 @@ class MessagesPageState extends State<MessagesPage> {
   MessagesPageState();
 
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         //centerTitle: false,
@@ -147,4 +149,7 @@ class MessagesPageState extends State<MessagesPage> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

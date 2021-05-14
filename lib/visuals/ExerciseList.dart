@@ -32,7 +32,7 @@ class _ExerciseListState extends State<ExerciseList> {
     //   await DatabaseService(uid: UserSingleton.userSingleton.userID)
     //       .deleteMedia(mediaURl);
     // }
-    // String mediaPath = doc.data()["Media Path"];
+    // String mediaPath = doc.data()["MediaPath"];
     // if (mediaPath != null && mediaPath.isNotEmpty) {
     //   await DatabaseService().deleteMedia(mediaPath);
     // }
@@ -64,18 +64,18 @@ class _ExerciseListState extends State<ExerciseList> {
                   doc.data()["Name"] ?? "Error Name",
                   style: TextStyle(color: Colors.white),
                 ),
-                trailing:
-                    doc.data()["Creator Id"] == UserSingleton.userSingleton.userID
-                        ? IconButton(
-                            icon: Icon(
-                              CupertinoIcons.delete,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              deleteExercise(doc);
-                            },
-                          )
-                        : SizedBox(),
+                trailing: doc.data()["Creator Id"] ==
+                        UserSingleton.userSingleton.userID
+                    ? IconButton(
+                        icon: Icon(
+                          CupertinoIcons.delete,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          deleteExercise(doc);
+                        },
+                      )
+                    : SizedBox(),
               ),
             ),
           ),

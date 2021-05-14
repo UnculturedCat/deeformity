@@ -35,6 +35,7 @@ class ProfilePageState extends State<ProfilePage>
   final ImagePicker _imagePicker = ImagePicker();
   bool editingDescription = false;
   final _discriptionFormKey = GlobalKey<FormState>();
+  AddedUsers addedUsers;
 
   // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
