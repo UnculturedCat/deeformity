@@ -66,6 +66,9 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
             selectedSchedule = schedules[0];
             aboutPage = AboutSchedulePage(selectedSchedule);
           }
+          if (schedules.isEmpty) {
+            setState(() {});
+          }
         },
       );
     }
@@ -576,10 +579,10 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                             ],
                           ),
                         ),
-                        onTap: selectedSchedule.data()["Creator Id"] ==
-                                UserSingleton.userSingleton.userID
-                            ? deleteSchedule
-                            : null,
+                        onTap: () {
+                          Navigator.pop(context);
+                          deleteSchedule();
+                        },
                       )
                     : SizedBox(),
               ),

@@ -21,13 +21,9 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
   QuerySnapshot connectionsSnapShot;
   DocumentSnapshot userDoc;
   Pages currentpage = Pages.about;
-  AddedSchedules addedSchedules;
-  AboutUserPage aboutUserPage;
 
   _OtherUserProfileState(DocumentSnapshot doc) {
     userDoc = doc;
-    aboutUserPage = AboutUserPage(doc);
-    addedSchedules = AddedSchedules(doc);
     UserSingleton.analytics.logEvent(name: "another_user_profile_viewed");
   }
 
@@ -57,8 +53,6 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
       });
       DatabaseService(uid: widget.userDoc.id).anyUserData.listen((event) {
         userDoc = event;
-        aboutUserPage = AboutUserPage(event);
-        addedSchedules = AddedSchedules(event);
         if (mounted) {
           setState(() {});
         }
@@ -320,8 +314,8 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
               child: Container(
                 color: Colors.grey[50],
                 child: currentpage == Pages.schedules
-                    ? addedSchedules
-                    : aboutUserPage,
+                    ? AddedSchedules(userDoc)
+                    : AboutUserPage(userDoc),
               ),
             ),
           ],

@@ -81,6 +81,8 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
     int mediaTypeIndex =
         docSnapshot.data()["Mediatype"] ?? docSnapshot.data()["Media type"];
     correctVideoAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
+    media = null;
+    appVideoPlayer = null;
 
     if (mediaURL != null && mediaURL.isNotEmpty) {
       if (mediaTypeIndex != MediaType.none.index) {

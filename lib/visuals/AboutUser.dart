@@ -43,6 +43,14 @@ class _AboutUserPageState extends State<AboutUserPage> {
     if (widget.doc.id != UserSingleton.userSingleton.userID) {
       yourPage = false;
     }
+    DatabaseService(uid: widget.doc.id).anyUserData.listen((event) {
+      if (mounted) {
+        initMedia();
+        setState(() {
+          docSnapshot = event;
+        });
+      }
+    });
     initMedia();
   }
 
@@ -51,10 +59,8 @@ class _AboutUserPageState extends State<AboutUserPage> {
       _formKey.currentState.save();
       if (description.isNotEmpty) {
         await DatabaseService(uid: UserSingleton.userSingleton.userID)
-            .updateScheduleField(
+            .updateUserData(
                 doc: docSnapshot, field: "FullBio", value: description);
-
-        await updateDocumentSnapShot();
       }
     }
     setState(() {
@@ -62,20 +68,22 @@ class _AboutUserPageState extends State<AboutUserPage> {
     });
   }
 
-  Future updateDocumentSnapShot() async {
-    DocumentSnapshot newDoc;
-    newDoc = await DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .getParticularUserDoc(docSnapshot.id);
-    setState(() {
-      docSnapshot = newDoc;
-    });
-  }
+  // Future updateDocumentSnapShot() async {
+  //   DocumentSnapshot newDoc;
+  //   newDoc = await DatabaseService(uid: UserSingleton.userSingleton.userID)
+  //       .getParticularUserDoc(docSnapshot.id);
+  //   setState(() {
+  //     docSnapshot = newDoc;
+  //   });
+  // }
 
   void initMedia() {
     mediaURL = docSnapshot.data()["MediaURL"];
     int mediaTypeIndex =
         docSnapshot.data()["Mediatype"] ?? docSnapshot.data()["Media type"];
     correctVideoAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
+    media = null;
+    appVideoPlayer = null;
 
     if (mediaURL != null && mediaURL.isNotEmpty) {
       if (mediaTypeIndex != MediaType.none.index) {
@@ -127,7 +135,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
           .updateUserData(
               doc: docSnapshot, field: "MediaPath", value: mediaStoragePath);
-      await updateDocumentSnapShot();
+
       message = "Media upload successful";
     }
     setState(() {
@@ -156,7 +164,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
           .updateUserData(doc: docSnapshot, field: "MediaURL", value: "");
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
           .updateUserData(doc: docSnapshot, field: "MediaPath", value: "");
-      await updateDocumentSnapShot();
+
       message = "Media Delete successful";
       setState(() {
         picture = null;
@@ -569,6 +577,8 @@ class _AboutUserPageState extends State<AboutUserPage> {
                             child: Form(
                               key: _formKey,
                               child: TextFormField(
+                                initialValue:
+                                    docSnapshot.data()["FullBio"] ?? "No Bio",
                                 maxLines: null,
                                 minLines: 3,
                                 decoration: textInputDecorationWhite.copyWith(
@@ -589,8 +599,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            docSnapshot.data()["Description"] ??
-                                "No description",
+                            docSnapshot.data()["FullBio"] ?? "No Bio",
                             style: TextStyle(
                                 fontSize: fontSizeBody,
                                 color: elementColorWhiteBackground,
