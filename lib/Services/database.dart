@@ -203,7 +203,7 @@ class DatabaseService {
   }
 
   Future updateUserData({
-    QueryDocumentSnapshot doc,
+    DocumentSnapshot doc,
     String field,
     value,
   }) async {
@@ -225,7 +225,7 @@ class DatabaseService {
   }
 
   Future deleteUserData({
-    QueryDocumentSnapshot doc,
+    DocumentSnapshot doc,
     String field,
     value,
   }) async {
@@ -234,7 +234,7 @@ class DatabaseService {
 
 //When deleting an acount
   Future deleteUser({
-    QueryDocumentSnapshot doc,
+    DocumentSnapshot doc,
     String field,
     value,
   }) async {

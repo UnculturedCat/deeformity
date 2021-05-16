@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Messages/messageDaniel.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
+import 'package:deeformity/visuals/AboutUser.dart';
 import 'package:deeformity/visuals/AddedSchedulesList.dart';
 import 'package:deeformity/visuals/AddedUsersList.dart';
 import 'package:deeformity/visuals/DeleteAccountPage.dart';
@@ -14,7 +15,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 
-enum Pages { schedules, connections }
+enum Pages { schedules, about }
 
 class ProfilePage extends StatefulWidget {
   ProfilePage();
@@ -28,14 +29,14 @@ class ProfilePage extends StatefulWidget {
 class ProfilePageState extends State<ProfilePage>
     with AutomaticKeepAliveClientMixin {
   List<DocumentSnapshot> usersConnections = [];
-  Pages currentpage = Pages.schedules;
+  Pages currentpage = Pages.about;
   ProfilePageState();
   DocumentSnapshot userDoc;
   String aboutUser;
   final ImagePicker _imagePicker = ImagePicker();
   bool editingDescription = false;
   final _discriptionFormKey = GlobalKey<FormState>();
-  AddedUsers addedUsers;
+  AddedSchedules addedSchedules;
 
   // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -54,11 +55,13 @@ class ProfilePageState extends State<ProfilePage>
           .anyUserData
           .listen((event) {
         userDoc = event;
+        addedSchedules = AddedSchedules(userDoc);
         if (mounted) {
           setState(() {});
         }
       });
     }
+    addedSchedules = AddedSchedules(userDoc);
     super.initState();
   }
 
@@ -214,6 +217,24 @@ class ProfilePageState extends State<ProfilePage>
     );
   }
 
+  void openAddedUsersPage() {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.only(top: 50),
+          height: MediaQuery.of(context).size.height * 0.85,
+          child: AddedUsers(
+            sharingItem: false,
+          ),
+        );
+      },
+    );
+  }
+
   Widget createDrawer() {
     return Container(
       width: MediaQuery.of(context).size.width * 0.55,
@@ -317,12 +338,6 @@ class ProfilePageState extends State<ProfilePage>
               child: Column(
                 children: [
                   Container(
-                    child: Container(
-                      color: Colors.blue,
-                      height: 35,
-                    ),
-                  ),
-                  Container(
                     padding: EdgeInsets.only(top: 10, bottom: 10),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -381,19 +396,25 @@ class ProfilePageState extends State<ProfilePage>
                                   ),
                                 ],
                               ),
-                              Row(
-                                children: [
-                                  usersConnections != null
-                                      ? Text(
-                                          usersConnections.length.toString(),
-                                          style: TextStyle(
-                                            color: elementColorWhiteBackground,
-                                            fontSize: fontSize,
-                                          ),
-                                        )
-                                      : SizedBox(),
-                                  Icon(Icons.people)
-                                ],
+                              InkWell(
+                                child: Row(
+                                  children: [
+                                    usersConnections != null
+                                        ? Text(
+                                            usersConnections.length.toString(),
+                                            style: TextStyle(
+                                              color: Colors.blue,
+                                              fontSize: fontSize,
+                                            ),
+                                          )
+                                        : SizedBox(),
+                                    Icon(
+                                      Icons.people,
+                                      color: Colors.blue,
+                                    )
+                                  ],
+                                ),
+                                onTap: openAddedUsersPage,
                               ),
                             ],
                           ),
@@ -413,8 +434,11 @@ class ProfilePageState extends State<ProfilePage>
                                 child: Form(
                                   key: _discriptionFormKey,
                                   child: TextFormField(
-                                    maxLines: null,
-                                    minLines: 3,
+                                    maxLines: 3,
+                                    minLines: 2,
+                                    maxLength: 70,
+                                    initialValue: userDoc.data()["About"] ??
+                                        "Who am I, what am I, Where am I?",
                                     decoration:
                                         textInputDecorationWhite.copyWith(
                                       hintText: "Description",
@@ -436,7 +460,11 @@ class ProfilePageState extends State<ProfilePage>
                             children: [
                               userDoc.data()["About"] != null
                                   ? Expanded(
-                                      child: Text(userDoc.data()["About"],
+                                      child: Text(
+                                          userDoc
+                                              .data()["About"]
+                                              .toString()
+                                              .trim(),
                                           style: TextStyle(
                                             color: elementColorWhiteBackground,
                                             fontSize: fontSizeBody,
@@ -444,7 +472,7 @@ class ProfilePageState extends State<ProfilePage>
                                           textAlign: TextAlign.justify),
                                     )
                                   : Text(
-                                      "Who am I,\nwhat am I,\nWhere am I?",
+                                      "Who am I, what am I, Where am I?",
                                       style: TextStyle(
                                         color: elementColorWhiteBackground,
                                         fontSize: fontSizeBody,
@@ -471,18 +499,18 @@ class ProfilePageState extends State<ProfilePage>
                       children: [
                         Container(
                           child: TextButton(
-                            child: Text("Connections",
+                            child: Text("Bio",
                                 style: TextStyle(
-                                    fontSize: currentpage != Pages.connections
+                                    fontSize: currentpage != Pages.about
                                         ? 15
                                         : fontSize,
-                                    color: currentpage != Pages.connections
+                                    color: currentpage != Pages.about
                                         ? Colors.grey
                                         : themeColor)),
                             onPressed: () {
                               setState(
                                 () {
-                                  currentpage = Pages.connections;
+                                  currentpage = Pages.about;
                                 },
                               );
                             },
@@ -522,12 +550,10 @@ class ProfilePageState extends State<ProfilePage>
                   Expanded(
                     child: Container(
                       color: Colors.grey[50],
-                      child: currentpage == Pages.connections
-                          ? AddedUsers(
-                              sharingItem: false,
-                            )
+                      child: currentpage == Pages.about
+                          ? AboutUserPage(userDoc)
                           : currentpage == Pages.schedules
-                              ? AddedSchedules(userDoc)
+                              ? addedSchedules
                               : Container(),
                     ),
                   ),

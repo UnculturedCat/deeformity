@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Services/database.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
+import 'package:deeformity/visuals/AboutUser.dart';
 import 'package:deeformity/visuals/AddedSchedulesList.dart';
 import 'package:deeformity/Messages/createMessagePage.dart';
 import 'package:flutter/material.dart';
@@ -13,26 +14,33 @@ class OtherUserProfile extends StatefulWidget {
   _OtherUserProfileState createState() => _OtherUserProfileState(this.userDoc);
 }
 
+enum Pages { schedules, about }
+
 class _OtherUserProfileState extends State<OtherUserProfile> {
   List<DocumentSnapshot> usersConnections = [];
   QuerySnapshot connectionsSnapShot;
   DocumentSnapshot userDoc;
+  Pages currentpage = Pages.about;
+  AddedSchedules addedSchedules;
+  AboutUserPage aboutUserPage;
 
   _OtherUserProfileState(DocumentSnapshot doc) {
     userDoc = doc;
-    UserSingleton.analytics.logEvent(name: "another user profile viewed");
+    aboutUserPage = AboutUserPage(doc);
+    addedSchedules = AddedSchedules(doc);
+    UserSingleton.analytics.logEvent(name: "another_user_profile_viewed");
   }
 
   void connectWithUser() {
     DatabaseService(uid: UserSingleton.userSingleton.userID)
         .connectWithUser(userDoc);
-    UserSingleton.analytics.logEvent(name: "connected with another user");
+    UserSingleton.analytics.logEvent(name: "connected_with_another_user");
   }
 
   void disconnectWithUser() {
     DatabaseService(uid: UserSingleton.userSingleton.userID)
         .disconnectWithUser(userDoc);
-    UserSingleton.analytics.logEvent(name: "disconnected with another user");
+    UserSingleton.analytics.logEvent(name: "disconnected_with_another_user");
   }
 
   @override
@@ -49,6 +57,8 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
       });
       DatabaseService(uid: widget.userDoc.id).anyUserData.listen((event) {
         userDoc = event;
+        aboutUserPage = AboutUserPage(event);
+        addedSchedules = AddedSchedules(event);
         if (mounted) {
           setState(() {});
         }
@@ -244,7 +254,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                               textAlign: TextAlign.justify),
                         )
                       : Text(
-                          "Who am I,\nwhat am I,\nWhere am I?",
+                          "Who am I, what am I, Where am I?",
                           style: TextStyle(
                             color: elementColorWhiteBackground,
                             fontSize: fontSizeBody,
@@ -262,9 +272,45 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Container(
-                    child: Text(
-                      "Schedules",
-                      style: TextStyle(fontSize: fontSize, color: themeColor),
+                    child: TextButton(
+                      child: Text("Bio",
+                          style: TextStyle(
+                              fontSize:
+                                  currentpage != Pages.about ? 15 : fontSize,
+                              color: currentpage != Pages.about
+                                  ? Colors.grey
+                                  : themeColor)),
+                      onPressed: () {
+                        setState(
+                          () {
+                            currentpage = Pages.about;
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  VerticalDivider(
+                    //width: 30,
+                    color: Colors.black26,
+                  ),
+                  Container(
+                    child: TextButton(
+                      child: Text(
+                        "Schedules",
+                        style: TextStyle(
+                            fontSize:
+                                currentpage != Pages.schedules ? 15 : fontSize,
+                            color: currentpage != Pages.schedules
+                                ? Colors.grey
+                                : themeColor),
+                      ),
+                      onPressed: () {
+                        setState(
+                          () {
+                            currentpage = Pages.schedules;
+                          },
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -273,7 +319,9 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
             Expanded(
               child: Container(
                 color: Colors.grey[50],
-                child: AddedSchedules(userDoc),
+                child: currentpage == Pages.schedules
+                    ? addedSchedules
+                    : aboutUserPage,
               ),
             ),
           ],

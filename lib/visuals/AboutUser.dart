@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Services/AppVideoPlayer.dart';
 import 'package:deeformity/Services/database.dart';
-import 'package:deeformity/Shared/UserCardCreator.dart';
 import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:deeformity/Shared/loading.dart';
@@ -13,14 +12,14 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class AboutSchedulePage extends StatefulWidget {
+class AboutUserPage extends StatefulWidget {
   final DocumentSnapshot doc;
-  AboutSchedulePage(this.doc);
+  AboutUserPage(this.doc);
   @override
-  _AboutSchedulePageState createState() => _AboutSchedulePageState();
+  _AboutUserPageState createState() => _AboutUserPageState();
 }
 
-class _AboutSchedulePageState extends State<AboutSchedulePage> {
+class _AboutUserPageState extends State<AboutUserPage> {
   bool loading = false;
   AppVideoPlayer appVideoPlayer;
   bool editingMedia = false;
@@ -31,20 +30,18 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
   MediaType _mediaType;
   File _mediaFile;
   Image picture;
-  bool createdByYou = true;
+  bool yourPage = true;
   DocumentSnapshot docSnapshot;
   String description;
   final _formKey = GlobalKey<FormState>();
   var media;
 
-  Widget creatorUserCard;
   @override
   void initState() {
     super.initState();
     docSnapshot = widget.doc;
-    if (widget.doc.data()["Creator Id"] != UserSingleton.userSingleton.userID) {
-      getScheduleCreatorCard();
-      createdByYou = false;
+    if (widget.doc.id != UserSingleton.userSingleton.userID) {
+      yourPage = false;
     }
     initMedia();
   }
@@ -55,10 +52,8 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
       if (description.isNotEmpty) {
         await DatabaseService(uid: UserSingleton.userSingleton.userID)
             .updateScheduleField(
-                doc: docSnapshot, field: "Description", value: description);
+                doc: docSnapshot, field: "FullBio", value: description);
 
-        //log event
-        UserSingleton.analytics.logEvent(name: "Schedule Discription Edited");
         await updateDocumentSnapShot();
       }
     }
@@ -70,7 +65,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
   Future updateDocumentSnapShot() async {
     DocumentSnapshot newDoc;
     newDoc = await DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .getScheduleDoc(docSnapshot.id);
+        .getParticularUserDoc(docSnapshot.id);
     setState(() {
       docSnapshot = newDoc;
     });
@@ -125,13 +120,12 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
     }
     if (done) {
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
-          .updateScheduleField(
+          .updateUserData(
               doc: docSnapshot, field: "Mediatype", value: _mediaType.index);
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
-          .updateScheduleField(
-              doc: docSnapshot, field: "MediaURL", value: mediaURL);
+          .updateUserData(doc: docSnapshot, field: "MediaURL", value: mediaURL);
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
-          .updateScheduleField(
+          .updateUserData(
               doc: docSnapshot, field: "MediaPath", value: mediaStoragePath);
       await updateDocumentSnapShot();
       message = "Media upload successful";
@@ -154,14 +148,14 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
           .deleteMedia(mediaURL);
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
-          .updateScheduleField(
+          .updateUserData(
               doc: docSnapshot,
               field: "Mediatype",
               value: MediaType.none.index);
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
-          .updateScheduleField(doc: docSnapshot, field: "MediaURL", value: "");
+          .updateUserData(doc: docSnapshot, field: "MediaURL", value: "");
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
-          .updateScheduleField(doc: docSnapshot, field: "MediaPath", value: "");
+          .updateUserData(doc: docSnapshot, field: "MediaPath", value: "");
       await updateDocumentSnapShot();
       message = "Media Delete successful";
       setState(() {
@@ -352,47 +346,12 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
     );
   }
 
-  Future getScheduleCreatorCard() async {
-    String creatorId = docSnapshot.data()["Creator Id"];
-    await DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .getParticularUserDoc(creatorId)
-        .then((value) {
-      setState(
-        () {
-          creatorUserCard = InkWell(
-            child: UserCardCreator(
-              userDoc: value,
-            ),
-            onTap: () {
-              openCreatorCard(value);
-            },
-          );
-        },
-      );
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return loading
         ? Loading()
         : ListView(
             children: [
-              Column(
-                children: [
-                  Container(
-                    child: Text("Created by:"),
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(top: 5, bottom: 5),
-                    child: creatorUserCard == null
-                        ? createdByYou
-                            ? Text("You")
-                            : SizedBox()
-                        : creatorUserCard,
-                  ),
-                ],
-              ),
               SizedBox(
                 height: 20,
               ),
@@ -405,7 +364,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                           ? picture
                           : appVideoPlayer != null
                               ? appVideoPlayer
-                              : createdByYou
+                              : yourPage
                                   ? Center(
                                       child: InkWell(
                                         child: Row(
@@ -443,7 +402,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                           : appVideoPlayer != null
                               ? appVideoPlayer
                               : Center(
-                                  child: createdByYou
+                                  child: yourPage
                                       ? InkWell(
                                           child: Row(
                                             mainAxisAlignment:
@@ -543,49 +502,51 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                             )
                           : SizedBox(),
                     ),
-                    Container(
-                      child: picture != null ||
-                              appVideoPlayer != null ||
-                              media != null
-                          ? InkWell(
-                              child: Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(5),
-                                    child: Icon(
-                                      CupertinoIcons.delete,
-                                      color: Colors.red,
-                                      size: 30,
+                    yourPage
+                        ? Container(
+                            child: picture != null ||
+                                    appVideoPlayer != null ||
+                                    media != null
+                                ? InkWell(
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.all(5),
+                                          child: Icon(
+                                            CupertinoIcons.delete,
+                                            color: Colors.red,
+                                            size: 30,
+                                          ),
+                                        ),
+                                        Text(
+                                          "Delete Media",
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                  ),
-                                  Text(
-                                    "Delete Media",
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                    ),
+                                    onTap: editingMedia
+                                        ? () {
+                                            setState(() {
+                                              picture = null;
+                                              appVideoPlayer = null;
+                                              _mediaFile = null;
+                                              editingMedia = false;
+                                            });
+                                          }
+                                        : deleteMedia,
                                   )
-                                ],
-                              ),
-                              onTap: editingMedia
-                                  ? () {
-                                      setState(() {
-                                        picture = null;
-                                        appVideoPlayer = null;
-                                        _mediaFile = null;
-                                        editingMedia = false;
-                                      });
-                                    }
-                                  : deleteMedia,
-                            )
-                          : SizedBox(),
-                    ),
+                                : SizedBox(),
+                          )
+                        : SizedBox(),
                   ],
                 ),
               ),
               Container(
                 padding: EdgeInsets.only(top: 30),
                 child: Text(
-                  "Description",
+                  "About Me",
                   style: TextStyle(
                     fontSize: fontSize,
                     color: elementColorWhiteBackground,
@@ -636,7 +597,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                                 fontWeight: FontWeight.w600),
                           ),
                           Container(
-                            child: createdByYou
+                            child: yourPage
                                 ? IconButton(
                                     icon: Icon(Icons.edit),
                                     iconSize: iconSizeBody,

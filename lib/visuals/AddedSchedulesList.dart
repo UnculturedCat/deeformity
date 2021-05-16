@@ -27,19 +27,23 @@ class _AddedSchedulesState extends State<AddedSchedules> {
       event.docs.forEach((element) {
         createScheduleCard(element);
       });
+      if (event.docs.isEmpty && mounted) {
+        setState(() {});
+      }
     });
     super.initState();
   }
 
-  void openScheduleCard(
-      {DocumentSnapshot scheduleDoc, DocumentSnapshot creatorDoc}) {
+  void openScheduleCard({
+    DocumentSnapshot scheduleDoc,
+    DocumentSnapshot creatorDoc,
+  }) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) {
           return SchedulePage(
-            scheduleDoc: scheduleDoc,
-            creatorDoc: creatorDoc,
+            scheduleDoc,
           );
         },
       ),
