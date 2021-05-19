@@ -15,7 +15,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 class AboutSchedulePage extends StatefulWidget {
   final DocumentSnapshot doc;
-  AboutSchedulePage(this.doc);
+  AboutSchedulePage({@required this.doc, Key key}) : super(key: key);
   @override
   _AboutSchedulePageState createState() => _AboutSchedulePageState();
 }
@@ -42,11 +42,37 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
   void initState() {
     super.initState();
     docSnapshot = widget.doc;
+
     if (widget.doc.data()["Creator Id"] != UserSingleton.userSingleton.userID) {
       getScheduleCreatorCard();
       createdByYou = false;
     }
+    DatabaseService(uid: widget.doc.data()["Creator Id"])
+        .particularUserSchedule(widget.doc.id)
+        .listen((event) {
+      if (mounted) {
+        setState(() {
+          docSnapshot = event;
+          initMedia(); //get latest snapshot from schedule Creator.
+        });
+      }
+    });
     initMedia();
+  }
+
+  void updateDocument() async {
+    docSnapshot = widget.doc;
+
+    initMedia();
+    if (widget.doc.data()["Creator Id"] != UserSingleton.userSingleton.userID) {
+      createdByYou = false;
+      await getScheduleCreatorCard();
+    } else {
+      setState(() {
+        creatorUserCard = null;
+        createdByYou = true;
+      });
+    }
   }
 
   void setDescription() async {
@@ -58,8 +84,8 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                 doc: docSnapshot, field: "Description", value: description);
 
         //log event
-        UserSingleton.analytics.logEvent(name: "Schedule Discription Edited");
-        await updateDocumentSnapShot();
+        UserSingleton.analytics.logEvent(name: "Schedule_Discription_Edited");
+        // await updateDocumentSnapShot();
       }
     }
     setState(() {
@@ -67,41 +93,44 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
     });
   }
 
-  Future updateDocumentSnapShot() async {
-    DocumentSnapshot newDoc;
-    newDoc = await DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .getScheduleDoc(docSnapshot.id);
-    setState(() {
-      docSnapshot = newDoc;
-    });
-  }
+  // Future updateDocumentSnapShot() async {
+  //   DocumentSnapshot newDoc;
+  //   newDoc = await DatabaseService(uid: UserSingleton.userSingleton.userID)
+  //       .getScheduleDoc(docSnapshot.id);
+  //   setState(() {
+  //     docSnapshot = newDoc;
+  //   });
+  // }
 
   void initMedia() {
-    mediaURL = docSnapshot.data()["MediaURL"];
-    int mediaTypeIndex =
-        docSnapshot.data()["Mediatype"] ?? docSnapshot.data()["Media type"];
-    correctVideoAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
-    media = null;
-    appVideoPlayer = null;
+    if (docSnapshot.data()["MediaURL"] != null &&
+        docSnapshot.data()["MediaURL"] != "") {
+      mediaURL = docSnapshot.data()["MediaURL"];
+      int mediaTypeIndex =
+          docSnapshot.data()["Mediatype"] ?? docSnapshot.data()["Media type"];
+      correctVideoAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
+      media = null;
+      appVideoPlayer = null;
 
-    if (mediaURL != null && mediaURL.isNotEmpty) {
-      if (mediaTypeIndex != MediaType.none.index) {
-        MediaType mediaType = MediaType.values[mediaTypeIndex];
-        switch (mediaType) {
-          case MediaType.photo:
-            media = Image.network(mediaURL);
-            break;
-          case MediaType.video:
-            appVideoPlayer = AppVideoPlayer(
-              assetURL: mediaURL,
-              assetSource: MediaAssetSource.network,
-              flipHeightAndWidth: correctVideoAspectRatio,
-            );
-            break;
-          case MediaType.textDocument:
-            break;
-          case MediaType.none:
-            break;
+      if (mediaURL != null && mediaURL.isNotEmpty) {
+        if (mediaTypeIndex != MediaType.none.index) {
+          MediaType mediaType = MediaType.values[mediaTypeIndex];
+          switch (mediaType) {
+            case MediaType.photo:
+              media = Image.network(mediaURL);
+              break;
+            case MediaType.video:
+              appVideoPlayer = AppVideoPlayer(
+                assetURL: mediaURL,
+                assetSource: MediaAssetSource.network,
+                flipHeightAndWidth: correctVideoAspectRatio,
+              );
+              break;
+            case MediaType.textDocument:
+              break;
+            case MediaType.none:
+              break;
+          }
         }
       }
     }
@@ -135,7 +164,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
           .updateScheduleField(
               doc: docSnapshot, field: "MediaPath", value: mediaStoragePath);
-      await updateDocumentSnapShot();
+      //await updateDocumentSnapShot();
       message = "Media upload successful";
     }
     setState(() {
@@ -164,7 +193,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
           .updateScheduleField(doc: docSnapshot, field: "MediaURL", value: "");
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
           .updateScheduleField(doc: docSnapshot, field: "MediaPath", value: "");
-      await updateDocumentSnapShot();
+      //await updateDocumentSnapShot();
       message = "Media Delete successful";
       setState(() {
         picture = null;
@@ -272,7 +301,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
               children: [
                 Container(
                   padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Row(children: [
                       //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                       Icon(
@@ -288,7 +317,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                 ),
                 Container(
                   padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Row(children: [
                       //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                       Icon(
@@ -304,7 +333,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                 ),
                 Container(
                   padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Row(children: [
                       //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                       Icon(
@@ -320,7 +349,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                 ),
                 Container(
                   padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Row(children: [
                       //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                       Icon(
@@ -546,9 +575,10 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                           : SizedBox(),
                     ),
                     Container(
-                      child: picture != null ||
-                              appVideoPlayer != null ||
-                              media != null
+                      child: createdByYou &&
+                              (picture != null ||
+                                  appVideoPlayer != null ||
+                                  media != null)
                           ? InkWell(
                               child: Row(
                                 children: [
@@ -610,6 +640,8 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                             child: Form(
                               key: _formKey,
                               child: TextFormField(
+                                initialValue:
+                                    docSnapshot.data()["Description"] ?? "",
                                 maxLines: null,
                                 minLines: 3,
                                 decoration: textInputDecorationWhite.copyWith(

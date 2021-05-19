@@ -22,7 +22,10 @@ class ExerciseList extends StatefulWidget {
 class _ExerciseListState extends State<ExerciseList> {
   void openExerciseCard(QueryDocumentSnapshot doc) {
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return ExercisePage(doc);
+      return ExercisePage(
+        documentSnapshot: doc,
+        key: Key(doc.id),
+      );
     }));
   }
 
@@ -92,8 +95,8 @@ class _ExerciseListState extends State<ExerciseList> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-        stream:
-            DatabaseService(uid: UserSingleton.userSingleton.userID).routines,
+        stream: DatabaseService(uid: widget.scheduleDoc.data()["Creator Id"])
+            .routines(scheduleId: widget.scheduleDoc.id),
         builder: (context, snapshot) {
           if ((snapshot != null && snapshot.data != null) &&
               (snapshot.data.docs != null && snapshot.data.docs.isNotEmpty)) {

@@ -246,16 +246,46 @@ class DatabaseService {
 */
 
   //get routine snapshot for the current user
-  Stream<QuerySnapshot> get routines => scheduleCollection
-      .doc(UserSingleton.userSingleton.userID)
-      .collection(workOutRoutinesSubCollectionName)
-      .snapshots();
+  Stream<QuerySnapshot> routines({@required String scheduleId}) {
+    return scheduleCollection
+        .doc(uid)
+        .collection(addedWorkOutScheduleSubCollectionName)
+        .doc(scheduleId)
+        .collection(workOutRoutinesSubCollectionName)
+        .snapshots();
+  }
+
+  Stream<DocumentSnapshot> particularRoutine(
+      {@required String scheduleId, @required String routineId}) {
+    return scheduleCollection
+        .doc(uid)
+        .collection(addedWorkOutScheduleSubCollectionName)
+        .doc(scheduleId)
+        .collection(workOutRoutinesSubCollectionName)
+        .doc(routineId)
+        .snapshots();
+  }
 
 //get schedules snapshot for the current user
   Stream<QuerySnapshot> get addedSchedules => scheduleCollection
       .doc(uid)
       .collection(addedWorkOutScheduleSubCollectionName)
       .snapshots();
+
+  Future<QuerySnapshot> schedules() {
+    return scheduleCollection
+        .doc(uid)
+        .collection(addedWorkOutScheduleSubCollectionName)
+        .get();
+  }
+
+  Stream<DocumentSnapshot> particularUserSchedule(String scheduleId) {
+    return scheduleCollection
+        .doc(uid)
+        .collection(addedWorkOutScheduleSubCollectionName)
+        .doc(scheduleId)
+        .snapshots();
+  }
 
   Future<String> createRoutine({
     String cardId,
@@ -277,6 +307,8 @@ class DatabaseService {
     try {
       ref = await scheduleCollection
           .doc(differUser ? differUserId : uid)
+          .collection(addedWorkOutScheduleSubCollectionName)
+          .doc(scheduleId)
           .collection(workOutRoutinesSubCollectionName)
           .add({
         "Card Id": cardId,
@@ -314,6 +346,8 @@ class DatabaseService {
   }) async {
     await scheduleCollection
         .doc(uid)
+        .collection(addedWorkOutScheduleSubCollectionName)
+        .doc(doc.data()["Schedule Id"])
         .collection(workOutRoutinesSubCollectionName)
         .doc(doc.id)
         .update({field: value});
@@ -321,11 +355,13 @@ class DatabaseService {
         .logEvent(name: "Exercise_" + field.trim() + "_Updated");
   }
 
-  Future<DocumentSnapshot> getRoutineDoc(String docId) async {
+  Future<DocumentSnapshot> getRoutineDoc(DocumentSnapshot doc) async {
     return await scheduleCollection
         .doc(uid)
+        .collection(addedWorkOutScheduleSubCollectionName)
+        .doc(doc.data()["Schedule Id"])
         .collection(workOutRoutinesSubCollectionName)
-        .doc(docId)
+        .doc(doc.id)
         .get();
   }
 
@@ -363,6 +399,8 @@ class DatabaseService {
       }
       await scheduleCollection
           .doc(uid)
+          .collection(addedWorkOutScheduleSubCollectionName)
+          .doc(doc.data()["Schedule Id"])
           .collection(workOutRoutinesSubCollectionName)
           .doc(doc.id)
           .delete();
@@ -414,7 +452,6 @@ class DatabaseService {
   Future<String> shareSchedule({
     @required DocumentSnapshot userDoc,
     @required DocumentSnapshot schedule,
-    @required List<DocumentSnapshot> schedulesExercises,
   }) async {
     String errorMessage = "";
     print("Sharing Schedule to " + userDoc.id);
@@ -446,22 +483,6 @@ class DatabaseService {
         "Split": schedule.data()["Split"],
         "Description": schedule.data()["Description"]
       }, SetOptions(merge: true));
-      Future.forEach(schedulesExercises, (DocumentSnapshot exercise) async {
-        await createRoutine(
-          differUser: true,
-          differUserId: userDoc.id,
-          cardId: exercise.data()["Card Id"],
-          scheduleId: exercise.data()["Schedule Id"],
-          workOutName: exercise.data()["Name"],
-          description: exercise.data()["Description"],
-          mediaURL: exercise.data()["MediaURL"],
-          mediaStoragePath: exercise.data()["mediaStoragePath"],
-          mediaType: MediaType.values[
-              exercise.data()["Mediatype"] ?? exercise.data()["Media type"]],
-          days: List<int>.from(exercise.data()["Days"]),
-          correctedAspectRatio: exercise.data()["CorrectVideo"],
-        );
-      });
       UserSingleton.analytics.logEvent(name: "Schedule_Shared");
     }
     return errorMessage;

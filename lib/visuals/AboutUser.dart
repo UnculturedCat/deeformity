@@ -78,31 +78,34 @@ class _AboutUserPageState extends State<AboutUserPage> {
   // }
 
   void initMedia() {
-    mediaURL = docSnapshot.data()["MediaURL"];
-    int mediaTypeIndex =
-        docSnapshot.data()["Mediatype"] ?? docSnapshot.data()["Media type"];
-    correctVideoAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
-    media = null;
-    appVideoPlayer = null;
+    if (docSnapshot.data()["MediaURL"] != null &&
+        docSnapshot.data()["MediaURL"] != "") {
+      mediaURL = docSnapshot.data()["MediaURL"];
+      int mediaTypeIndex =
+          docSnapshot.data()["Mediatype"] ?? docSnapshot.data()["Media type"];
+      correctVideoAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
+      media = null;
+      appVideoPlayer = null;
 
-    if (mediaURL != null && mediaURL.isNotEmpty) {
-      if (mediaTypeIndex != MediaType.none.index) {
-        MediaType mediaType = MediaType.values[mediaTypeIndex];
-        switch (mediaType) {
-          case MediaType.photo:
-            media = Image.network(mediaURL);
-            break;
-          case MediaType.video:
-            appVideoPlayer = AppVideoPlayer(
-              assetURL: mediaURL,
-              assetSource: MediaAssetSource.network,
-              flipHeightAndWidth: correctVideoAspectRatio,
-            );
-            break;
-          case MediaType.textDocument:
-            break;
-          case MediaType.none:
-            break;
+      if (mediaURL != null && mediaURL.isNotEmpty) {
+        if (mediaTypeIndex != MediaType.none.index) {
+          MediaType mediaType = MediaType.values[mediaTypeIndex];
+          switch (mediaType) {
+            case MediaType.photo:
+              media = Image.network(mediaURL);
+              break;
+            case MediaType.video:
+              appVideoPlayer = AppVideoPlayer(
+                assetURL: mediaURL,
+                assetSource: MediaAssetSource.network,
+                flipHeightAndWidth: correctVideoAspectRatio,
+              );
+              break;
+            case MediaType.textDocument:
+              break;
+            case MediaType.none:
+              break;
+          }
         }
       }
     }
@@ -272,7 +275,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
               children: [
                 Container(
                   padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Row(children: [
                       //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                       Icon(
@@ -288,7 +291,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
                 ),
                 Container(
                   padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Row(children: [
                       //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                       Icon(
@@ -304,7 +307,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
                 ),
                 Container(
                   padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Row(children: [
                       //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                       Icon(
@@ -320,7 +323,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
                 ),
                 Container(
                   padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Row(children: [
                       //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                       Icon(

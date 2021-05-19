@@ -240,25 +240,71 @@ class ProfilePageState extends State<ProfilePage>
       width: MediaQuery.of(context).size.width * 0.55,
       child: Drawer(
         child: Container(
-          padding: EdgeInsets.only(top: 40),
+          padding: EdgeInsets.only(left: 20, right: 20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color.fromRGBO(47, 72, 100, 1),
+                Color.fromRGBO(24, 41, 57, 1),
+              ],
+            ),
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                child: Divider(
-                  color: Colors.black26,
+              Flexible(
+                child: Container(
+                  padding: EdgeInsets.only(bottom: 30),
+                  child: Text(
+                    "REPLEE",
+                    style: TextStyle(
+                      decorationThickness: 3,
+                      //decorationColor: elementColorWhiteBackground,
+                      decoration: TextDecoration.combine(
+                        [
+                          //TextDecoration.lineThrough,
+                          //TextDecoration.overline,
+                          //TextDecoration.underline
+                        ],
+                      ),
+                      color: Colors.white,
+                      fontSize: MediaQuery.of(context).size.height * 0.04,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "ZenDots",
+                    ),
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.visible,
+                  ),
                 ),
               ),
               InkWell(
                 child: Container(
                   padding: EdgeInsets.all(6),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Icon(Icons.logout, color: Colors.red),
-                      Text(
-                        "Log out",
-                        style: TextStyle(color: Colors.red, fontSize: fontSize),
+                      Icon(
+                        Icons.logout,
+                        color: Colors.white,
+                        size: MediaQuery.of(context).size.height * 0.02,
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text("Log out",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize:
+                                    MediaQuery.of(context).size.height * 0.02,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              softWrap: true,
+                              overflow: TextOverflow.visible,
+                              maxLines: 1),
+                        ),
                       ),
                     ],
                   ),
@@ -267,20 +313,34 @@ class ProfilePageState extends State<ProfilePage>
               ),
               Container(
                 child: Divider(
-                  color: Colors.black26,
+                  color: Colors.white,
                 ),
               ),
               InkWell(
                 child: Container(
                   padding: EdgeInsets.all(6),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Icon(CupertinoIcons.smiley_fill, color: Colors.blue),
-                      Text(
-                        "Message Daniel",
-                        style:
-                            TextStyle(color: Colors.blue, fontSize: fontSize),
+                      Icon(
+                        CupertinoIcons.smiley_fill,
+                        color: Colors.blue,
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                            "Message Daniel",
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontSize:
+                                  MediaQuery.of(context).size.height * 0.02,
+                            ),
+                            maxLines: 1,
+                            softWrap: true,
+                            overflow: TextOverflow.visible,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -289,7 +349,7 @@ class ProfilePageState extends State<ProfilePage>
               ),
               Container(
                 child: Divider(
-                  color: Colors.black26,
+                  color: Colors.white,
                 ),
               ),
               InkWell(
@@ -299,9 +359,21 @@ class ProfilePageState extends State<ProfilePage>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(CupertinoIcons.delete, color: Colors.red),
-                      Text(
-                        "Delete Account",
-                        style: TextStyle(color: Colors.red, fontSize: fontSize),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                            "Delete Account",
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize:
+                                  MediaQuery.of(context).size.height * 0.02,
+                            ),
+                            //maxLines: 1,
+                            softWrap: true,
+                            overflow: TextOverflow.visible,
+                          ),
+                        ),
                       ),
                     ],
                   ),

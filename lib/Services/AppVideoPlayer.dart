@@ -49,6 +49,7 @@ class _AppVideoPlayerState extends State<AppVideoPlayer> {
     _controller.initialize().then((_) {
       // _chewieController = ChewieController(videoPlayerController: _controller);
       // _chewieController.enterFullScreen();
+      print(_controller.value.aspectRatio);
       setState(() {});
     });
     // _controller = VideoPlayerController.network(widget.assetURL)

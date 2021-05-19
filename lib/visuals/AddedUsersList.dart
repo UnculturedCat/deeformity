@@ -10,8 +10,7 @@ import 'package:deeformity/Shared/constants.dart';
 class AddedUsers extends StatefulWidget {
   final bool sharingItem;
   final QueryDocumentSnapshot schedule;
-  final List<QueryDocumentSnapshot> schedulesExercises;
-  AddedUsers({this.sharingItem, this.schedule, this.schedulesExercises});
+  AddedUsers({this.sharingItem, this.schedule});
   @override
   _AddedUsersState createState() => _AddedUsersState();
 }
@@ -31,9 +30,9 @@ class _AddedUsersState extends State<AddedUsers> {
       String error =
           await DatabaseService(uid: UserSingleton.userSingleton.userID)
               .shareSchedule(
-                  userDoc: user,
-                  schedule: widget.schedule,
-                  schedulesExercises: widget.schedulesExercises);
+        userDoc: user,
+        schedule: widget.schedule,
+      );
 
       if (error.isNotEmpty) {
         message = message + "!!" + error + "!!";

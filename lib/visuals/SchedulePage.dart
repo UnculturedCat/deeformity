@@ -28,7 +28,10 @@ class _SchedulePageState extends State<SchedulePage> {
         backgroundColor: Colors.white,
         body: Container(
             padding: EdgeInsets.only(left: 10, right: 10),
-            child: AboutSchedulePage(widget.scheduleDoc)),
+            child: AboutSchedulePage(
+              doc: widget.scheduleDoc,
+              key: Key(widget.scheduleDoc.id),
+            )),
       ),
     );
   }

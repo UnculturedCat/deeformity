@@ -13,7 +13,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ExercisePage extends StatefulWidget {
   final DocumentSnapshot documentSnapshot;
-  ExercisePage(this.documentSnapshot);
+  ExercisePage({this.documentSnapshot, Key key}) : super(key: key);
   @override
   _ExercisePageState createState() => _ExercisePageState(documentSnapshot);
 }
@@ -30,6 +30,7 @@ class _ExercisePageState extends State<ExercisePage> {
   MediaType _mediaType;
   File _mediaFile;
   Image picture;
+  bool createdByYou = false;
 
   String description;
   final _formKey = GlobalKey<FormState>();
@@ -38,44 +39,65 @@ class _ExercisePageState extends State<ExercisePage> {
 
   @override
   void initState() {
+    docSnapshot = widget.documentSnapshot;
 //log events
     if (docSnapshot.data()["Creator Id"] ==
         UserSingleton.userSingleton.userID) {
       UserSingleton.analytics.logEvent(name: "Exercise_viewed_by_creator");
+      createdByYou = true;
     } else if (docSnapshot.data()["Creator Id"] !=
         UserSingleton.userSingleton.userID) {
       UserSingleton.analytics.logEvent(name: "Exercise_viewed_by_subcriber");
+      createdByYou = false;
     }
+    DatabaseService(uid: docSnapshot.data()["Creator Id"])
+        .particularRoutine(
+            scheduleId: docSnapshot.data()["Schedule Id"],
+            routineId: widget.documentSnapshot.id)
+        .listen((event) {
+      setState(() {
+        docSnapshot = event;
+        initMedia(); //get latest snapshot from schedule Creator.
+      });
+    });
     initMedia();
     super.initState();
   }
 
   void initMedia() {
-    mediaURL = docSnapshot.data()["MediaURL"];
-    int mediaTypeIndex =
-        docSnapshot.data()["Mediatype"] ?? docSnapshot.data()["Media type"];
-    correctVideoAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
+    if (docSnapshot.data()["MediaURL"] != null &&
+        docSnapshot.data()["MediaURL"] != "") {
+      mediaURL = docSnapshot.data()["MediaURL"];
+      int mediaTypeIndex =
+          docSnapshot.data()["Mediatype"] ?? docSnapshot.data()["Media type"];
+      correctVideoAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
 
-    if (mediaURL != null && mediaURL.isNotEmpty) {
-      if (mediaTypeIndex != MediaType.none.index) {
-        MediaType mediaType = MediaType.values[mediaTypeIndex];
-        switch (mediaType) {
-          case MediaType.photo:
-            media = Image.network(mediaURL);
-            break;
-          case MediaType.video:
-            appVideoPlayer = AppVideoPlayer(
-              assetURL: mediaURL,
-              assetSource: MediaAssetSource.network,
-              flipHeightAndWidth: correctVideoAspectRatio,
-            );
-            break;
-          case MediaType.textDocument:
-            break;
-          case MediaType.none:
-            break;
+      if (mediaURL != null && mediaURL.isNotEmpty) {
+        if (mediaTypeIndex != MediaType.none.index) {
+          MediaType mediaType = MediaType.values[mediaTypeIndex];
+          switch (mediaType) {
+            case MediaType.photo:
+              media = Image.network(mediaURL);
+              break;
+            case MediaType.video:
+              appVideoPlayer = AppVideoPlayer(
+                assetURL: mediaURL,
+                assetSource: MediaAssetSource.network,
+                flipHeightAndWidth: correctVideoAspectRatio,
+              );
+              break;
+            case MediaType.textDocument:
+              break;
+            case MediaType.none:
+              break;
+          }
         }
       }
+    } else if (docSnapshot.data()["MediaURL"] == "") {
+      picture = null;
+      appVideoPlayer = null;
+      _mediaFile = null;
+      media = null;
     }
   }
 
@@ -89,7 +111,7 @@ class _ExercisePageState extends State<ExercisePage> {
 
         //log event
         UserSingleton.analytics.logEvent(name: "Exercise Discription Edited");
-        await updateDocumentSnapShot();
+        // await updateDocumentSnapShot();
       }
     }
     setState(() {
@@ -97,14 +119,14 @@ class _ExercisePageState extends State<ExercisePage> {
     });
   }
 
-  Future updateDocumentSnapShot() async {
-    DocumentSnapshot newDoc;
-    newDoc = await DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .getRoutineDoc(docSnapshot.id);
-    setState(() {
-      docSnapshot = newDoc;
-    });
-  }
+  // Future updateDocumentSnapShot() async {
+  //   DocumentSnapshot newDoc;
+  //   newDoc = await DatabaseService(uid: UserSingleton.userSingleton.userID)
+  //       .getRoutineDoc(docSnapshot);
+  //   setState(() {
+  //     docSnapshot = newDoc;
+  //   });
+  // }
 
   void saveMedia() async {
     Map<String, String> mediaFields;
@@ -133,7 +155,7 @@ class _ExercisePageState extends State<ExercisePage> {
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
           .updateRoutineField(
               doc: docSnapshot, field: "MediaPath", value: mediaStoragePath);
-      await updateDocumentSnapShot();
+      // await updateDocumentSnapShot();
       message = "Media upload successful";
     }
     setState(() {
@@ -162,7 +184,7 @@ class _ExercisePageState extends State<ExercisePage> {
           .updateRoutineField(doc: docSnapshot, field: "MediaURL", value: "");
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
           .updateRoutineField(doc: docSnapshot, field: "MediaPath", value: "");
-      await updateDocumentSnapShot();
+      //await updateDocumentSnapShot();
       message = "Media Delete successful";
       setState(() {
         picture = null;
@@ -270,7 +292,7 @@ class _ExercisePageState extends State<ExercisePage> {
               children: [
                 Container(
                   padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Row(children: [
                       //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                       Icon(
@@ -286,7 +308,7 @@ class _ExercisePageState extends State<ExercisePage> {
                 ),
                 Container(
                   padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Row(children: [
                       //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                       Icon(
@@ -302,7 +324,7 @@ class _ExercisePageState extends State<ExercisePage> {
                 ),
                 Container(
                   padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Row(children: [
                       //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                       Icon(
@@ -318,7 +340,7 @@ class _ExercisePageState extends State<ExercisePage> {
                 ),
                 Container(
                   padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: GestureDetector(
+                  child: InkWell(
                     child: Row(children: [
                       //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                       Icon(
@@ -516,9 +538,10 @@ class _ExercisePageState extends State<ExercisePage> {
                               : SizedBox(),
                         ),
                         Container(
-                          child: picture != null ||
-                                  appVideoPlayer != null ||
-                                  media != null
+                          child: createdByYou &&
+                                  (picture != null ||
+                                      appVideoPlayer != null ||
+                                      media != null)
                               ? InkWell(
                                   child: Row(
                                     children: [
