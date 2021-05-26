@@ -9,6 +9,7 @@ import 'package:deeformity/Shared/loading.dart';
 import 'package:deeformity/User/otherProfile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -221,13 +222,22 @@ class _AboutUserPageState extends State<AboutUserPage> {
   Future<void> attachPhoto(ImageSource source) async {
     if (await checkAndRequestMediaPermission(source)) {
       //open attach media page
-      PickedFile selected = await _imagePicker.getImage(source: source);
+      PickedFile selected = await _imagePicker.getImage(
+        source: source,
+      );
       _mediaType = MediaType.photo;
       if (selected != null) {
-        setState(() {
-          _mediaFile = File(selected.path);
-          picture = Image.file(_mediaFile);
-        });
+        File croppedImage = await cropPicture(File(selected.path));
+        if (croppedImage != null) {
+          setState(() {
+            _mediaFile = croppedImage;
+            picture = Image.file(_mediaFile);
+          });
+        } else {
+          setState(() {
+            editingMedia = false;
+          });
+        }
       } else {
         setState(() {
           editingMedia = false;
@@ -260,90 +270,104 @@ class _AboutUserPageState extends State<AboutUserPage> {
     }
   }
 
+  Future<File> cropPicture(File imageFile) async {
+    return await ImageCropper.cropImage(
+      sourcePath: imageFile.path,
+      aspectRatio: CropAspectRatio(
+        ratioX: 1,
+        ratioY: 1,
+      ),
+      aspectRatioPresets: [CropAspectRatioPreset.square],
+      compressFormat: ImageCompressFormat.jpg,
+      compressQuality: 60,
+    );
+  }
+
   void showMediaSelectionOption() {
     setState(() {
       editingMedia = true;
     });
     showModalBottomSheet(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10))),
-        context: context,
-        builder: (context) {
-          return Container(
-            padding: EdgeInsets.all(10),
-            child: Wrap(
-              children: [
-                Container(
-                  padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: InkWell(
-                    child: Row(children: [
-                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
-                      Icon(
-                        Icons.image,
-                        size: 50,
-                      ),
-                      Text("Add Photo from device"),
-                    ]),
-                    onTap: () {
-                      attachPhoto(ImageSource.gallery);
-                    },
-                  ),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.all(10),
+          child: Wrap(
+            children: [
+              Container(
+                padding: EdgeInsets.only(top: 10, bottom: 10),
+                child: InkWell(
+                  child: Row(children: [
+                    //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                    Icon(
+                      Icons.image,
+                      size: 50,
+                    ),
+                    Text("Add Photo from device"),
+                  ]),
+                  onTap: () {
+                    attachPhoto(ImageSource.gallery);
+                  },
                 ),
-                Container(
-                  padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: InkWell(
-                    child: Row(children: [
-                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
-                      Icon(
-                        Icons.photo_camera,
-                        size: 50,
-                      ),
-                      Text("Add Photo from camera"),
-                    ]),
-                    onTap: () {
-                      attachPhoto(ImageSource.camera);
-                    },
-                  ),
+              ),
+              Container(
+                padding: EdgeInsets.only(top: 10, bottom: 10),
+                child: InkWell(
+                  child: Row(children: [
+                    //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                    Icon(
+                      Icons.photo_camera,
+                      size: 50,
+                    ),
+                    Text("Add Photo from camera"),
+                  ]),
+                  onTap: () {
+                    attachPhoto(ImageSource.camera);
+                  },
                 ),
-                Container(
-                  padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: InkWell(
-                    child: Row(children: [
-                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
-                      Icon(
-                        Icons.video_library,
-                        size: 50,
-                      ),
-                      Text("Add video from gallery"),
-                    ]),
-                    onTap: () {
-                      attachVideo(ImageSource.gallery);
-                    },
-                  ),
+              ),
+              Container(
+                padding: EdgeInsets.only(top: 10, bottom: 10),
+                child: InkWell(
+                  child: Row(children: [
+                    //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                    Icon(
+                      Icons.video_library,
+                      size: 50,
+                    ),
+                    Text("Add video from gallery"),
+                  ]),
+                  onTap: () {
+                    attachVideo(ImageSource.gallery);
+                  },
                 ),
-                Container(
-                  padding: EdgeInsets.only(top: 10, bottom: 10),
-                  child: InkWell(
-                    child: Row(children: [
-                      //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
-                      Icon(
-                        Icons.videocam,
-                        size: 50,
-                      ),
-                      Text("Add video from camera"),
-                    ]),
-                    onTap: () {
-                      attachVideo(ImageSource.camera);
-                    },
-                  ),
+              ),
+              Container(
+                padding: EdgeInsets.only(top: 10, bottom: 10),
+                child: InkWell(
+                  child: Row(children: [
+                    //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
+                    Icon(
+                      Icons.videocam,
+                      size: 50,
+                    ),
+                    Text("Add video from camera"),
+                  ]),
+                  onTap: () {
+                    attachVideo(ImageSource.camera);
+                  },
                 ),
-                SizedBox(
-                  height: 120,
-                )
-              ],
-            ),
-          );
-        });
+              ),
+              SizedBox(
+                height: 120,
+              )
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void openCreatorCard(DocumentSnapshot doc) {
@@ -367,54 +391,27 @@ class _AboutUserPageState extends State<AboutUserPage> {
                 height: 20,
               ),
               editingMedia
-                  ? Container(
-                      color: Colors.white,
-                      alignment: Alignment.center,
-                      height: 500,
-                      child: picture != null
-                          ? picture
-                          : appVideoPlayer != null
-                              ? appVideoPlayer
-                              : yourPage
-                                  ? Center(
-                                      child: InkWell(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.image,
-                                              size: 50,
-                                            ),
-                                            Text("Add Media"),
-                                          ],
-                                        ),
-                                        onTap: showMediaSelectionOption,
-                                      ),
-                                    )
-                                  : Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.image,
-                                          size: 50,
-                                        ),
-                                        Text("No Media"),
-                                      ],
-                                    ),
-                    )
-                  : Container(
-                      color: Colors.white,
-                      alignment: Alignment.center,
-                      height: 500,
-                      child: media != null
-                          ? media
-                          : appVideoPlayer != null
-                              ? appVideoPlayer
-                              : Center(
-                                  child: yourPage
-                                      ? InkWell(
+                  ? Card(
+                      clipBehavior: Clip.antiAlias,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                      elevation: 5,
+                      child: Container(
+                        color: Colors.white,
+                        alignment: Alignment.center,
+                        height: (picture == null)
+                            ? MediaQuery.of(context).size.height * 0.50
+                            : null,
+                        child: picture != null
+                            ? picture
+                            : appVideoPlayer != null
+                                ? appVideoPlayer
+                                : yourPage
+                                    ? Center(
+                                        child: InkWell(
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
@@ -427,63 +424,112 @@ class _AboutUserPageState extends State<AboutUserPage> {
                                             ],
                                           ),
                                           onTap: showMediaSelectionOption,
-                                        )
-                                      : Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Icon(
-                                              Icons.image,
-                                              size: 50,
-                                            ),
-                                            Text("No Media"),
-                                          ],
                                         ),
-                                ),
-                    ),
-              appVideoPlayer != null
-                  ? Container(
-                      child: InkWell(
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(5),
-                              child: Icon(
-                                Icons.reset_tv,
-                                color: Colors.blue,
-                                size: 30,
-                              ),
-                            ),
-                            Text(
-                              "Fix Video",
-                              style: TextStyle(
-                                color: Colors.blue,
-                              ),
-                            )
-                          ],
-                        ),
-                        onTap: () {
-                          setState(
-                            () {
-                              correctVideoAspectRatio =
-                                  !correctVideoAspectRatio;
-                              appVideoPlayer = AppVideoPlayer(
-                                assetSource: editingMedia
-                                    ? MediaAssetSource.file
-                                    : MediaAssetSource.network,
-                                assetURL: mediaURL,
-                                assetFile: _mediaFile,
-                                flipHeightAndWidth: correctVideoAspectRatio,
-                              );
-                            },
-                          );
-                          final snackBar = SnackBar(
-                              content: Text("Video's aspect ratio corrected"));
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        },
+                                      )
+                                    : Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.image,
+                                            size: 50,
+                                          ),
+                                          Text("No Media"),
+                                        ],
+                                      ),
                       ),
                     )
-                  : SizedBox(),
+                  : Card(
+                      clipBehavior: Clip.antiAlias,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                      elevation: 5,
+                      child: Container(
+                        color: Colors.white,
+                        alignment: Alignment.center,
+                        height: (media == null)
+                            ? MediaQuery.of(context).size.height * 0.50
+                            : null,
+                        child: media != null
+                            ? media
+                            : appVideoPlayer != null
+                                ? appVideoPlayer
+                                : Center(
+                                    child: yourPage
+                                        ? InkWell(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.image,
+                                                  size: 50,
+                                                ),
+                                                Text("Add Media"),
+                                              ],
+                                            ),
+                                            onTap: showMediaSelectionOption,
+                                          )
+                                        : Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.image,
+                                                size: 50,
+                                              ),
+                                              Text("No Media"),
+                                            ],
+                                          ),
+                                  ),
+                      ),
+                    ),
+              // appVideoPlayer != null
+              //     ? Container(
+              //         child: InkWell(
+              //           child: Row(
+              //             children: [
+              //               Container(
+              //                 padding: EdgeInsets.all(5),
+              //                 child: Icon(
+              //                   Icons.reset_tv,
+              //                   color: Colors.blue,
+              //                   size: 20,
+              //                 ),
+              //               ),
+              //               Text(
+              //                 "Fix Video",
+              //                 style: TextStyle(
+              //                   color: Colors.blue,
+              //                 ),
+              //               )
+              //             ],
+              //           ),
+              //           onTap: () {
+              //             setState(
+              //               () {
+              //                 correctVideoAspectRatio =
+              //                     !correctVideoAspectRatio;
+              //                 appVideoPlayer = AppVideoPlayer(
+              //                   assetSource: editingMedia
+              //                       ? MediaAssetSource.file
+              //                       : MediaAssetSource.network,
+              //                   assetURL: mediaURL,
+              //                   assetFile: _mediaFile,
+              //                   flipHeightAndWidth: correctVideoAspectRatio,
+              //                 );
+              //               },
+              //             );
+              //             final snackBar = SnackBar(
+              //                 content: Text("Video's aspect ratio corrected"));
+              //             ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              //           },
+              //         ),
+              //       )
+              //     : SizedBox(),
               Container(
                 child: Column(
                   children: [
@@ -498,7 +544,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
                                     child: Icon(
                                       Icons.done,
                                       color: Colors.blue,
-                                      size: 30,
+                                      size: 20,
                                     ),
                                   ),
                                   Text(
@@ -524,9 +570,9 @@ class _AboutUserPageState extends State<AboutUserPage> {
                                         Container(
                                           padding: EdgeInsets.all(5),
                                           child: Icon(
-                                            CupertinoIcons.delete,
+                                            CupertinoIcons.xmark,
                                             color: Colors.red,
-                                            size: 30,
+                                            size: 20,
                                           ),
                                         ),
                                         Text(

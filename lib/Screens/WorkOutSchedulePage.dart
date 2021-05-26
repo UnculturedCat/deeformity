@@ -556,48 +556,57 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Container(
-                              child: TextButton(
-                                child: Text(
-                                  "Schedule",
-                                  style: TextStyle(
-                                      fontSize: currentPage != Pages.schedule
-                                          ? 15
-                                          : fontSize,
-                                      color: currentPage != Pages.schedule
-                                          ? Colors.grey
-                                          : themeColor),
-                                ),
-                                onPressed: () {
-                                  setState(
-                                    () {
-                                      currentPage = Pages.schedule;
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-                            VerticalDivider(
-                              //width: 30,
-                              color: Colors.black26,
-                            ),
-                            Container(
-                              child: TextButton(
-                                child: Text("About",
+                            Expanded(
+                              flex: 2,
+                              child: Container(
+                                child: TextButton(
+                                  child: Text(
+                                    "Schedule",
                                     style: TextStyle(
-                                        fontSize: currentPage != Pages.about
+                                        fontSize: currentPage != Pages.schedule
                                             ? 15
                                             : fontSize,
-                                        color: currentPage != Pages.about
+                                        color: currentPage != Pages.schedule
                                             ? Colors.grey
-                                            : themeColor)),
-                                onPressed: () {
-                                  setState(
-                                    () {
-                                      currentPage = Pages.about;
-                                    },
-                                  );
-                                },
+                                            : themeColor),
+                                  ),
+                                  onPressed: () {
+                                    setState(
+                                      () {
+                                        currentPage = Pages.schedule;
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.only(top: 4, bottom: 4),
+                              child: VerticalDivider(
+                                //width: 30,
+                                color: Colors.black26,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Container(
+                                child: TextButton(
+                                  child: Text("About",
+                                      style: TextStyle(
+                                          fontSize: currentPage != Pages.about
+                                              ? 15
+                                              : fontSize,
+                                          color: currentPage != Pages.about
+                                              ? Colors.grey
+                                              : themeColor)),
+                                  onPressed: () {
+                                    setState(
+                                      () {
+                                        currentPage = Pages.about;
+                                      },
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                           ],
@@ -606,8 +615,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                       Expanded(
                         child: Container(
                           color: Colors.grey[50],
-                          padding:
-                              EdgeInsets.only(top: 10, left: 20, right: 20),
+                          padding: EdgeInsets.only(top: 10, left: 5, right: 5),
                           child: currentPage == Pages.schedule
                               ? scheduleViewPage
                               : aboutPage,

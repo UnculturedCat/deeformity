@@ -38,7 +38,10 @@ class UserCardCreator extends StatelessWidget {
       elevation: 3,
       color: mark == true ? Colors.blue[200] : null,
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10))),
+        borderRadius: BorderRadius.all(
+          Radius.circular(10),
+        ),
+      ),
       child: Container(
         child: ListTile(
           leading: CircleAvatar(

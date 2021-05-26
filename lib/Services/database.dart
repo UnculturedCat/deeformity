@@ -5,6 +5,8 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
+import 'package:video_compress/video_compress.dart';
 
 class DatabaseService {
   final String uid;
@@ -508,13 +510,31 @@ class DatabaseService {
         subfolder = "";
         break;
     }
+    File uploadFile = file;
+
+    if (mediaType == MediaType.video) {
+      try {
+        var info = await VideoCompress.compressVideo(file.path,
+            includeAudio: true, quality: VideoQuality.MediumQuality);
+        uploadFile = info.file;
+      } catch (e) {
+        VideoCompress.cancelCompression();
+      }
+    } else if (mediaType == MediaType.photo) {
+      try {
+        uploadFile = await FlutterNativeImage.compressImage(file.path);
+      } catch (e) {
+        //FlutterNativeImage.canc
+      }
+    }
+
     var mediaFileName = uid + DateTime.now().millisecondsSinceEpoch.toString();
 
     firebase_storage.TaskSnapshot task = await _mediaStorage
         .ref()
         .child(subfolder)
         .child(mediaFileName)
-        .putFile(file);
+        .putFile(uploadFile);
     String downloadURL = await task.ref.getDownloadURL();
     String fullPath = task.ref.fullPath;
     Map<String, String> mediaFields = {

@@ -155,7 +155,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                 children: [
                   Container(
                     child: CircleAvatar(
-                      radius: 50,
+                      radius: 40,
                       child: userDoc.data()["Profile Picture Url"] == null
                           ? Text(userDoc.data()["First Name"][0])
                           : null,
@@ -166,7 +166,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.only(left: 20),
+                    padding: EdgeInsets.only(left: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,

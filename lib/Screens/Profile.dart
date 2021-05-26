@@ -127,7 +127,8 @@ class ProfilePageState extends State<ProfilePage>
     if (await checkAndRequestMediaPermission(source)) {
       File profilePictureFile;
       //open attach media page
-      PickedFile selected = await _imagePicker.getImage(source: source);
+      PickedFile selected =
+          await _imagePicker.getImage(source: source, imageQuality: 70);
       if (selected != null) {
         setState(() {
           profilePictureFile = File(selected.path);
@@ -332,11 +333,10 @@ class ProfilePageState extends State<ProfilePage>
                           child: Text(
                             "Message Daniel",
                             style: TextStyle(
-                              color: Colors.blue,
-                              fontSize:
-                                  MediaQuery.of(context).size.height * 0.02,
-                            ),
-                            maxLines: 1,
+                                color: Colors.blue,
+                                fontSize:
+                                    MediaQuery.of(context).size.height * 0.02,
+                                fontWeight: FontWeight.bold),
                             softWrap: true,
                             overflow: TextOverflow.visible,
                           ),
@@ -368,6 +368,7 @@ class ProfilePageState extends State<ProfilePage>
                               color: Colors.red,
                               fontSize:
                                   MediaQuery.of(context).size.height * 0.02,
+                              fontWeight: FontWeight.bold,
                             ),
                             //maxLines: 1,
                             softWrap: true,
@@ -420,7 +421,7 @@ class ProfilePageState extends State<ProfilePage>
                             alignment: Alignment.bottomCenter,
                             children: [
                               CircleAvatar(
-                                radius: 50,
+                                radius: 40,
                                 child: userDoc.data()["Profile Picture Url"] ==
                                         null
                                     ? Text(userDoc.data()["First Name"][0])
@@ -443,7 +444,7 @@ class ProfilePageState extends State<ProfilePage>
                           ),
                         ),
                         Container(
-                          padding: EdgeInsets.only(left: 20),
+                          padding: EdgeInsets.only(left: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -569,48 +570,54 @@ class ProfilePageState extends State<ProfilePage>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Container(
-                          child: TextButton(
-                            child: Text("Bio",
-                                style: TextStyle(
-                                    fontSize: currentpage != Pages.about
-                                        ? 15
-                                        : fontSize,
-                                    color: currentpage != Pages.about
-                                        ? Colors.grey
-                                        : themeColor)),
-                            onPressed: () {
-                              setState(
-                                () {
-                                  currentpage = Pages.about;
-                                },
-                              );
-                            },
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            child: TextButton(
+                              child: Text("Bio",
+                                  style: TextStyle(
+                                      fontSize: currentpage != Pages.about
+                                          ? 15
+                                          : fontSize,
+                                      color: currentpage != Pages.about
+                                          ? Colors.grey
+                                          : themeColor)),
+                              onPressed: () {
+                                setState(
+                                  () {
+                                    currentpage = Pages.about;
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ),
                         VerticalDivider(
                           //width: 30,
                           color: Colors.black26,
                         ),
-                        Container(
-                          child: TextButton(
-                            child: Text(
-                              "Schedules",
-                              style: TextStyle(
-                                  fontSize: currentpage != Pages.schedules
-                                      ? 15
-                                      : fontSize,
-                                  color: currentpage != Pages.schedules
-                                      ? Colors.grey
-                                      : themeColor),
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            child: TextButton(
+                              child: Text(
+                                "Schedules",
+                                style: TextStyle(
+                                    fontSize: currentpage != Pages.schedules
+                                        ? 15
+                                        : fontSize,
+                                    color: currentpage != Pages.schedules
+                                        ? Colors.grey
+                                        : themeColor),
+                              ),
+                              onPressed: () {
+                                setState(
+                                  () {
+                                    currentpage = Pages.schedules;
+                                  },
+                                );
+                              },
                             ),
-                            onPressed: () {
-                              setState(
-                                () {
-                                  currentpage = Pages.schedules;
-                                },
-                              );
-                            },
                           ),
                         ),
                       ],

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:deeformity/Services/database.dart';
 import 'dart:io';
 import 'package:deeformity/Services/AppVideoPlayer.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:image_picker/image_picker.dart';
@@ -196,10 +197,13 @@ class _AddExercisePageState extends State<AddExercisePage>
       PickedFile selected = await _imagePicker.getImage(source: source);
       _mediaType = MediaType.photo;
       if (selected != null) {
-        setState(() {
-          _mediaFile = File(selected.path);
-          picture = Image.file(_mediaFile);
-        });
+        File croppedImage = await cropPicture(File(selected.path));
+        if (croppedImage != null) {
+          setState(() {
+            _mediaFile = croppedImage;
+            picture = Image.file(_mediaFile);
+          });
+        }
       }
       Navigator.pop(context);
     }
@@ -222,6 +226,19 @@ class _AddExercisePageState extends State<AddExercisePage>
       }
       Navigator.pop(context);
     }
+  }
+
+  Future<File> cropPicture(File imageFile) async {
+    return await ImageCropper.cropImage(
+      sourcePath: imageFile.path,
+      aspectRatio: CropAspectRatio(
+        ratioX: 1,
+        ratioY: 1,
+      ),
+      aspectRatioPresets: [CropAspectRatioPreset.square],
+      compressFormat: ImageCompressFormat.jpg,
+      compressQuality: 60,
+    );
   }
 
   Widget createDayCard(DaysOfTheWeek dayEnum) {
@@ -402,62 +419,67 @@ class _AddExercisePageState extends State<AddExercisePage>
                 //     ],
                 //   ),
                 // ),
-                Container(
-                  color: Colors.white,
-                  alignment: Alignment.center,
-                  height: 400,
-                  child: picture != null
-                      ? picture
-                      : _videoPlayer != null
-                          ? _videoPlayer
-                          : Center(
-                              child:
-                                  Text("Nothing to show. Delete and try again"),
-                            ),
+                Card(
+                  elevation: 5,
+                  child: Container(
+                    color: Colors.white,
+                    alignment: Alignment.center,
+                    height: (picture == null)
+                        ? MediaQuery.of(context).size.height * 0.50
+                        : null,
+                    child: picture != null
+                        ? picture
+                        : _videoPlayer != null
+                            ? _videoPlayer
+                            : Center(
+                                child: Text(
+                                    "Nothing to show. Delete and try again"),
+                              ),
+                  ),
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    _videoPlayer != null
-                        ? Container(
-                            child: InkWell(
-                              child: Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(5),
-                                    child: Icon(
-                                      Icons.reset_tv,
-                                      color: Colors.blue,
-                                      size: 30,
-                                    ),
-                                  ),
-                                  Text(
-                                    "Fix Video",
-                                    style: TextStyle(
-                                      color: Colors.blue,
-                                    ),
-                                  )
-                                ],
-                              ),
-                              onTap: () {
-                                setState(() {
-                                  correctVideoAspectRatio =
-                                      !correctVideoAspectRatio;
-                                  _videoPlayer = AppVideoPlayer(
-                                    assetSource: MediaAssetSource.file,
-                                    assetFile: _mediaFile,
-                                    flipHeightAndWidth: correctVideoAspectRatio,
-                                  );
-                                });
-                                final snackBar = SnackBar(
-                                    content:
-                                        Text("Video's aspect ratio corrected"));
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
-                              },
-                            ),
-                          )
-                        : SizedBox(),
+                    // _videoPlayer != null
+                    //     ? Container(
+                    //         child: InkWell(
+                    //           child: Row(
+                    //             children: [
+                    //               Container(
+                    //                 padding: EdgeInsets.all(5),
+                    //                 child: Icon(
+                    //                   Icons.reset_tv,
+                    //                   color: Colors.blue,
+                    //                   size: 20,
+                    //                 ),
+                    //               ),
+                    //               Text(
+                    //                 "Fix Video",
+                    //                 style: TextStyle(
+                    //                   color: Colors.blue,
+                    //                 ),
+                    //               )
+                    //             ],
+                    //           ),
+                    //           onTap: () {
+                    //             setState(() {
+                    //               correctVideoAspectRatio =
+                    //                   !correctVideoAspectRatio;
+                    //               _videoPlayer = AppVideoPlayer(
+                    //                 assetSource: MediaAssetSource.file,
+                    //                 assetFile: _mediaFile,
+                    //                 flipHeightAndWidth: correctVideoAspectRatio,
+                    //               );
+                    //             });
+                    //             final snackBar = SnackBar(
+                    //                 content:
+                    //                     Text("Video's aspect ratio corrected"));
+                    //             ScaffoldMessenger.of(context)
+                    //                 .showSnackBar(snackBar);
+                    //           },
+                    //         ),
+                    //       )
+                    //     : SizedBox(),
                     Container(
                       child: InkWell(
                         child: Row(
@@ -465,9 +487,9 @@ class _AddExercisePageState extends State<AddExercisePage>
                             Container(
                               padding: EdgeInsets.all(5),
                               child: Icon(
-                                CupertinoIcons.delete,
+                                CupertinoIcons.xmark,
                                 color: Colors.red,
-                                size: 30,
+                                size: 20,
                               ),
                             ),
                             Text(

@@ -75,62 +75,81 @@ class _AppVideoPlayerState extends State<AppVideoPlayer> {
     }
     return _controller != null && _controller.value.isInitialized
         ? GestureDetector(
-            child: AspectRatio(
-              aspectRatio: widget.flipHeightAndWidth
-                  ? _controller.value.size.height / _controller.value.size.width
-                  : _controller.value.aspectRatio,
-              child: Stack(
-                alignment: AlignmentDirectional.bottomStart,
-                children: [
-                  VideoPlayer(_controller),
-                  showControls
-                      ? Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _controller.value.isPlaying
-                                  ? IconButton(
-                                      icon: Icon(CupertinoIcons.pause_circle),
-                                      onPressed: () {
-                                        setState(() {
-                                          _controller.pause();
-                                        });
-                                      },
-                                      color: Colors.white,
-                                    )
-                                  : _controller.value.position !=
-                                          _controller.value.duration
-                                      ? IconButton(
-                                          icon: Icon(
-                                              CupertinoIcons.play_circle_fill),
-                                          onPressed: () {
-                                            setState(() {
-                                              _controller.play();
-                                            });
-                                          },
-                                          color: Colors.white,
-                                        )
-                                      : IconButton(
-                                          icon: Icon(Icons.replay),
-                                          onPressed: () {
-                                            setState(() {
-                                              _controller.seekTo(Duration.zero);
-                                              _controller.play();
-                                            });
-                                          },
-                                          color: Colors.white,
-                                        ),
-                            ],
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                AspectRatio(
+                  aspectRatio: _controller.value.aspectRatio,
+                  child: FittedBox(
+                    //§fit: BoxFit.cover,
+                    child: SizedBox(
+                      width: _controller.value.size.width,
+                      height: _controller.value.size.height,
+                      child: VideoPlayer(_controller),
+                    ),
+                  ),
+                ),
+                showControls
+                    ? Stack(
+                        children: [
+                          Container(
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _controller.value.isPlaying
+                                    ? IconButton(
+                                        icon: Icon(CupertinoIcons.pause_circle),
+                                        onPressed: () {
+                                          setState(() {
+                                            _controller.pause();
+                                          });
+                                        },
+                                        color: Colors.white,
+                                      )
+                                    : _controller.value.position !=
+                                            _controller.value.duration
+                                        ? IconButton(
+                                            icon: Icon(CupertinoIcons
+                                                .play_circle_fill),
+                                            onPressed: () {
+                                              setState(() {
+                                                _controller.play();
+                                              });
+                                            },
+                                            color: Colors.white,
+                                          )
+                                        : IconButton(
+                                            icon: Icon(Icons.replay),
+                                            onPressed: () {
+                                              setState(() {
+                                                _controller
+                                                    .seekTo(Duration.zero);
+                                                _controller.play();
+                                              });
+                                            },
+                                            color: Colors.white,
+                                          ),
+                              ],
+                            ),
                           ),
-                        )
-                      : SizedBox(),
-                  VideoProgressIndicator(
-                    _controller,
-                    allowScrubbing: true,
-                    colors: VideoProgressColors(playedColor: Colors.blue),
-                  )
-                ],
-              ),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: VideoProgressIndicator(
+                              _controller,
+                              allowScrubbing: true,
+                              colors: VideoProgressColors(
+                                playedColor: Colors.blue,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : SizedBox(),
+              ],
             ),
             onTap: () {
               setState(() {
