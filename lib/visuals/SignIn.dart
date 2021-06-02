@@ -34,7 +34,7 @@ class SignInState extends State<SignIn> {
   void showErrorMessage(String errorMessage) {
     SnackBar snackBar = SnackBar(
       content: Text(errorMessage),
-      duration: Duration(seconds: 60),
+      duration: Duration(seconds: 10),
       action: SnackBarAction(
         label: "DISMISS",
         onPressed: () {

@@ -43,7 +43,7 @@ class _AddedUsersState extends State<AddedUsers> {
       content: Text(
         message,
       ),
-      duration: Duration(seconds: 60),
+      duration: Duration(seconds: 10),
       // action: SnackBarAction(
       //   label: "DISMISS",
       //   onPressed: () {

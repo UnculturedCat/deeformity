@@ -29,14 +29,19 @@ class SignUpPageState extends State<SignUpPage> {
 
   void handlCancelled() {
     //Navigator.pop(context);
-    UserSingleton.analytics.logEvent(name: "SignUp canceled");
+    UserSingleton.analytics.logEvent(name: "SignUp_canceled");
     widget.showsigninPage(true);
   }
 
   void openAgreement() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return AgreementPage();
-    }));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return AgreementPage();
+        },
+      ),
+    );
   }
 
   void handleDone() async {

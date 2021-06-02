@@ -25,7 +25,7 @@ class _VerificationPageState extends State<VerificationPage> {
       message = "Could not send verification link to " + widget.email;
       SnackBar snackBar = SnackBar(
         content: Text(message),
-        duration: Duration(seconds: 60),
+        duration: Duration(seconds: 10),
         action: SnackBarAction(
           label: "DISMISS",
           onPressed: () {
@@ -42,7 +42,7 @@ class _VerificationPageState extends State<VerificationPage> {
         message = "Verification link sent to " + widget.email;
         SnackBar snackBar = SnackBar(
           content: Text(message),
-          duration: Duration(seconds: 60),
+          duration: Duration(seconds: 10),
           action: SnackBarAction(
             label: "DISMISS",
             onPressed: () {

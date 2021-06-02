@@ -111,7 +111,7 @@ class _ExercisePageState extends State<ExercisePage> {
                 doc: docSnapshot, field: "Description", value: description);
 
         //log event
-        UserSingleton.analytics.logEvent(name: "Exercise Discription Edited");
+        UserSingleton.analytics.logEvent(name: "Exercise_Discription_Edited");
         // await updateDocumentSnapShot();
       }
     }
@@ -237,6 +237,9 @@ class _ExercisePageState extends State<ExercisePage> {
 
 //attach photo
   Future<void> attachPhoto(ImageSource source) async {
+    setState(() {
+      loading = true;
+    });
     if (await checkAndRequestMediaPermission(source)) {
       //open attach media page
       PickedFile selected = await _imagePicker.getImage(source: source);
@@ -247,6 +250,7 @@ class _ExercisePageState extends State<ExercisePage> {
           setState(() {
             _mediaFile = croppedImage;
             picture = Image.file(_mediaFile);
+            loading = false;
           });
         } else {
           setState(() {
@@ -256,6 +260,7 @@ class _ExercisePageState extends State<ExercisePage> {
       } else {
         setState(() {
           editingMedia = false;
+          loading = false;
         });
       }
       Navigator.pop(context);
@@ -276,6 +281,9 @@ class _ExercisePageState extends State<ExercisePage> {
   }
 
   Future<void> attachVideo(ImageSource source) async {
+    setState(() {
+      loading = true;
+    });
     if (await checkAndRequestMediaPermission(source)) {
       //open attach media page
       PickedFile selected = await _imagePicker.getVideo(source: source);
@@ -288,10 +296,12 @@ class _ExercisePageState extends State<ExercisePage> {
             assetSource: MediaAssetSource.file,
             assetFile: _mediaFile,
           );
+          loading = false;
         });
       } else {
         setState(() {
           editingMedia = false;
+          loading = false;
         });
       }
       Navigator.pop(context);
@@ -644,6 +654,9 @@ class _ExercisePageState extends State<ExercisePage> {
                                 child: Form(
                                   key: _formKey,
                                   child: TextFormField(
+                                    initialValue:
+                                        docSnapshot.data()["Description"] ??
+                                            "No description",
                                     maxLines: null,
                                     minLines: 3,
                                     decoration:

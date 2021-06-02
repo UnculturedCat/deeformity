@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Messages/messageDaniel.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
+import 'package:deeformity/Shared/loading.dart';
 import 'package:deeformity/visuals/AboutUser.dart';
 import 'package:deeformity/visuals/AddedSchedulesList.dart';
 import 'package:deeformity/visuals/AddedUsersList.dart';
@@ -37,6 +38,7 @@ class ProfilePageState extends State<ProfilePage>
   bool editingDescription = false;
   final _discriptionFormKey = GlobalKey<FormState>();
   AddedSchedules addedSchedules;
+  bool loading = false;
 
   // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -124,6 +126,9 @@ class ProfilePageState extends State<ProfilePage>
   }
 
   Future<void> replacePhoto(ImageSource source) async {
+    setState(() {
+      loading = true;
+    });
     if (await checkAndRequestMediaPermission(source)) {
       File profilePictureFile;
       //open attach media page
@@ -149,6 +154,9 @@ class ProfilePageState extends State<ProfilePage>
                   value: mediaFields["downloadURL"]);
         }
       }
+      setState(() {
+        loading = false;
+      });
       Navigator.pop(context);
     }
   }
@@ -178,7 +186,7 @@ class ProfilePageState extends State<ProfilePage>
             children: [
               Container(
                 padding: EdgeInsets.only(top: 10, bottom: 10),
-                child: GestureDetector(
+                child: InkWell(
                   child: Row(children: [
                     //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                     Icon(
@@ -194,7 +202,7 @@ class ProfilePageState extends State<ProfilePage>
               ),
               Container(
                 padding: EdgeInsets.only(top: 10, bottom: 10),
-                child: GestureDetector(
+                child: InkWell(
                   child: Row(children: [
                     //IconButton(icon: Icon(CupertinoIcons.photo), onPressed: () {}),
                     Icon(
@@ -290,7 +298,7 @@ class ProfilePageState extends State<ProfilePage>
                       Icon(
                         Icons.logout,
                         color: Colors.white,
-                        size: MediaQuery.of(context).size.height * 0.02,
+                        //size: MediaQuery.of(context).size.height * 0.02,
                       ),
                       Expanded(
                         child: Container(
@@ -391,258 +399,262 @@ class ProfilePageState extends State<ProfilePage>
   Widget build(BuildContext context) {
     super.build(context);
     return (userDoc != null && userDoc.data != null)
-        ? Scaffold(
-            // key: _scaffoldKey,
-            appBar: AppBar(
-              actionsIconTheme: IconThemeData(
-                color: elementColorWhiteBackground,
-              ),
-              backgroundColor: Colors.white,
-              shadowColor: Colors.white24,
-              title: Text(
-                userDoc.data()["User Name"] ?? "Error Name",
-                style: TextStyle(color: elementColorWhiteBackground),
-              ),
-            ),
-            endDrawer: createDrawer(),
-            backgroundColor: Colors.white,
-            body: Container(
-              padding: EdgeInsets.only(left: 10, right: 10),
-              child: Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(top: 10, bottom: 10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          child: Stack(
-                            alignment: Alignment.bottomCenter,
-                            children: [
-                              CircleAvatar(
-                                radius: 40,
-                                child: userDoc.data()["Profile Picture Url"] ==
-                                        null
-                                    ? Text(userDoc.data()["First Name"][0])
-                                    : null,
-                                backgroundImage: userDoc
-                                            .data()["Profile Picture Url"] !=
-                                        null
-                                    ? NetworkImage(
-                                        userDoc.data()["Profile Picture Url"])
-                                    : null,
-                              ),
-                              IconButton(
-                                icon: Icon(
-                                  Icons.camera_alt,
-                                  color: Colors.white,
-                                ),
-                                onPressed: showPhotoSelectionOption,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Row(
+        ? loading
+            ? Loading()
+            : Scaffold(
+                // key: _scaffoldKey,
+                appBar: AppBar(
+                  actionsIconTheme: IconThemeData(
+                    color: elementColorWhiteBackground,
+                  ),
+                  backgroundColor: Colors.white,
+                  shadowColor: Colors.white24,
+                  title: Text(
+                    userDoc.data()["User Name"] ?? "Error Name",
+                    style: TextStyle(color: elementColorWhiteBackground),
+                  ),
+                ),
+                endDrawer: createDrawer(),
+                backgroundColor: Colors.white,
+                body: Container(
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(top: 10, bottom: 10),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                              child: Stack(
+                                alignment: Alignment.bottomCenter,
                                 children: [
-                                  Text(
-                                    userDoc.data()["First Name"] + " ",
-                                    style: TextStyle(
-                                      color: elementColorWhiteBackground,
-                                      fontSize: fontSize,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                  CircleAvatar(
+                                    radius: 40,
+                                    child: userDoc.data()[
+                                                "Profile Picture Url"] ==
+                                            null
+                                        ? Text(userDoc.data()["First Name"][0])
+                                        : null,
+                                    backgroundImage:
+                                        userDoc.data()["Profile Picture Url"] !=
+                                                null
+                                            ? NetworkImage(userDoc
+                                                .data()["Profile Picture Url"])
+                                            : null,
                                   ),
-                                  Text(
-                                    userDoc.data()["Last Name"],
-                                    style: TextStyle(
-                                      color: elementColorWhiteBackground,
-                                      fontSize: fontSize,
-                                      fontWeight: FontWeight.bold,
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.camera_alt,
+                                      color: Colors.white,
                                     ),
+                                    onPressed: showPhotoSelectionOption,
                                   ),
                                 ],
                               ),
-                              InkWell(
-                                child: Row(
-                                  children: [
-                                    usersConnections != null
-                                        ? Text(
-                                            usersConnections.length.toString(),
-                                            style: TextStyle(
-                                              color: Colors.blue,
-                                              fontSize: fontSize,
-                                            ),
-                                          )
-                                        : SizedBox(),
-                                    Icon(
-                                      Icons.people,
-                                      color: Colors.blue,
-                                    )
-                                  ],
-                                ),
-                                onTap: openAddedUsersPage,
+                            ),
+                            Container(
+                              padding: EdgeInsets.only(left: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        userDoc.data()["First Name"] + " ",
+                                        style: TextStyle(
+                                          color: elementColorWhiteBackground,
+                                          fontSize: fontSize,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        userDoc.data()["Last Name"],
+                                        style: TextStyle(
+                                          color: elementColorWhiteBackground,
+                                          fontSize: fontSize,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  InkWell(
+                                    child: Row(
+                                      children: [
+                                        usersConnections != null
+                                            ? Text(
+                                                usersConnections.length
+                                                    .toString(),
+                                                style: TextStyle(
+                                                  color: Colors.blue,
+                                                  fontSize: fontSize,
+                                                ),
+                                              )
+                                            : SizedBox(),
+                                        Icon(
+                                          Icons.people,
+                                          color: Colors.blue,
+                                        )
+                                      ],
+                                    ),
+                                    onTap: openAddedUsersPage,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(left: 10, right: 10),
-                    child: editingDescription
-                        ? Row(
-                            //crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.70,
-                                child: Form(
-                                  key: _discriptionFormKey,
-                                  child: TextFormField(
-                                    maxLines: 3,
-                                    minLines: 2,
-                                    maxLength: 70,
-                                    initialValue: userDoc.data()["About"] ??
-                                        "Who am I, what am I, Where am I?",
-                                    decoration:
-                                        textInputDecorationWhite.copyWith(
-                                      hintText: "Description",
-                                      hintStyle: TextStyle(
-                                        fontSize: fontSizeInputHint,
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: 10, right: 10),
+                        child: editingDescription
+                            ? Row(
+                                //crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.70,
+                                    child: Form(
+                                      key: _discriptionFormKey,
+                                      child: TextFormField(
+                                        maxLines: 3,
+                                        minLines: 2,
+                                        maxLength: 70,
+                                        initialValue: userDoc.data()["About"] ??
+                                            "Who am I, what am I, Where am I?",
+                                        decoration:
+                                            textInputDecorationWhite.copyWith(
+                                          hintText: "Description",
+                                          hintStyle: TextStyle(
+                                            fontSize: fontSizeInputHint,
+                                          ),
+                                        ),
+                                        onSaved: (input) => aboutUser = input,
                                       ),
                                     ),
-                                    onSaved: (input) => aboutUser = input,
                                   ),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: setUserDescription,
-                                child: Text("Done"),
-                              ),
-                            ],
-                          )
-                        : Row(
-                            children: [
-                              userDoc.data()["About"] != null
-                                  ? Expanded(
-                                      child: Text(
-                                          userDoc
-                                              .data()["About"]
-                                              .toString()
-                                              .trim(),
+                                  TextButton(
+                                    onPressed: setUserDescription,
+                                    child: Text("Done"),
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                children: [
+                                  userDoc.data()["About"] != null
+                                      ? Expanded(
+                                          child: Text(
+                                              userDoc
+                                                  .data()["About"]
+                                                  .toString()
+                                                  .trim(),
+                                              style: TextStyle(
+                                                color:
+                                                    elementColorWhiteBackground,
+                                                fontSize: fontSizeBody,
+                                              ),
+                                              textAlign: TextAlign.justify),
+                                        )
+                                      : Text(
+                                          "Who am I, what am I, Where am I?",
                                           style: TextStyle(
                                             color: elementColorWhiteBackground,
                                             fontSize: fontSizeBody,
                                           ),
-                                          textAlign: TextAlign.justify),
-                                    )
-                                  : Text(
-                                      "Who am I, what am I, Where am I?",
-                                      style: TextStyle(
-                                        color: elementColorWhiteBackground,
-                                        fontSize: fontSizeBody,
-                                      ),
-                                      textAlign: TextAlign.justify,
-                                    ),
-                              IconButton(
-                                  icon: Icon(Icons.edit),
-                                  onPressed: () {
-                                    setState(() {
-                                      editingDescription = true;
-                                    });
-                                  }),
-                            ],
-                          ),
-                  ),
-                  Divider(
-                    color: Colors.black26,
-                  ),
-                  IntrinsicHeight(
-                    //added intrinsicHeight order to have a proper height for the vertical divider
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            child: TextButton(
-                              child: Text("Bio",
-                                  style: TextStyle(
-                                      fontSize: currentpage != Pages.about
-                                          ? 15
-                                          : fontSize,
-                                      color: currentpage != Pages.about
-                                          ? Colors.grey
-                                          : themeColor)),
-                              onPressed: () {
-                                setState(
-                                  () {
-                                    currentpage = Pages.about;
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        VerticalDivider(
-                          //width: 30,
-                          color: Colors.black26,
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            child: TextButton(
-                              child: Text(
-                                "Schedules",
-                                style: TextStyle(
-                                    fontSize: currentpage != Pages.schedules
-                                        ? 15
-                                        : fontSize,
-                                    color: currentpage != Pages.schedules
-                                        ? Colors.grey
-                                        : themeColor),
+                                          textAlign: TextAlign.justify,
+                                        ),
+                                  IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {
+                                        setState(() {
+                                          editingDescription = true;
+                                        });
+                                      }),
+                                ],
                               ),
-                              onPressed: () {
-                                setState(
-                                  () {
-                                    currentpage = Pages.schedules;
+                      ),
+                      Divider(
+                        color: Colors.black26,
+                      ),
+                      IntrinsicHeight(
+                        //added intrinsicHeight order to have a proper height for the vertical divider
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Container(
+                                child: TextButton(
+                                  child: Text("Bio",
+                                      style: TextStyle(
+                                          fontSize: currentpage != Pages.about
+                                              ? 15
+                                              : fontSize,
+                                          color: currentpage != Pages.about
+                                              ? Colors.grey
+                                              : themeColor)),
+                                  onPressed: () {
+                                    setState(
+                                      () {
+                                        currentpage = Pages.about;
+                                      },
+                                    );
                                   },
-                                );
-                              },
+                                ),
+                              ),
                             ),
-                          ),
+                            VerticalDivider(
+                              //width: 30,
+                              color: Colors.black26,
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Container(
+                                child: TextButton(
+                                  child: Text(
+                                    "Schedules",
+                                    style: TextStyle(
+                                        fontSize: currentpage != Pages.schedules
+                                            ? 15
+                                            : fontSize,
+                                        color: currentpage != Pages.schedules
+                                            ? Colors.grey
+                                            : themeColor),
+                                  ),
+                                  onPressed: () {
+                                    setState(
+                                      () {
+                                        currentpage = Pages.schedules;
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Expanded(
+                        child: Container(
+                          color: Colors.grey[50],
+                          child: currentpage == Pages.about
+                              ? AboutUserPage(userDoc)
+                              : currentpage == Pages.schedules
+                                  ? addedSchedules
+                                  : Container(),
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Expanded(
-                    child: Container(
-                      color: Colors.grey[50],
-                      child: currentpage == Pages.about
-                          ? AboutUserPage(userDoc)
-                          : currentpage == Pages.schedules
-                              ? addedSchedules
-                              : Container(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
-        : Center(
-            child: Text("User profile not found"),
-          );
+                ),
+              )
+        : Loading();
   }
 
   @override

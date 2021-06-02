@@ -111,29 +111,38 @@ class WorkoutDayState extends State<WorkoutDay> {
               scheduleDoc: widget.scheduleDoc,
             ),
           ),
-          widget.scheduleDoc.data()["Creator Id"] ==
-                  UserSingleton.userSingleton.userID
-              ? Container(
-                  padding: EdgeInsets.only(top: 20, right: 20, left: 20),
-                  child: FloatingActionButton.extended(
-                      label: Text(
-                        "Add exercise",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: fontSizeButton,
-                        ),
-                      ),
-                      backgroundColor: Color.fromRGBO(27, 98, 49, 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(3)),
-                      ),
-                      onPressed: () {
-                        openCreateExercisePage();
-                      }),
-                )
-              : SizedBox(),
         ],
       ),
+      floatingActionButton: widget.scheduleDoc.data()["Creator Id"] ==
+              UserSingleton.userSingleton.userID
+          ? Align(
+              child: Container(
+                padding: EdgeInsets.only(top: 20, right: 20, left: 20),
+                child: FloatingActionButton.extended(
+                    label: Row(
+                      children: [
+                        Container(
+                          child: Icon(Icons.add),
+                        ),
+                        Text(
+                          "Add exercise",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: fontSizeButton,
+                          ),
+                        ),
+                      ],
+                    ),
+                    backgroundColor: Color.fromRGBO(27, 98, 49, 1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(3)),
+                    ),
+                    onPressed: () {
+                      openCreateExercisePage();
+                    }),
+              ),
+            )
+          : SizedBox(),
     );
   }
 }
