@@ -20,8 +20,18 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
   QuerySnapshot _exercisesSnapshot;
   @override
   void initState() {
-    scheduleDoc = widget.selectedSchedule;
     super.initState();
+    initializeListener(true);
+  }
+
+  void initializeListener(bool firstTime) async {
+    if (!firstTime) {
+      await DatabaseService(uid: scheduleDoc.data()["Creator Id"])
+          .particularUserSchedule(widget.selectedSchedule.id)
+          .listen((event) {})
+          .cancel();
+    }
+    scheduleDoc = widget.selectedSchedule;
     DatabaseService(uid: widget.selectedSchedule.data()["Creator Id"])
         .particularUserSchedule(widget.selectedSchedule.id)
         .listen((event) {
@@ -156,7 +166,7 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
                   Container(
                     //insert Icon
                     child: Text(
-                      convertWorkoutSplitsToString(workoutSplit),
+                      convertWorkoutSplitsToString(workoutSplit) + " Day",
                       style: TextStyle(
                         color: elementColorWhiteBackground,
                         fontSize: fontSizeBody,
@@ -260,6 +270,9 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (scheduleDoc.id != widget.selectedSchedule.id) {
+      initializeListener(false);
+    }
     return StreamBuilder<QuerySnapshot>(
         stream:
             DatabaseService(uid: widget.selectedSchedule.data()["Creator Id"])
