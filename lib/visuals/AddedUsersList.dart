@@ -24,6 +24,15 @@ class _AddedUsersState extends State<AddedUsers> {
 
   String textBoxquery;
 
+  @override
+  void dispose() {
+    DatabaseService(uid: UserSingleton.userSingleton.userID)
+        .addedUsersSnapShot
+        .listen((snapShot) {})
+        .cancel();
+    super.dispose();
+  }
+
   void shareSchedule() async {
     String message = "";
     await Future.forEach(userToShareSchedule, (user) async {

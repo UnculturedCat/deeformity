@@ -16,7 +16,7 @@ class ScheduleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String name = scheduleDoc.data()["Name"];
-    String description = scheduleDoc.data()["Description"] ?? "No description";
+    String description = scheduleDoc.data()["Header"] ?? "No description";
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(

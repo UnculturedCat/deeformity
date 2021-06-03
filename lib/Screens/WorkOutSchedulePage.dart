@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Services/database.dart';
 import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
+import 'package:deeformity/visuals/AddedSchedulesList.dart';
 import 'package:deeformity/visuals/AddedUsersList.dart';
 import 'package:deeformity/visuals/ScheduleView.dart';
 import 'package:flutter/cupertino.dart';
@@ -84,6 +85,15 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
       );
     }
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    DatabaseService(uid: UserSingleton.userSingleton.userID)
+        .addedSchedules
+        .listen((event) {})
+        .cancel();
+    super.dispose();
   }
 
   void addScheduleToDataBase() async {
@@ -332,6 +342,40 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     );
   }
 
+  void showListOfSchedules() {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.only(top: 50),
+          height: MediaQuery.of(context).size.height * 0.85,
+          child: AddedSchedules(
+            UserSingleton.userSingleton.userID,
+            cardFunction: setSelectedSchedule,
+          ),
+        );
+      },
+    );
+  }
+
+  void setSelectedSchedule(QueryDocumentSnapshot doc) {
+    setState(
+      () {
+        selectedSchedule = doc;
+        aboutPage = AboutSchedulePage(
+          doc: doc,
+          key: Key(doc.id),
+        );
+        scheduleViewPage = ScheduleViewPage(
+          selectedSchedule: doc,
+        );
+      },
+    );
+  }
+
   void deleteSchedule() {
     showCupertinoDialog(
       context: context,
@@ -371,41 +415,58 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     return GestureDetector(
       child: Scaffold(
         appBar: AppBar(
-          actionsIconTheme: IconThemeData(color: elementColorWhiteBackground),
+          actionsIconTheme: IconThemeData(color: themeColor),
           backgroundColor: Colors.white,
           shadowColor: Colors.white24,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              schedules == null ||
-                      schedules.isEmpty //check if user has saved any schedules
-                  ? SizedBox()
-                  : DropdownButton<QueryDocumentSnapshot>(
-                      value: selectedSchedule,
-                      items: schedules
-                          .map(
-                            (value) => DropdownMenuItem<QueryDocumentSnapshot>(
-                              value: value,
-                              child: Text(value.data()["Name"] ?? "Error Name"),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (QueryDocumentSnapshot currentVal) {
-                        setState(
-                          () {
-                            selectedSchedule = currentVal;
-                            aboutPage = AboutSchedulePage(
-                              doc: currentVal,
-                              key: Key(currentVal.id),
-                            );
-                            scheduleViewPage = ScheduleViewPage(
-                              selectedSchedule: currentVal,
-                            );
-                          },
-                        );
-                      },
-                    ),
-            ],
+          // title: Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     schedules == null ||
+          //             schedules.isEmpty //check if user has saved any schedules
+          //         ? SizedBox()
+          //         : DropdownButton<QueryDocumentSnapshot>(
+          //             value: selectedSchedule,
+          //             items: schedules
+          //                 .map(
+          //                   (value) => DropdownMenuItem<QueryDocumentSnapshot>(
+          //                     value: value,
+          //                     child: Text(
+          //                       value.data()["Name"] ?? "Error Name",
+          //                       style: TextStyle(
+          //                           color: themeColor,
+          //                           fontWeight: FontWeight.bold),
+          //                     ),
+          //                   ),
+          //                 )
+          //                 .toList(),
+          //             onChanged: (QueryDocumentSnapshot currentVal) {
+          //               setState(
+          //                 () {
+          //                   selectedSchedule = currentVal;
+          //                   aboutPage = AboutSchedulePage(
+          //                     doc: currentVal,
+          //                     key: Key(currentVal.id),
+          //                   );
+          //                   scheduleViewPage = ScheduleViewPage(
+          //                     selectedSchedule: currentVal,
+          //                   );
+          //                 },
+          //               );
+          //             },
+          //           ),
+          //   ],
+          // ),
+          title: TextButton(
+            child: Text(
+              selectedSchedule != null
+                  ? selectedSchedule.data()["Name"] ?? "No Name"
+                  : " ",
+              style: TextStyle(
+                  color: themeColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: fontSize),
+            ),
+            onPressed: showListOfSchedules,
           ),
         ),
         backgroundColor: Colors.white,
@@ -615,7 +676,8 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                       Expanded(
                         child: Container(
                           color: Colors.grey[50],
-                          padding: EdgeInsets.only(top: 10, left: 5, right: 5),
+                          padding:
+                              EdgeInsets.only(top: 10, left: 10, right: 10),
                           child: currentPage == Pages.schedule
                               ? scheduleViewPage
                               : aboutPage,

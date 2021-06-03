@@ -43,6 +43,15 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
     });
   }
 
+  @override
+  void dispose() {
+    DatabaseService(uid: widget.selectedSchedule.data()["Creator Id"])
+        .particularUserSchedule(widget.selectedSchedule.id)
+        .listen((event) {})
+        .cancel();
+    super.dispose();
+  }
+
   void openExerciseCard(QueryDocumentSnapshot doc) {
     Navigator.push(
       context,

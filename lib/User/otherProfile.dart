@@ -61,6 +61,15 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    DatabaseService(uid: widget.userDoc.id)
+        .addedUsersSnapShot
+        .listen((event) {})
+        .cancel();
+    super.dispose();
+  }
+
   bool isUserAdded(QuerySnapshot snapshot) {
     bool userAdded = false;
     snapshot.docs.forEach((doc) {
@@ -314,7 +323,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
               child: Container(
                 color: Colors.grey[50],
                 child: currentpage == Pages.schedules
-                    ? AddedSchedules(userDoc)
+                    ? AddedSchedules(userDoc.id)
                     : AboutUserPage(userDoc),
               ),
             ),

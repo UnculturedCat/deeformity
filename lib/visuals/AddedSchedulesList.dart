@@ -8,8 +8,9 @@ import 'package:deeformity/Shared/constants.dart';
 import 'package:deeformity/Shared/ScheduleCardCreator.dart';
 
 class AddedSchedules extends StatefulWidget {
-  final DocumentSnapshot userDoc;
-  AddedSchedules(this.userDoc);
+  final String userDocID;
+  final Function cardFunction;
+  AddedSchedules(this.userDocID, {this.cardFunction});
   @override
   _AddedSchedulesState createState() => _AddedSchedulesState();
 }
@@ -21,7 +22,7 @@ class _AddedSchedulesState extends State<AddedSchedules> {
 
   @override
   void initState() {
-    DatabaseService(uid: widget.userDoc.id).addedSchedules.listen((event) {
+    DatabaseService(uid: widget.userDocID).addedSchedules.listen((event) {
       scheduleCards = [];
       addedSchedules = event.docs;
       event.docs.forEach((element) {
@@ -32,6 +33,15 @@ class _AddedSchedulesState extends State<AddedSchedules> {
       }
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    DatabaseService(uid: widget.userDocID)
+        .addedSchedules
+        .listen((event) {})
+        .cancel();
+    super.dispose();
   }
 
   void openScheduleCard({
@@ -55,6 +65,11 @@ class _AddedSchedulesState extends State<AddedSchedules> {
         .getParticularUserDoc(doc.data()["Creator Id"]);
   }
 
+  void callExternalFunction(QueryDocumentSnapshot doc) {
+    widget.cardFunction(doc);
+    Navigator.pop(context);
+  }
+
   void createScheduleCard(QueryDocumentSnapshot doc) {
     if (mounted) {
       getCreatorDoc(doc).then(
@@ -63,7 +78,9 @@ class _AddedSchedulesState extends State<AddedSchedules> {
             InkWell(
               child: ScheduleCard(scheduleDoc: doc, creatorDoc: value),
               onTap: () {
-                openScheduleCard(scheduleDoc: doc, creatorDoc: value);
+                widget.cardFunction != null
+                    ? callExternalFunction(doc)
+                    : openScheduleCard(scheduleDoc: doc, creatorDoc: value);
               },
             ),
           );

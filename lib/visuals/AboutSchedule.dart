@@ -26,6 +26,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
   AppVideoPlayer appVideoPlayer;
   bool editingMedia = false;
   bool editingDescription = false;
+  bool editingHeader = false;
   String mediaURL;
   bool correctVideoAspectRatio = false;
   final ImagePicker _imagePicker = ImagePicker();
@@ -36,6 +37,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
   DocumentSnapshot docSnapshot;
   String description;
   final _formKey = GlobalKey<FormState>();
+  final _formKeyHeader = GlobalKey<FormState>();
   var media;
 
   Widget creatorUserCard;
@@ -94,6 +96,23 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
     });
   }
 
+  void setHeader() async {
+    if (_formKeyHeader.currentState.validate()) {
+      _formKeyHeader.currentState.save();
+      if (description.isNotEmpty) {
+        await DatabaseService(uid: UserSingleton.userSingleton.userID)
+            .updateScheduleField(
+                doc: docSnapshot, field: "Header", value: description);
+
+        //log event
+        UserSingleton.analytics.logEvent(name: "Schedule_Header_Edited");
+        // await updateDocumentSnapShot();
+      }
+    }
+    setState(() {
+      editingHeader = false;
+    });
+  }
   // Future updateDocumentSnapShot() async {
   //   DocumentSnapshot newDoc;
   //   newDoc = await DatabaseService(uid: UserSingleton.userSingleton.userID)
@@ -432,6 +451,63 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
         ? Loading()
         : ListView(
             children: [
+              Container(
+                padding: EdgeInsets.only(top: 5, bottom: 5),
+                child: editingHeader
+                    ? Row(
+                        //crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.70,
+                            child: Form(
+                              key: _formKeyHeader,
+                              child: TextFormField(
+                                initialValue:
+                                    docSnapshot.data()["Header"] ?? "",
+                                maxLines: 1,
+                                maxLength: 30,
+                                decoration: textInputDecorationWhite.copyWith(
+                                    hintText: "Add a header",
+                                    hintStyle:
+                                        TextStyle(fontSize: fontSizeInputHint)),
+                                onSaved: (input) => description = input,
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: setHeader,
+                            child: Text("Done"),
+                          ),
+                        ],
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            docSnapshot.data()["Header"] ?? " ",
+                            style: TextStyle(
+                                fontSize: fontSizeBody,
+                                color: elementColorWhiteBackground,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          Container(
+                            child: createdByYou
+                                ? IconButton(
+                                    icon: Icon(Icons.edit),
+                                    iconSize: iconSizeBody,
+                                    color: elementColorWhiteBackground,
+                                    onPressed: () {
+                                      setState(() {
+                                        editingHeader = true;
+                                      });
+                                    },
+                                  )
+                                : SizedBox(),
+                          )
+                        ],
+                      ),
+              ),
               Column(
                 children: [
                   Container(

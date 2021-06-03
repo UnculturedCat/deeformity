@@ -57,14 +57,27 @@ class ProfilePageState extends State<ProfilePage>
           .anyUserData
           .listen((event) {
         userDoc = event;
-        addedSchedules = AddedSchedules(userDoc);
+        addedSchedules = AddedSchedules(UserSingleton.userSingleton.userID);
         if (mounted) {
           setState(() {});
         }
       });
     }
-    addedSchedules = AddedSchedules(userDoc);
+    addedSchedules = AddedSchedules(UserSingleton.userSingleton.userID);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    DatabaseService(uid: UserSingleton.userSingleton.userID)
+        .addedUsersSnapShot
+        .listen((event) {})
+        .cancel();
+    DatabaseService(uid: UserSingleton.userSingleton.userID)
+        .anyUserData
+        .listen((event) {})
+        .cancel();
+    super.dispose();
   }
 
   void logOut() {
@@ -428,7 +441,7 @@ class ProfilePageState extends State<ProfilePage>
                           children: [
                             Container(
                               child: Stack(
-                                alignment: Alignment.bottomCenter,
+                                //alignment: Alignment.bottomCenter,
                                 children: [
                                   CircleAvatar(
                                     radius: 40,
@@ -444,13 +457,23 @@ class ProfilePageState extends State<ProfilePage>
                                                 .data()["Profile Picture Url"])
                                             : null,
                                   ),
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.camera_alt,
-                                      color: Colors.white,
+                                  Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: IconButton(
+                                      icon: Icon(
+                                        Icons.camera_alt,
+                                        color: Colors.white,
+                                      ),
+                                      onPressed: showPhotoSelectionOption,
                                     ),
-                                    onPressed: showPhotoSelectionOption,
                                   ),
+                                  // IconButton(
+                                  //   icon: Icon(
+                                  //     Icons.camera_alt,
+                                  //     color: Colors.white,
+                                  //   ),
+                                  //   onPressed: showPhotoSelectionOption,
+                                  // ),
                                 ],
                               ),
                             ),

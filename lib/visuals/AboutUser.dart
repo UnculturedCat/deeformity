@@ -55,6 +55,12 @@ class _AboutUserPageState extends State<AboutUserPage> {
     initMedia();
   }
 
+  @override
+  void dispose() {
+    DatabaseService(uid: widget.doc.id).anyUserData.listen((event) {}).cancel();
+    super.dispose();
+  }
+
   void setDescription() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
