@@ -79,6 +79,8 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
             );
             scheduleViewPage =
                 ScheduleViewPage(selectedSchedule: selectedSchedule);
+          } else if (initializeSelectedSchedule && schedules.isEmpty) {
+            selectedSchedule = null;
           }
           setState(() {});
         },
@@ -393,7 +395,8 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
               ),
               onPressed: () async {
                 await DatabaseService(uid: UserSingleton.userSingleton.userID)
-                    .deleteSchedule(selectedSchedule, _schedulesExercises);
+                    .deleteSchedule(
+                        doc: selectedSchedule, exercises: _schedulesExercises);
                 Navigator.pop(context);
               },
             ),
@@ -462,9 +465,10 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                   ? selectedSchedule.data()["Name"] ?? "No Name"
                   : " ",
               style: TextStyle(
-                  color: themeColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: fontSize),
+                color: themeColor,
+                fontWeight: FontWeight.bold,
+                fontSize: fontSize,
+              ),
             ),
             onPressed: showListOfSchedules,
           ),
@@ -524,22 +528,31 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            child: Text(
-                              "Whoops, you have no schedule. \nTap on \"New Schedule\" to create a schedule or request a schedule from another user",
-                              style: TextStyle(
-                                color: elementColorWhiteBackground,
-                                fontSize: fontSize,
-                                fontWeight: FontWeight.w600,
+                          Icon(
+                            Icons.pending_actions,
+                            color: Colors.black38,
+                            size: fontSize,
+                          ),
+                          Column(
+                            children: [
+                              Container(
+                                child: Text(
+                                  "Create a schedule or request a schedule from another user",
+                                  style: TextStyle(
+                                    color: Colors.black38,
+                                    fontSize: fontSize,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                              textAlign: TextAlign.center,
-                            ),
+                            ],
                           ),
                           Container(
                             padding: EdgeInsets.only(top: 20),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                primary: Color.fromRGBO(47, 72, 100, 1),
+                                primary: themeColor,
                                 elevation: 5,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
@@ -548,7 +561,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                               child: Container(
                                 padding: EdgeInsets.all(5),
                                 child: Text(
-                                  "New Schedule",
+                                  "Create Schedule",
                                   style: TextStyle(
                                       fontSize:
                                           MediaQuery.of(context).size.height *

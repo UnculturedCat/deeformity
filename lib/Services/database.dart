@@ -410,12 +410,12 @@ class DatabaseService {
     print("Deleted routine");
   }
 
-  Future deleteSchedule(
+  Future deleteSchedule({
     QueryDocumentSnapshot doc,
-    List<DocumentSnapshot> routineSnapshot,
-  ) async {
-    if (routineSnapshot != null) {
-      Future.forEach(routineSnapshot, (document) async {
+    List<DocumentSnapshot> exercises,
+  }) async {
+    if (exercises != null) {
+      Future.forEach(exercises, (document) async {
         await deleteRoutine(doc: document, deletingSchedule: true);
       });
     }

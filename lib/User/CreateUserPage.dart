@@ -107,8 +107,8 @@ class _CreateUserPageState extends State<CreateUserPage> {
                                 textAlign: TextAlign.justify,
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontFamily: "Romanesco",
-                                  fontSize: 30,
+                                  //fontFamily: "Romanesco",
+                                  fontSize: 15,
                                 ),
                               ),
                             ),

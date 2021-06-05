@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Screens/MessagesPage.dart';
 import 'package:deeformity/Services/database.dart';
 //import 'package:deeformity/Shared/infoSingleton.dart';
-import 'package:deeformity/Shared/loading.dart';
+
 import 'package:deeformity/User/CreateUserPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -69,46 +69,44 @@ class NavigatorClassState extends State<NavigatorClass> {
               if (doc.id == widget.user.uid) userFound = true;
             });
           }
-          return allUsers.isEmpty
-              ? Loading()
-              : userFound
-                  ? Scaffold(
-                      body: PageView(
-                        controller: _pageController,
-                        children: _pages,
-                        onPageChanged: _pageChanged,
-                      ),
-                      bottomNavigationBar: BottomNavigationBar(
-                        type: BottomNavigationBarType.fixed,
-                        currentIndex: _currentIndex,
-                        selectedItemColor: Color.fromRGBO(21, 33, 47, 1),
-                        iconSize: 30,
-                        backgroundColor: Colors.white,
-                        unselectedItemColor: Colors.grey,
-                        //elevation: 8,
-                        items: [
-                          //BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-                          //BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Finances"),
+          return userFound
+              ? Scaffold(
+                  body: PageView(
+                    controller: _pageController,
+                    children: _pages,
+                    onPageChanged: _pageChanged,
+                  ),
+                  bottomNavigationBar: BottomNavigationBar(
+                    type: BottomNavigationBarType.fixed,
+                    currentIndex: _currentIndex,
+                    selectedItemColor: Color.fromRGBO(21, 33, 47, 1),
+                    iconSize: 30,
+                    backgroundColor: Colors.white,
+                    unselectedItemColor: Colors.grey,
+                    //elevation: 8,
+                    items: [
+                      //BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+                      //BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Finances"),
 
-                          BottomNavigationBarItem(
-                              icon: Icon(CupertinoIcons.calendar_circle_fill),
-                              label: "Workout"),
-                          BottomNavigationBarItem(
-                            icon: Icon(CupertinoIcons.search),
-                            label: "Search",
-                          ),
-                          BottomNavigationBarItem(
-                              icon: Icon(CupertinoIcons.chat_bubble),
-                              label: "Messages"),
-                          BottomNavigationBarItem(
-                              icon: Icon(CupertinoIcons.profile_circled),
-                              label: "Profile")
-                        ],
-                        onTap: _itemTapped,
+                      BottomNavigationBarItem(
+                          icon: Icon(CupertinoIcons.calendar_circle_fill),
+                          label: "Workout"),
+                      BottomNavigationBarItem(
+                        icon: Icon(CupertinoIcons.search),
+                        label: "Search",
                       ),
-                    )
-                  : CreateUserPage(
-                      widget.user); //if user not create navigate to this page
+                      BottomNavigationBarItem(
+                          icon: Icon(CupertinoIcons.chat_bubble),
+                          label: "Messages"),
+                      BottomNavigationBarItem(
+                          icon: Icon(CupertinoIcons.profile_circled),
+                          label: "Profile")
+                    ],
+                    onTap: _itemTapped,
+                  ),
+                )
+              : CreateUserPage(
+                  widget.user); //if user not create navigate to this page
         });
   }
 }

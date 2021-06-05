@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Services/database.dart';
 import 'package:deeformity/Shared/constants.dart';
+import 'package:deeformity/Shared/infoSingleton.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'ExercisePage.dart';
@@ -31,10 +33,10 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
           .listen((event) {})
           .cancel();
     }
-    scheduleDoc = widget.selectedSchedule;
     DatabaseService(uid: widget.selectedSchedule.data()["Creator Id"])
         .particularUserSchedule(widget.selectedSchedule.id)
         .listen((event) {
+      scheduleDoc = null;
       if (mounted) {
         setState(() {
           scheduleDoc = event; //get latest snapshot from schedule Creator.
@@ -145,6 +147,41 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
       onLongPress: () {},
       onTap: () {
         openExerciseCard(doc);
+      },
+    );
+  }
+
+  void unFollowSchedule() {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text("Warning"),
+          content: Text("Are you sure you want permanently unfollow " +
+              widget.selectedSchedule.data()["Name"] +
+              "?"),
+          actions: [
+            CupertinoActionSheetAction(
+              child: Text(
+                "Yes",
+                style: TextStyle(color: Colors.red),
+              ),
+              onPressed: () async {
+                await DatabaseService(uid: UserSingleton.userSingleton.userID)
+                    .deleteSchedule(
+                        doc: widget.selectedSchedule,
+                        exercises: _schedulesExercises);
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoActionSheetAction(
+              child: Text("No"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
       },
     );
   }
@@ -279,33 +316,86 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (scheduleDoc.id != widget.selectedSchedule.id) {
+    if (scheduleDoc != null && scheduleDoc.id != widget.selectedSchedule.id) {
       initializeListener(false);
     }
-    return StreamBuilder<QuerySnapshot>(
-        stream:
-            DatabaseService(uid: widget.selectedSchedule.data()["Creator Id"])
+    return scheduleDoc != null && scheduleDoc.data() != null
+        ? StreamBuilder<QuerySnapshot>(
+            stream: DatabaseService(
+                    uid: widget.selectedSchedule.data()["Creator Id"])
                 .routines(scheduleId: widget.selectedSchedule.id),
-        builder: (context, routinesSnapshot) {
-          if (routinesSnapshot != null && routinesSnapshot.hasData) {
-            _exercisesSnapshot = routinesSnapshot.data;
-            _schedulesExercises = [];
-            _exercisesSnapshot.docs.forEach(
-              (exerciseDoc) {
-                if (exerciseDoc.data()["Schedule Id"] ==
-                    widget.selectedSchedule.id) {
-                  _schedulesExercises.add(exerciseDoc);
-                }
-              },
-            );
-          }
-          return ListView(
-            children: DaysOfTheWeek.values
-                .map(
-                  (day) => createDayRow(convertDayToString(day), day),
-                )
-                .toList(),
+            builder: (context, routinesSnapshot) {
+              if (routinesSnapshot != null && routinesSnapshot.hasData) {
+                _exercisesSnapshot = routinesSnapshot.data;
+                _schedulesExercises = [];
+                _exercisesSnapshot.docs.forEach(
+                  (exerciseDoc) {
+                    if (exerciseDoc.data()["Schedule Id"] ==
+                        widget.selectedSchedule.id) {
+                      _schedulesExercises.add(exerciseDoc);
+                    }
+                  },
+                );
+              }
+              return ListView(
+                children: DaysOfTheWeek.values
+                    .map(
+                      (day) => createDayRow(convertDayToString(day), day),
+                    )
+                    .toList(),
+              );
+            })
+        : Container(
+            padding: EdgeInsets.only(left: 10, right: 10),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.broken_image,
+                    color: Colors.black38,
+                    size: fontSize,
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        child: Text(
+                          "Creator seems to have deleted this schedule",
+                          style: TextStyle(
+                            color: Colors.black38,
+                            fontSize: fontSize,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(top: 20),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: themeColor,
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        child: Text(
+                          "Unfollow Schedule",
+                          style: TextStyle(
+                              fontSize:
+                                  MediaQuery.of(context).size.height * 0.019),
+                        ),
+                      ),
+                      onPressed: unFollowSchedule,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           );
-        });
   }
 }

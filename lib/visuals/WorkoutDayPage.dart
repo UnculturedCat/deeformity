@@ -116,8 +116,9 @@ class WorkoutDayState extends State<WorkoutDay> {
       floatingActionButton: widget.scheduleDoc.data()["Creator Id"] ==
               UserSingleton.userSingleton.userID
           ? Align(
+              alignment: Alignment.bottomCenter,
               child: Container(
-                padding: EdgeInsets.only(top: 20, right: 20, left: 20),
+                //padding: EdgeInsets.only(top: 20, right: 20),
                 child: FloatingActionButton.extended(
                     label: Row(
                       children: [

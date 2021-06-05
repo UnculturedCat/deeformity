@@ -457,23 +457,17 @@ class ProfilePageState extends State<ProfilePage>
                                                 .data()["Profile Picture Url"])
                                             : null,
                                   ),
-                                  Align(
-                                    alignment: Alignment.bottomCenter,
+                                  Positioned(
+                                    top: 45,
+                                    left: 45,
                                     child: IconButton(
                                       icon: Icon(
                                         Icons.camera_alt,
-                                        color: Colors.white,
+                                        color: Colors.black54,
                                       ),
                                       onPressed: showPhotoSelectionOption,
                                     ),
                                   ),
-                                  // IconButton(
-                                  //   icon: Icon(
-                                  //     Icons.camera_alt,
-                                  //     color: Colors.white,
-                                  //   ),
-                                  //   onPressed: showPhotoSelectionOption,
-                                  // ),
                                 ],
                               ),
                             ),
