@@ -8,6 +8,7 @@ const Color elementColorWhiteBackground = Color.fromRGBO(21, 33, 47, 1);
 const Color themeColor = Color.fromRGBO(47, 72, 100, 1);
 const double fontSizeBody = 15;
 const double iconSizeBody = 15;
+const double fontSizeHeader = 20;
 
 //Cards
 const TextStyle cardHeaderStyle = TextStyle(color: Colors.white, fontSize: 30);

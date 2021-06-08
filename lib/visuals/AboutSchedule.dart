@@ -484,12 +484,15 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
-                            docSnapshot.data()["Header"] ?? " ",
-                            style: TextStyle(
-                                fontSize: fontSizeBody,
-                                color: elementColorWhiteBackground,
-                                fontWeight: FontWeight.w600),
+                          Container(
+                            padding: EdgeInsets.only(top: 20),
+                            child: Text(
+                              docSnapshot.data()["Header"] ?? "No Header",
+                              style: TextStyle(
+                                  fontSize: fontSizeHeader,
+                                  color: elementColorWhiteBackground,
+                                  fontWeight: FontWeight.w600),
+                            ),
                           ),
                           Container(
                             child: createdByYou

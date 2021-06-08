@@ -110,7 +110,7 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
       child: Card(
         key: Key(doc.id),
         color: Colors.white,
-        elevation: 5,
+        elevation: 3,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(10),

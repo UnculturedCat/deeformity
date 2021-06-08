@@ -110,6 +110,12 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     }
   }
 
+  //Implement later
+  void updateSelectedSchedule(String scheduleId) async {
+    await await DatabaseService(uid: UserSingleton.userSingleton.userID)
+        .updateUserData(field: "Last Used Schedule", value: scheduleId);
+  }
+
   Widget createScheduleButton({bool popContext = false}) {
     return TextButton(
       onPressed: () {
@@ -194,7 +200,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Icon(
-                        CupertinoIcons.floppy_disk,
+                        CupertinoIcons.add,
                         color: Colors.white,
                         size: MediaQuery.of(context).size.height * 0.02,
                       ),
@@ -233,46 +239,56 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.02,
               ),
-              InkWell(
-                child: Container(
-                  padding: EdgeInsets.all(6),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.offline_share,
-                        color: Colors.white,
-                        size: MediaQuery.of(context).size.height * 0.02,
-                      ),
-                      Expanded(
+              Container(
+                child: selectedSchedule.data()["Creator Id"] ==
+                        UserSingleton.userSingleton.userID
+                    ? InkWell(
                         child: Container(
-                          padding: EdgeInsets.only(left: 20),
-                          child: Text(
-                            "Share Schedule",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize:
-                                  MediaQuery.of(context).size.height * 0.02,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 1,
-                            softWrap: false,
-                            overflow: TextOverflow.visible,
+                          padding: EdgeInsets.all(6),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(
+                                //Icons.offline_share,
+                                CupertinoIcons.share,
+                                color: Colors.white,
+                                size: MediaQuery.of(context).size.height * 0.02,
+                              ),
+                              Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.only(left: 20),
+                                  child: Text(
+                                    "Share Schedule",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize:
+                                          MediaQuery.of(context).size.height *
+                                              0.02,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    overflow: TextOverflow.visible,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                onTap: shareSchedule,
+                        onTap: shareSchedule,
+                      )
+                    : SizedBox(),
               ),
               SizedBox(
                 height: 20,
               ),
               Container(
-                child: Divider(
-                  color: Colors.white,
-                ),
+                child: selectedSchedule.data()["Creator Id"] ==
+                        UserSingleton.userSingleton.userID
+                    ? Divider(
+                        color: Colors.white,
+                      )
+                    : SizedBox(),
               ),
               SizedBox(
                 height: 20,

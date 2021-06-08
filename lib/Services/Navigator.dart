@@ -89,7 +89,7 @@ class NavigatorClassState extends State<NavigatorClass> {
                       //BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Finances"),
 
                       BottomNavigationBarItem(
-                          icon: Icon(CupertinoIcons.calendar_circle_fill),
+                          icon: Icon(Icons.fitness_center_rounded),
                           label: "Workout"),
                       BottomNavigationBarItem(
                         icon: Icon(CupertinoIcons.search),
