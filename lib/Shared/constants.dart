@@ -230,6 +230,7 @@ enum WorkoutSplits {
   rest,
   fullbody
 }
+enum Language { en, de, nl }
 
 String convertWorkoutSplitsToString(WorkoutSplits splits) {
   String split = " ";

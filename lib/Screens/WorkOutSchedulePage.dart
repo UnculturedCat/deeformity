@@ -332,7 +332,42 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                           deleteSchedule();
                         },
                       )
-                    : SizedBox(),
+                    : InkWell(
+                        child: Container(
+                          padding: EdgeInsets.all(6),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(
+                                CupertinoIcons.delete,
+                                color: Colors.redAccent,
+                                size: MediaQuery.of(context).size.height * 0.02,
+                              ),
+                              Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.only(left: 20),
+                                  child: Text(
+                                    "Unfollow Schedule",
+                                    style: TextStyle(
+                                      color: Colors.redAccent,
+                                      fontSize:
+                                          MediaQuery.of(context).size.height *
+                                              0.02,
+                                    ),
+                                    //maxLines: 1,
+                                    softWrap: true,
+                                    overflow: TextOverflow.visible,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          unFollowSchedule();
+                        },
+                      ),
               ),
             ],
           ),
@@ -428,12 +463,46 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
     );
   }
 
+  void unFollowSchedule() {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text("Warning"),
+          content: Text("Are you sure you want permanently unfollow " +
+              selectedSchedule.data()["Name"] +
+              "?"),
+          actions: [
+            CupertinoActionSheetAction(
+              child: Text(
+                "Yes",
+                style: TextStyle(color: Colors.red),
+              ),
+              onPressed: () async {
+                await DatabaseService(uid: UserSingleton.userSingleton.userID)
+                    .deleteSchedule(doc: selectedSchedule, exercises: null);
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoActionSheetAction(
+              child: Text("No"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget build(BuildContext context) {
     super.build(context);
 
     return GestureDetector(
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           actionsIconTheme: IconThemeData(color: themeColor),
           backgroundColor: Colors.white,
           shadowColor: Colors.white24,

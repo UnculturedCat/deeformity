@@ -399,6 +399,7 @@ class _ExercisePageState extends State<ExercisePage> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
+        centerTitle: true,
         iconTheme: IconThemeData(color: elementColorWhiteBackground),
         //centerTitle: false,
         title: Text(

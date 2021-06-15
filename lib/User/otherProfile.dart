@@ -107,6 +107,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           userDoc.data()["User Name"] ?? "Error Name",
           style: TextStyle(color: elementColorWhiteBackground),

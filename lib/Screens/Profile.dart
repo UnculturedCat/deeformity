@@ -417,6 +417,7 @@ class ProfilePageState extends State<ProfilePage>
             : Scaffold(
                 // key: _scaffoldKey,
                 appBar: AppBar(
+                  centerTitle: true,
                   actionsIconTheme: IconThemeData(
                     color: elementColorWhiteBackground,
                   ),

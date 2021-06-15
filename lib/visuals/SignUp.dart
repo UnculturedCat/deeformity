@@ -1,4 +1,5 @@
 import 'package:deeformity/Services/AgreementPage.dart';
+import 'package:deeformity/Services/PolicyPage.dart';
 import 'package:deeformity/Shared/infoSingleton.dart';
 import 'package:deeformity/Shared/loading.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,6 +22,7 @@ class SignUpPageState extends State<SignUpPage> {
   String location = dropDownLocations.first.value;
   bool loading = false;
   bool agreed = false;
+  bool viewed = false;
 
   @override
   void dispose() {
@@ -44,6 +46,17 @@ class SignUpPageState extends State<SignUpPage> {
     );
   }
 
+  void openPolicy() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return PrivacyPolicyPage();
+        },
+      ),
+    );
+  }
+
   void handleDone() async {
     setState(() {
       loading = true;
@@ -53,9 +66,13 @@ class SignUpPageState extends State<SignUpPage> {
     String errorMessage;
     final formState = formKey.currentState;
     if (!agreed) {
-      errorMessage = "Please check the \"Beta Testing Agreement\" box";
+      errorMessage = "Please check the \"Agreed Beta Testing\" box";
     }
-    if (formState.validate() && agreed) {
+    if (!viewed) {
+      errorMessage =
+          errorMessage + " Please check the \"Viewed Privacy Policy\" box";
+    }
+    if (formState.validate() && agreed && viewed) {
       formState.save();
 
       //verify email before creating user
@@ -73,8 +90,10 @@ class SignUpPageState extends State<SignUpPage> {
     }
     if (!success || !agreed) {
       setState(() => loading = false);
-      SnackBar snackBar = SnackBar(content: Text(errorMessage));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (errorMessage != null && errorMessage.isNotEmpty) {
+        SnackBar snackBar = SnackBar(content: Text(errorMessage));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     }
   }
 
@@ -220,10 +239,10 @@ class SignUpPageState extends State<SignUpPage> {
                       child: Theme(
                         data: ThemeData(unselectedWidgetColor: Colors.white),
                         child: CheckboxListTile(
-                          contentPadding: EdgeInsets.all(10),
+                          //contentPadding: EdgeInsets.all(10),
                           title: TextButton(
                             child: Text(
-                              "Beta Testing Agreement",
+                              "Agreed Beta Testing",
                               style: TextStyle(
                                   decoration: TextDecoration.underline),
                             ),
@@ -233,6 +252,30 @@ class SignUpPageState extends State<SignUpPage> {
                           onChanged: (value) {
                             setState(() {
                               agreed = value;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    Container(
+                      child: Theme(
+                        data: ThemeData(unselectedWidgetColor: Colors.white),
+                        child: CheckboxListTile(
+                          //contentPadding: EdgeInsets.all(10),
+                          title: TextButton(
+                            child: Text(
+                              "Viewed Privacy Policy",
+                              style: TextStyle(
+                                  decoration: TextDecoration.underline),
+                            ),
+                            onPressed: () {
+                              openPolicy();
+                            },
+                          ),
+                          value: viewed,
+                          onChanged: (value) {
+                            setState(() {
+                              viewed = value;
                             });
                           },
                         ),

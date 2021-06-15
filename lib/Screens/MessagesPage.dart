@@ -92,7 +92,7 @@ class MessagesPageState extends State<MessagesPage>
     super.build(context);
     return Scaffold(
       appBar: AppBar(
-        //centerTitle: false,
+        centerTitle: true,
         backgroundColor: Colors.white,
         shadowColor: Colors.white24,
         iconTheme: IconThemeData(color: elementColorWhiteBackground),

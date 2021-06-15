@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deeformity/Screens/MessagesPage.dart';
 import 'package:deeformity/Services/database.dart';
+import 'package:deeformity/Shared/loading.dart';
 //import 'package:deeformity/Shared/infoSingleton.dart';
 
 import 'package:deeformity/User/CreateUserPage.dart';
@@ -63,50 +64,56 @@ class NavigatorClassState extends State<NavigatorClass> {
         stream: DatabaseService().allUsers,
         builder: (context, snapshot) {
           bool userFound = false;
+          bool loading = true;
           if (snapshot != null && snapshot.data != null) {
             allUsers = snapshot.data.docs;
             allUsers.forEach((doc) {
-              if (doc.id == widget.user.uid) userFound = true;
+              if (doc.id == widget.user.uid) {
+                userFound = true;
+              }
             });
+            loading = false;
           }
-          return userFound
-              ? Scaffold(
-                  body: PageView(
-                    controller: _pageController,
-                    children: _pages,
-                    onPageChanged: _pageChanged,
-                  ),
-                  bottomNavigationBar: BottomNavigationBar(
-                    type: BottomNavigationBarType.fixed,
-                    currentIndex: _currentIndex,
-                    selectedItemColor: Color.fromRGBO(21, 33, 47, 1),
-                    iconSize: 30,
-                    backgroundColor: Colors.white,
-                    unselectedItemColor: Colors.grey,
-                    //elevation: 8,
-                    items: [
-                      //BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-                      //BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Finances"),
-
-                      BottomNavigationBarItem(
-                          icon: Icon(Icons.fitness_center_rounded),
-                          label: "Workout"),
-                      BottomNavigationBarItem(
-                        icon: Icon(CupertinoIcons.search),
-                        label: "Search",
+          return loading
+              ? Loading()
+              : userFound
+                  ? Scaffold(
+                      body: PageView(
+                        controller: _pageController,
+                        children: _pages,
+                        onPageChanged: _pageChanged,
                       ),
-                      BottomNavigationBarItem(
-                          icon: Icon(CupertinoIcons.chat_bubble),
-                          label: "Messages"),
-                      BottomNavigationBarItem(
-                          icon: Icon(CupertinoIcons.profile_circled),
-                          label: "Profile")
-                    ],
-                    onTap: _itemTapped,
-                  ),
-                )
-              : CreateUserPage(
-                  widget.user); //if user not create navigate to this page
+                      bottomNavigationBar: BottomNavigationBar(
+                        type: BottomNavigationBarType.fixed,
+                        currentIndex: _currentIndex,
+                        selectedItemColor: Color.fromRGBO(21, 33, 47, 1),
+                        iconSize: 30,
+                        backgroundColor: Colors.white,
+                        unselectedItemColor: Colors.grey,
+                        //elevation: 8,
+                        items: [
+                          //BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+                          //BottomNavigationBarItem(icon: Icon(Icons.payment), label: "Finances"),
+
+                          BottomNavigationBarItem(
+                              icon: Icon(Icons.fitness_center_rounded),
+                              label: "Workout"),
+                          BottomNavigationBarItem(
+                            icon: Icon(CupertinoIcons.search),
+                            label: "Search",
+                          ),
+                          BottomNavigationBarItem(
+                              icon: Icon(CupertinoIcons.chat_bubble),
+                              label: "Messages"),
+                          BottomNavigationBarItem(
+                              icon: Icon(CupertinoIcons.profile_circled),
+                              label: "Profile")
+                        ],
+                        onTap: _itemTapped,
+                      ),
+                    )
+                  : CreateUserPage(
+                      widget.user); //if user not create navigate to this page
         });
   }
 }
