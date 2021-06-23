@@ -30,12 +30,12 @@ class _ExerciseListState extends State<ExerciseList> {
   }
 
   void deleteExercise(QueryDocumentSnapshot doc) async {
-    // String mediaURl = doc.data()["MediaURL"];
+    // String mediaURl = doc["MediaURL"];
     // if (mediaURl != null && mediaURl.isNotEmpty) {
     //   await DatabaseService(uid: UserSingleton.userSingleton.userID)
     //       .deleteMedia(mediaURl);
     // }
-    // String mediaPath = doc.data()["MediaPath"];
+    // String mediaPath = doc["MediaPath"];
     // if (mediaPath != null && mediaPath.isNotEmpty) {
     //   await DatabaseService().deleteMedia(mediaPath);
     // }
@@ -44,9 +44,9 @@ class _ExerciseListState extends State<ExerciseList> {
   }
 
   Widget createExerciseCard(QueryDocumentSnapshot doc) {
-    List<int> days = List.from(doc.data()["Days"]) ?? [];
+    List<int> days = List.from(doc["Days"]) ?? [];
     if (days.contains(widget.dayEnum.index) &&
-        doc.data()["Schedule Id"] == widget.scheduleDoc.id) {
+        doc["Schedule Id"] == widget.scheduleDoc.id) {
       return Container(
         child: InkWell(
           child: Card(
@@ -64,21 +64,21 @@ class _ExerciseListState extends State<ExerciseList> {
                       ])),
               child: ListTile(
                 title: Text(
-                  doc.data()["Name"] ?? "Error Name",
+                  doc["Name"] ?? "Error Name",
                   style: TextStyle(color: Colors.white),
                 ),
-                trailing: doc.data()["Creator Id"] ==
-                        UserSingleton.userSingleton.userID
-                    ? IconButton(
-                        icon: Icon(
-                          CupertinoIcons.delete,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          deleteExercise(doc);
-                        },
-                      )
-                    : SizedBox(),
+                trailing:
+                    doc["Creator Id"] == UserSingleton.userSingleton.userID
+                        ? IconButton(
+                            icon: Icon(
+                              CupertinoIcons.delete,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              deleteExercise(doc);
+                            },
+                          )
+                        : SizedBox(),
               ),
             ),
           ),
@@ -95,7 +95,7 @@ class _ExerciseListState extends State<ExerciseList> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-        stream: DatabaseService(uid: widget.scheduleDoc.data()["Creator Id"])
+        stream: DatabaseService(uid: widget.scheduleDoc["Creator Id"])
             .routines(scheduleId: widget.scheduleDoc.id),
         builder: (context, snapshot) {
           if ((snapshot != null && snapshot.data != null) &&

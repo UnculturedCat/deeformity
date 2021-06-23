@@ -85,12 +85,11 @@ class _AboutUserPageState extends State<AboutUserPage> {
   // }
 
   void initMedia() {
-    if (docSnapshot.data()["MediaURL"] != null &&
-        docSnapshot.data()["MediaURL"] != "") {
-      mediaURL = docSnapshot.data()["MediaURL"];
+    if (docSnapshot["MediaURL"] != null && docSnapshot["MediaURL"] != "") {
+      mediaURL = docSnapshot["MediaURL"];
       int mediaTypeIndex =
-          docSnapshot.data()["Mediatype"] ?? docSnapshot.data()["Media type"];
-      correctVideoAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
+          docSnapshot["Mediatype"] ?? docSnapshot["Media type"];
+      correctVideoAspectRatio = docSnapshot["CorrectVideo"] ?? false;
       media = null;
       appVideoPlayer = null;
 
@@ -131,7 +130,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
     if (_mediaFile != null) {
       mediaFields =
           await DatabaseService(uid: UserSingleton.userSingleton.userID)
-              .storeMedia(_mediaFile, docSnapshot.data()["Name"], _mediaType);
+              .storeMedia(_mediaFile, docSnapshot["Name"], _mediaType);
       mediaURL = mediaFields["downloadURL"];
       mediaStoragePath = mediaFields["fullPath"];
       done = true;
@@ -633,7 +632,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
                               key: _formKey,
                               child: TextFormField(
                                 initialValue:
-                                    docSnapshot.data()["FullBio"] ?? "No Bio",
+                                    docSnapshot["FullBio"] ?? "No Bio",
                                 maxLines: null,
                                 minLines: 3,
                                 decoration: textInputDecorationWhite.copyWith(
@@ -654,7 +653,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            docSnapshot.data()["FullBio"] ?? "No Bio",
+                            docSnapshot["FullBio"] ?? "No Bio",
                             style: TextStyle(
                                 fontSize: fontSizeBody,
                                 color: elementColorWhiteBackground,

@@ -46,11 +46,11 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
     super.initState();
     docSnapshot = widget.doc;
 
-    if (widget.doc.data()["Creator Id"] != UserSingleton.userSingleton.userID) {
+    if (widget.doc["Creator Id"] != UserSingleton.userSingleton.userID) {
       getScheduleCreatorCard();
       createdByYou = false;
     }
-    DatabaseService(uid: widget.doc.data()["Creator Id"])
+    DatabaseService(uid: widget.doc["Creator Id"])
         .particularUserSchedule(widget.doc.id)
         .listen((event) {
       if (mounted) {
@@ -67,7 +67,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
     docSnapshot = widget.doc;
 
     initMedia();
-    if (widget.doc.data()["Creator Id"] != UserSingleton.userSingleton.userID) {
+    if (widget.doc["Creator Id"] != UserSingleton.userSingleton.userID) {
       createdByYou = false;
       await getScheduleCreatorCard();
     } else {
@@ -123,12 +123,11 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
   // }
 
   void initMedia() {
-    if (docSnapshot.data()["MediaURL"] != null &&
-        docSnapshot.data()["MediaURL"] != "") {
-      mediaURL = docSnapshot.data()["MediaURL"];
+    if (docSnapshot["MediaURL"] != null && docSnapshot["MediaURL"] != "") {
+      mediaURL = docSnapshot["MediaURL"];
       int mediaTypeIndex =
-          docSnapshot.data()["Mediatype"] ?? docSnapshot.data()["Media type"];
-      correctVideoAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
+          docSnapshot["Mediatype"] ?? docSnapshot["Media type"];
+      correctVideoAspectRatio = docSnapshot["CorrectVideo"] ?? false;
       media = null;
       appVideoPlayer = null;
 
@@ -169,7 +168,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
     if (_mediaFile != null) {
       mediaFields =
           await DatabaseService(uid: UserSingleton.userSingleton.userID)
-              .storeMedia(_mediaFile, docSnapshot.data()["Name"], _mediaType);
+              .storeMedia(_mediaFile, docSnapshot["Name"], _mediaType);
       mediaURL = mediaFields["downloadURL"];
       mediaStoragePath = mediaFields["fullPath"];
       done = true;
@@ -426,7 +425,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
   }
 
   Future getScheduleCreatorCard() async {
-    String creatorId = docSnapshot.data()["Creator Id"];
+    String creatorId = docSnapshot["Creator Id"];
     await DatabaseService(uid: UserSingleton.userSingleton.userID)
         .getParticularUserDoc(creatorId)
         .then((value) {
@@ -463,8 +462,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                             child: Form(
                               key: _formKeyHeader,
                               child: TextFormField(
-                                initialValue:
-                                    docSnapshot.data()["Header"] ?? "",
+                                initialValue: docSnapshot["Header"] ?? "",
                                 maxLines: 1,
                                 maxLength: 30,
                                 decoration: textInputDecorationWhite.copyWith(
@@ -487,7 +485,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                           Container(
                             padding: EdgeInsets.only(top: 20),
                             child: Text(
-                              docSnapshot.data()["Header"] ?? "No Header",
+                              docSnapshot["Header"] ?? "No Header",
                               style: TextStyle(
                                   fontSize: fontSizeHeader,
                                   color: elementColorWhiteBackground,
@@ -764,8 +762,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                             child: Form(
                               key: _formKey,
                               child: TextFormField(
-                                initialValue:
-                                    docSnapshot.data()["Description"] ?? "",
+                                initialValue: docSnapshot["Description"] ?? "",
                                 maxLines: null,
                                 minLines: 3,
                                 decoration: textInputDecorationWhite.copyWith(
@@ -786,8 +783,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            docSnapshot.data()["Description"] ??
-                                "No description",
+                            docSnapshot["Description"] ?? "No description",
                             style: TextStyle(
                                 fontSize: fontSizeBody,
                                 color: elementColorWhiteBackground,

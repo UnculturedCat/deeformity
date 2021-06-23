@@ -28,12 +28,12 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
 
   void initializeListener(bool firstTime) async {
     if (!firstTime) {
-      await DatabaseService(uid: scheduleDoc.data()["Creator Id"])
+      await DatabaseService(uid: scheduleDoc["Creator Id"])
           .particularUserSchedule(widget.selectedSchedule.id)
           .listen((event) {})
           .cancel();
     }
-    DatabaseService(uid: widget.selectedSchedule.data()["Creator Id"])
+    DatabaseService(uid: widget.selectedSchedule["Creator Id"])
         .particularUserSchedule(widget.selectedSchedule.id)
         .listen((event) {
       scheduleDoc = null;
@@ -47,7 +47,7 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
 
   @override
   void dispose() {
-    DatabaseService(uid: widget.selectedSchedule.data()["Creator Id"])
+    DatabaseService(uid: widget.selectedSchedule["Creator Id"])
         .particularUserSchedule(widget.selectedSchedule.id)
         .listen((event) {})
         .cancel();
@@ -92,11 +92,11 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
     if ((exercisesSnapshot != null && exercisesSnapshot.docs != null) &&
         exercisesSnapshot.docs.isNotEmpty) {
       exercisesSnapshot.docs.forEach((doc) {
-        List<int> days = List<int>.from(doc.data()["Days"]) ??
+        List<int> days = List<int>.from(doc["Days"]) ??
             []; //get list of days that this exercise should occur
 
         if (days.contains(dayEnum.index) &&
-            doc.data()["Schedule Id"] == widget.selectedSchedule.id) {
+            doc["Schedule Id"] == widget.selectedSchedule.id) {
           _exercisesForTheDay.add(doc);
           exerciseAvailable = true;
         }
@@ -134,7 +134,7 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
           padding: EdgeInsets.all(4),
           child: Center(
             child: Text(
-              doc.data()["Name"] ?? "Error name",
+              doc["Name"] ?? "Error name",
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: MediaQuery.of(context).size.height * 0.017,
@@ -158,7 +158,7 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
         return CupertinoAlertDialog(
           title: Text("Warning"),
           content: Text("Are you sure you want permanently unfollow " +
-              widget.selectedSchedule.data()["Name"] +
+              widget.selectedSchedule["Name"] +
               "?"),
           actions: [
             CupertinoActionSheetAction(
@@ -188,8 +188,7 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
 
   Widget createDayRow(String day, DaysOfTheWeek dayEnum) {
     WorkoutSplits workoutSplit = WorkoutSplits.values[
-        scheduleDoc.data()["Split"][dayEnum.index.toString()] ??
-            WorkoutSplits.rest];
+        scheduleDoc["Split"][dayEnum.index.toString()] ?? WorkoutSplits.rest];
     return Container(
       padding: EdgeInsets.only(top: 10, bottom: 10),
       key: Key(day),
@@ -319,10 +318,9 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
     if (scheduleDoc != null && scheduleDoc.id != widget.selectedSchedule.id) {
       initializeListener(false);
     }
-    return scheduleDoc != null && scheduleDoc.data() != null
+    return scheduleDoc != null && scheduleDoc != null
         ? StreamBuilder<QuerySnapshot>(
-            stream: DatabaseService(
-                    uid: widget.selectedSchedule.data()["Creator Id"])
+            stream: DatabaseService(uid: widget.selectedSchedule["Creator Id"])
                 .routines(scheduleId: widget.selectedSchedule.id),
             builder: (context, routinesSnapshot) {
               if (routinesSnapshot != null && routinesSnapshot.hasData) {
@@ -330,7 +328,7 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
                 _schedulesExercises = [];
                 _exercisesSnapshot.docs.forEach(
                   (exerciseDoc) {
-                    if (exerciseDoc.data()["Schedule Id"] ==
+                    if (exerciseDoc["Schedule Id"] ==
                         widget.selectedSchedule.id) {
                       _schedulesExercises.add(exerciseDoc);
                     }
