@@ -65,7 +65,7 @@ class _CreateMessageState extends State<CreateMessage> {
                     minLines: 12,
                     decoration: textInputDecorationWhite.copyWith(
                       hintText: "Write stuff to " +
-                              widget.recipientDoc.data()["User Name"] ??
+                              widget.recipientDoc["User Name"] ??
                           "This guy",
                       hintStyle: TextStyle(fontSize: fontSizeInputHint),
                     ),

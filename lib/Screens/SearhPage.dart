@@ -25,6 +25,7 @@ class SearchPageSate extends State<SearchPage>
   Widget build(BuildContext context) {
     super.build(context);
     return StreamProvider<QuerySnapshot>.value(
+      initialData: null,
       value: DatabaseService(uid: UserSingleton.userSingleton.userID).allUsers,
       child: GestureDetector(
         child: Scaffold(

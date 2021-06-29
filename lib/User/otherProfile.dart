@@ -109,7 +109,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          userDoc.data()["User Name"] ?? "Error Name",
+          userDoc["User Name"] ?? "Error Name",
           style: TextStyle(color: elementColorWhiteBackground),
         ),
         backgroundColor: Colors.white,
@@ -166,12 +166,11 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                   Container(
                     child: CircleAvatar(
                       radius: 40,
-                      child: userDoc.data()["Profile Picture Url"] == null
-                          ? Text(userDoc.data()["First Name"][0])
+                      child: userDoc["Profile Picture Url"] == null
+                          ? Text(userDoc["First Name"][0])
                           : null,
-                      backgroundImage: userDoc.data()["Profile Picture Url"] !=
-                              null
-                          ? NetworkImage(userDoc.data()["Profile Picture Url"])
+                      backgroundImage: userDoc["Profile Picture Url"] != null
+                          ? NetworkImage(userDoc["Profile Picture Url"])
                           : null,
                     ),
                   ),
@@ -184,7 +183,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                         Row(
                           children: [
                             Text(
-                              userDoc.data()["First Name"] + " ",
+                              userDoc["First Name"] + " ",
                               style: TextStyle(
                                 color: elementColorWhiteBackground,
                                 fontSize: fontSize,
@@ -192,7 +191,7 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                               ),
                             ),
                             Text(
-                              userDoc.data()["Last Name"],
+                              userDoc["Last Name"],
                               style: TextStyle(
                                 color: elementColorWhiteBackground,
                                 fontSize: fontSize,
@@ -248,9 +247,9 @@ class _OtherUserProfileState extends State<OtherUserProfile> {
                   EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
               child: Row(
                 children: [
-                  userDoc.data()["About"] != null
+                  userDoc["About"] != null
                       ? Expanded(
-                          child: Text(userDoc.data()["About"],
+                          child: Text(userDoc["About"],
                               style: TextStyle(
                                 color: elementColorWhiteBackground,
                                 fontSize: fontSizeBody,

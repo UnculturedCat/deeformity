@@ -124,8 +124,8 @@ class _AddedUsersState extends State<AddedUsers> {
       return SizedBox();
     }
     bool markedForShare = false;
-    String firstName = doc.data()["First Name"] ?? "Error";
-    String lastName = doc.data()["Last Name"] ?? "Error";
+    String firstName = doc["First Name"] ?? "Error";
+    String lastName = doc["Last Name"] ?? "Error";
     String userFullName = firstName + " " + lastName;
 
     userToShareSchedule.forEach((element) {
