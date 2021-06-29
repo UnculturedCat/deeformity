@@ -43,10 +43,10 @@ class _SearchResultsState extends State<SearchResults> {
   Widget createUserCard(QueryDocumentSnapshot doc) {
     if (doc.id == UserSingleton.userSingleton.userID ||
         widget.textBoxQuery.isEmpty) return SizedBox();
-    String firstName = doc["First Name"];
-    String lastName = doc["Last Name"];
+    String firstName = doc.data()["First Name"];
+    String lastName = doc.data()["Last Name"];
     String userFullName = firstName + " " + lastName;
-    String userName = doc["User Name"];
+    String userName = doc.data()["User Name"];
 
     //Fliters displayed users according to textForm input
     if (widget.textBoxQuery.isNotEmpty) {

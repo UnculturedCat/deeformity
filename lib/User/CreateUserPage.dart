@@ -24,7 +24,7 @@ class _CreateUserPageState extends State<CreateUserPage> {
     bool nameTaken = false;
 
     allUsersSnapShot.docs.forEach((doc) {
-      String name = doc["User Name"] ?? " ";
+      String name = doc.data()["User Name"] ?? " ";
       if (name.toUpperCase() == username.toUpperCase()) {
         nameTaken = true;
       }

@@ -7,7 +7,7 @@ class UserCardCreator extends StatelessWidget {
   UserCardCreator({this.userDoc, this.mark = false});
   @override
   Widget build(BuildContext context) {
-    if (userDoc == null) {
+    if (userDoc.data() == null) {
       return Card(
         color: mark == true ? Colors.blue[200] : null,
         shape: RoundedRectangleBorder(
@@ -30,9 +30,9 @@ class UserCardCreator extends StatelessWidget {
         ),
       );
     }
-    String firstName = userDoc["First Name"];
-    String lastName = userDoc["Last Name"];
-    String userName = userDoc["User Name"] ?? "Private user";
+    String firstName = userDoc.data()["First Name"];
+    String lastName = userDoc.data()["Last Name"];
+    String userName = userDoc.data()["User Name"] ?? "Private user";
     String userFullName = firstName + " " + lastName;
     return Card(
       elevation: 3,
@@ -45,11 +45,11 @@ class UserCardCreator extends StatelessWidget {
       child: Container(
         child: ListTile(
           leading: CircleAvatar(
-            child: userDoc["Profile Picture Url"] == null
-                ? Text(userDoc["First Name"][0])
+            child: userDoc.data()["Profile Picture Url"] == null
+                ? Text(userDoc.data()["First Name"][0])
                 : null,
-            backgroundImage: userDoc["Profile Picture Url"] != null
-                ? NetworkImage(userDoc["Profile Picture Url"])
+            backgroundImage: userDoc.data()["Profile Picture Url"] != null
+                ? NetworkImage(userDoc.data()["Profile Picture Url"])
                 : null,
           ),
           title: Column(

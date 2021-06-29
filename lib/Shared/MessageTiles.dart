@@ -12,14 +12,15 @@ class MessageTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment:
-          messageDoc["Sender"] == UserSingleton.userSingleton.userID
+          messageDoc.data()["Sender"] == UserSingleton.userSingleton.userID
               ? MainAxisAlignment.end
               : MainAxisAlignment.start,
       children: [
         Container(
           width: MediaQuery.of(context).size.width * .6,
           child: Card(
-            color: messageDoc["Sender"] == UserSingleton.userSingleton.userID
+            color: messageDoc.data()["Sender"] ==
+                    UserSingleton.userSingleton.userID
                 ? themeColor
                 : null,
             shape: RoundedRectangleBorder(
@@ -28,9 +29,9 @@ class MessageTile extends StatelessWidget {
               title: Container(
                 padding: EdgeInsets.all(2),
                 child: Text(
-                  messageDoc["Message"] ?? "No description",
+                  messageDoc.data()["Message"] ?? "No description",
                   style: TextStyle(
-                    color: messageDoc["Sender"] ==
+                    color: messageDoc.data()["Sender"] ==
                             UserSingleton.userSingleton.userID
                         ? Colors.white
                         : Color.fromRGBO(21, 33, 47, 1),
@@ -43,7 +44,8 @@ class MessageTile extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    messageDoc["Sender"] == UserSingleton.userSingleton.userID
+                    messageDoc.data()["Sender"] ==
+                            UserSingleton.userSingleton.userID
                         ? Text(
                             "You",
                             style: TextStyle(

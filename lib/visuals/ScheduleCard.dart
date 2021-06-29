@@ -38,13 +38,15 @@ class ScheduleCardState extends State<ScheduleCard> {
   void initialCardValues(QuerySnapshot scheduleSnapShot) {
     numberOfActivities = 0;
     for (var doc in scheduleSnapShot.docs) {
-      if ((doc["Date"] == UserSingleton.userSingleton.selectedStringDate ||
-              doc["Frequency"] == RepeatFrequency.daily.index ||
-              (doc["Frequency"] == RepeatFrequency.weekly.index &&
-                  DateFormat.EEEE().format(DateTime.parse(doc["DateTime"])) ==
+      if ((doc.data()["Date"] ==
+                  UserSingleton.userSingleton.selectedStringDate ||
+              doc.data()["Frequency"] == RepeatFrequency.daily.index ||
+              (doc.data()["Frequency"] == RepeatFrequency.weekly.index &&
+                  DateFormat.EEEE()
+                          .format(DateTime.parse(doc.data()["DateTime"])) ==
                       DateFormat.EEEE()
                           .format(UserSingleton.userSingleton.dateTime))) &&
-          doc["Category"] == category) numberOfActivities++;
+          doc.data()["Category"] == category) numberOfActivities++;
     }
   }
 

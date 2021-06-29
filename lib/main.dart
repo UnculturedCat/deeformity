@@ -22,7 +22,6 @@ class Deeformity extends StatelessWidget {
           create: (_) => AuthenticationService(),
         ),
         StreamProvider.value(
-          initialData: null,
           // create: (context) =>
           //     context.read<AuthenticationService>().authStateChanged
           value: AuthenticationService().authStateChanged,

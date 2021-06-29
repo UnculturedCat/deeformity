@@ -21,7 +21,7 @@ class _SchedulePageState extends State<SchedulePage> {
           shadowColor: Colors.white24,
           iconTheme: IconThemeData(color: elementColorWhiteBackground),
           title: Text(
-            widget.scheduleDoc["Name"] ?? "Schedule",
+            widget.scheduleDoc.data()["Name"] ?? "Schedule",
             style: pageHeaderStyle,
           ),
         ),

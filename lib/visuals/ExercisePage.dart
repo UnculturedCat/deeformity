@@ -42,17 +42,18 @@ class _ExercisePageState extends State<ExercisePage> {
   void initState() {
     docSnapshot = widget.documentSnapshot;
 //log events
-    if (docSnapshot["Creator Id"] == UserSingleton.userSingleton.userID) {
+    if (docSnapshot.data()["Creator Id"] ==
+        UserSingleton.userSingleton.userID) {
       UserSingleton.analytics.logEvent(name: "Exercise_viewed_by_creator");
       createdByYou = true;
-    } else if (docSnapshot["Creator Id"] !=
+    } else if (docSnapshot.data()["Creator Id"] !=
         UserSingleton.userSingleton.userID) {
       UserSingleton.analytics.logEvent(name: "Exercise_viewed_by_subcriber");
       createdByYou = false;
     }
-    DatabaseService(uid: docSnapshot["Creator Id"])
+    DatabaseService(uid: docSnapshot.data()["Creator Id"])
         .particularRoutine(
-            scheduleId: docSnapshot["Schedule Id"],
+            scheduleId: docSnapshot.data()["Schedule Id"],
             routineId: widget.documentSnapshot.id)
         .listen((event) {
       setState(() {
@@ -65,11 +66,12 @@ class _ExercisePageState extends State<ExercisePage> {
   }
 
   void initMedia() {
-    if (docSnapshot["MediaURL"] != null && docSnapshot["MediaURL"] != "") {
-      mediaURL = docSnapshot["MediaURL"];
+    if (docSnapshot.data()["MediaURL"] != null &&
+        docSnapshot.data()["MediaURL"] != "") {
+      mediaURL = docSnapshot.data()["MediaURL"];
       int mediaTypeIndex =
-          docSnapshot["Mediatype"] ?? docSnapshot["Media type"];
-      correctVideoAspectRatio = docSnapshot["CorrectVideo"] ?? false;
+          docSnapshot.data()["Mediatype"] ?? docSnapshot.data()["Media type"];
+      correctVideoAspectRatio = docSnapshot.data()["CorrectVideo"] ?? false;
 
       if (mediaURL != null && mediaURL.isNotEmpty) {
         if (mediaTypeIndex != MediaType.none.index) {
@@ -92,7 +94,7 @@ class _ExercisePageState extends State<ExercisePage> {
           }
         }
       }
-    } else if (docSnapshot["MediaURL"] == "") {
+    } else if (docSnapshot.data()["MediaURL"] == "") {
       picture = null;
       appVideoPlayer = null;
       _mediaFile = null;
@@ -139,7 +141,7 @@ class _ExercisePageState extends State<ExercisePage> {
     if (_mediaFile != null) {
       mediaFields =
           await DatabaseService(uid: UserSingleton.userSingleton.userID)
-              .storeMedia(_mediaFile, docSnapshot["Name"], _mediaType);
+              .storeMedia(_mediaFile, docSnapshot.data()["Name"], _mediaType);
       mediaURL = mediaFields["downloadURL"];
       mediaStoragePath = mediaFields["fullPath"];
       done = true;
@@ -401,7 +403,7 @@ class _ExercisePageState extends State<ExercisePage> {
         iconTheme: IconThemeData(color: elementColorWhiteBackground),
         //centerTitle: false,
         title: Text(
-          docSnapshot["Name"] ?? "No name",
+          docSnapshot.data()["Name"] ?? "No name",
           style: pageHeaderStyle,
         ),
         backgroundColor: Colors.white,
@@ -653,8 +655,9 @@ class _ExercisePageState extends State<ExercisePage> {
                                 child: Form(
                                   key: _formKey,
                                   child: TextFormField(
-                                    initialValue: docSnapshot["Description"] ??
-                                        "No description",
+                                    initialValue:
+                                        docSnapshot.data()["Description"] ??
+                                            "No description",
                                     maxLines: null,
                                     minLines: 3,
                                     decoration:
@@ -676,14 +679,15 @@ class _ExercisePageState extends State<ExercisePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                docSnapshot["Description"] ?? "No description",
+                                docSnapshot.data()["Description"] ??
+                                    "No description",
                                 style: TextStyle(
                                     fontSize: fontSizeBody,
                                     color: elementColorWhiteBackground,
                                     fontWeight: FontWeight.w600),
                               ),
                               Container(
-                                child: docSnapshot["Creator Id"] ==
+                                child: docSnapshot.data()["Creator Id"] ==
                                         UserSingleton.userSingleton.userID
                                     ? IconButton(
                                         icon: Icon(Icons.edit),

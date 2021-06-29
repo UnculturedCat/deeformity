@@ -153,14 +153,14 @@ class ProfilePageState extends State<ProfilePage>
           // _profilePicture = Image.file(_profilePictureFile);
         });
         if (profilePictureFile != null) {
-          if (userDoc["Profile Picture Url"] != null) {
+          if (userDoc.data()["Profile Picture Url"] != null) {
             DatabaseService(uid: UserSingleton.userSingleton.userID)
-                .deleteMedia(userDoc["Profile Picture Url"]);
+                .deleteMedia(userDoc.data()["Profile Picture Url"]);
           }
-          Map<String, String> mediaFields = await DatabaseService(
-                  uid: UserSingleton.userSingleton.userID)
-              .storeMedia(
-                  profilePictureFile, userDoc["First Name"], MediaType.photo);
+          Map<String, String> mediaFields =
+              await DatabaseService(uid: UserSingleton.userSingleton.userID)
+                  .storeMedia(profilePictureFile, userDoc.data()["First Name"],
+                      MediaType.photo);
           await DatabaseService(uid: UserSingleton.userSingleton.userID)
               .updateUserData(
                   field: "Profile Picture Url",
@@ -424,7 +424,7 @@ class ProfilePageState extends State<ProfilePage>
                   backgroundColor: Colors.white,
                   shadowColor: Colors.white24,
                   title: Text(
-                    userDoc["User Name"] ?? "Error Name",
+                    userDoc.data()["User Name"] ?? "Error Name",
                     style: TextStyle(color: elementColorWhiteBackground),
                   ),
                 ),
@@ -446,14 +446,16 @@ class ProfilePageState extends State<ProfilePage>
                                 children: [
                                   CircleAvatar(
                                     radius: 40,
-                                    child:
-                                        userDoc["Profile Picture Url"] == null
-                                            ? Text(userDoc["First Name"][0])
-                                            : null,
+                                    child: userDoc.data()[
+                                                "Profile Picture Url"] ==
+                                            null
+                                        ? Text(userDoc.data()["First Name"][0])
+                                        : null,
                                     backgroundImage:
-                                        userDoc["Profile Picture Url"] != null
-                                            ? NetworkImage(
-                                                userDoc["Profile Picture Url"])
+                                        userDoc.data()["Profile Picture Url"] !=
+                                                null
+                                            ? NetworkImage(userDoc
+                                                .data()["Profile Picture Url"])
                                             : null,
                                   ),
                                   Positioned(
@@ -479,7 +481,7 @@ class ProfilePageState extends State<ProfilePage>
                                   Row(
                                     children: [
                                       Text(
-                                        userDoc["First Name"] + " ",
+                                        userDoc.data()["First Name"] + " ",
                                         style: TextStyle(
                                           color: elementColorWhiteBackground,
                                           fontSize: fontSize,
@@ -487,7 +489,7 @@ class ProfilePageState extends State<ProfilePage>
                                         ),
                                       ),
                                       Text(
-                                        userDoc["Last Name"],
+                                        userDoc.data()["Last Name"],
                                         style: TextStyle(
                                           color: elementColorWhiteBackground,
                                           fontSize: fontSize,
@@ -539,7 +541,7 @@ class ProfilePageState extends State<ProfilePage>
                                         maxLines: 3,
                                         minLines: 2,
                                         maxLength: 70,
-                                        initialValue: userDoc["About"] ??
+                                        initialValue: userDoc.data()["About"] ??
                                             "Who am I, what am I, Where am I?",
                                         decoration:
                                             textInputDecorationWhite.copyWith(
@@ -560,10 +562,11 @@ class ProfilePageState extends State<ProfilePage>
                               )
                             : Row(
                                 children: [
-                                  userDoc["About"] != null
+                                  userDoc.data()["About"] != null
                                       ? Expanded(
                                           child: Text(
-                                              userDoc["About"]
+                                              userDoc
+                                                  .data()["About"]
                                                   .toString()
                                                   .trim(),
                                               style: TextStyle(

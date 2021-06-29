@@ -10,13 +10,13 @@ class ScheduleCard extends StatelessWidget {
 
   Future<DocumentSnapshot> getCreatorDoc() async {
     return await DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .getParticularUserDoc(scheduleDoc["Creator Id"]);
+        .getParticularUserDoc(scheduleDoc.data()["Creator Id"]);
   }
 
   @override
   Widget build(BuildContext context) {
-    String name = scheduleDoc["Name"];
-    String description = scheduleDoc["Header"] ?? "No description";
+    String name = scheduleDoc.data()["Name"];
+    String description = scheduleDoc.data()["Header"] ?? "No description";
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(
@@ -25,11 +25,11 @@ class ScheduleCard extends StatelessWidget {
         child: ListTile(
           contentPadding: EdgeInsets.all(20),
           trailing: CircleAvatar(
-            child: creatorDoc["Profile Picture Url"] == null
-                ? Text(creatorDoc["First Name"][0])
+            child: creatorDoc.data()["Profile Picture Url"] == null
+                ? Text(creatorDoc.data()["First Name"][0])
                 : null,
-            backgroundImage: creatorDoc["Profile Picture Url"] != null
-                ? NetworkImage(creatorDoc["Profile Picture Url"])
+            backgroundImage: creatorDoc.data()["Profile Picture Url"] != null
+                ? NetworkImage(creatorDoc.data()["Profile Picture Url"])
                 : null,
           ),
           title: Column(

@@ -26,7 +26,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
             return CupertinoAlertDialog(
               title: Text("Warning"),
               content: Text("Hey, " +
-                  widget.recipientDoc["First Name"] +
+                  widget.recipientDoc.data()["First Name"] +
                   "\nAre you sure you want permanently delete your account?"),
               actions: [
                 CupertinoActionSheetAction(

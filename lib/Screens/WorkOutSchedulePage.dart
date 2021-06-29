@@ -240,7 +240,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                 height: MediaQuery.of(context).size.height * 0.02,
               ),
               Container(
-                child: selectedSchedule["Creator Id"] ==
+                child: selectedSchedule.data()["Creator Id"] ==
                         UserSingleton.userSingleton.userID
                     ? InkWell(
                         child: Container(
@@ -283,7 +283,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                 height: 20,
               ),
               Container(
-                child: selectedSchedule["Creator Id"] ==
+                child: selectedSchedule.data()["Creator Id"] ==
                         UserSingleton.userSingleton.userID
                     ? Divider(
                         color: Colors.white,
@@ -294,7 +294,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
                 height: 20,
               ),
               Container(
-                child: selectedSchedule["Creator Id"] ==
+                child: selectedSchedule.data()["Creator Id"] ==
                         UserSingleton.userSingleton.userID
                     ? InkWell(
                         child: Container(
@@ -436,7 +436,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
         return CupertinoAlertDialog(
           title: Text("Warning"),
           content: Text("Are you sure you want permanently delete " +
-              selectedSchedule["Name"] +
+              selectedSchedule.data()["Name"] +
               "?"),
           actions: [
             CupertinoActionSheetAction(
@@ -470,7 +470,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
         return CupertinoAlertDialog(
           title: Text("Warning"),
           content: Text("Are you sure you want permanently unfollow " +
-              selectedSchedule["Name"] +
+              selectedSchedule.data()["Name"] +
               "?"),
           actions: [
             CupertinoActionSheetAction(
@@ -547,7 +547,7 @@ class WorkoutSchedulePageState extends State<WorkoutSchedulePage>
           title: TextButton(
             child: Text(
               selectedSchedule != null
-                  ? selectedSchedule["Name"] ?? "No Name"
+                  ? selectedSchedule.data()["Name"] ?? "No Name"
                   : " ",
               style: TextStyle(
                 color: themeColor,

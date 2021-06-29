@@ -79,7 +79,7 @@ class WorkoutDayState extends State<WorkoutDay> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                widget.scheduleDoc["Creator Id"] ==
+                widget.scheduleDoc.data()["Creator Id"] ==
                         UserSingleton.userSingleton.userID
                     ? DropdownButton<WorkoutSplits>(
                         value: workoutSplit,
@@ -113,37 +113,37 @@ class WorkoutDayState extends State<WorkoutDay> {
           ),
         ],
       ),
-      floatingActionButton:
-          widget.scheduleDoc["Creator Id"] == UserSingleton.userSingleton.userID
-              ? Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    //padding: EdgeInsets.only(top: 20, right: 20),
-                    child: FloatingActionButton.extended(
-                        label: Row(
-                          children: [
-                            Container(
-                              child: Icon(Icons.add),
-                            ),
-                            Text(
-                              "Add exercise",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: fontSizeButton,
-                              ),
-                            ),
-                          ],
+      floatingActionButton: widget.scheduleDoc.data()["Creator Id"] ==
+              UserSingleton.userSingleton.userID
+          ? Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                //padding: EdgeInsets.only(top: 20, right: 20),
+                child: FloatingActionButton.extended(
+                    label: Row(
+                      children: [
+                        Container(
+                          child: Icon(Icons.add),
                         ),
-                        backgroundColor: Color.fromRGBO(27, 98, 49, 1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(3)),
+                        Text(
+                          "Add exercise",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: fontSizeButton,
+                          ),
                         ),
-                        onPressed: () {
-                          openCreateExercisePage();
-                        }),
-                  ),
-                )
-              : SizedBox(),
+                      ],
+                    ),
+                    backgroundColor: Color.fromRGBO(27, 98, 49, 1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(3)),
+                    ),
+                    onPressed: () {
+                      openCreateExercisePage();
+                    }),
+              ),
+            )
+          : SizedBox(),
     );
   }
 }

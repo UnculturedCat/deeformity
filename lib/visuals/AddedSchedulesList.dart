@@ -62,7 +62,7 @@ class _AddedSchedulesState extends State<AddedSchedules> {
 
   Future<DocumentSnapshot> getCreatorDoc(QueryDocumentSnapshot doc) async {
     return await DatabaseService(uid: UserSingleton.userSingleton.userID)
-        .getParticularUserDoc(doc["Creator Id"]);
+        .getParticularUserDoc(doc.data()["Creator Id"]);
   }
 
   void callExternalFunction(QueryDocumentSnapshot doc) {

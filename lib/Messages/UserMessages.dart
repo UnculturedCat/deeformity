@@ -49,7 +49,7 @@ class _UserMessagesPageState extends State<UserMessagesPage> {
         if (snapshot != null && snapshot.hasData) {
           messages = [];
           snapshot.data.docs.forEach((element) {
-            List<String> messageUsers = List.from(element["Users"]);
+            List<String> messageUsers = List.from(element.data()["Users"]);
             if (messageUsers.contains(widget.userDoc.id) &&
                 messageUsers.contains(UserSingleton.userSingleton.userID)) {
               messages.add(element);
@@ -65,7 +65,7 @@ class _UserMessagesPageState extends State<UserMessagesPage> {
               shadowColor: Colors.white24,
               iconTheme: IconThemeData(color: elementColorWhiteBackground),
               title: Text(
-                widget.userDoc["User Name"] ?? "Who this?",
+                widget.userDoc.data()["User Name"] ?? "Who this?",
                 style: pageHeaderStyle,
               ),
             ),
@@ -84,7 +84,7 @@ class _UserMessagesPageState extends State<UserMessagesPage> {
                                     (message) => MessageTile(
                                       messageDoc: message,
                                       otherUserName:
-                                          widget.userDoc["User Name"],
+                                          widget.userDoc.data()["User Name"],
                                     ),
                                   )
                                   .toList(),
@@ -99,7 +99,7 @@ class _UserMessagesPageState extends State<UserMessagesPage> {
                                   maxLines: null,
                                   decoration: textInputDecorationWhite.copyWith(
                                     hintText: "Write stuff to " +
-                                        widget.userDoc["User Name"],
+                                        widget.userDoc.data()["User Name"],
                                     hintStyle:
                                         TextStyle(fontSize: fontSizeInputHint),
                                   ),

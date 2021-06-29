@@ -157,10 +157,10 @@ class DatabaseService {
           .doc(userToAdd.id)
           .set({
         "User Id": userToAdd.id,
-        "First Name": userToAdd["First Name"],
-        "Last Name": userToAdd["Last Name"],
-        "Profile Picture Url": userToAdd["Profile Picture Url"],
-        "About": userToAdd["About"]
+        "First Name": userToAdd.data()["First Name"],
+        "Last Name": userToAdd.data()["Last Name"],
+        "Profile Picture Url": userToAdd.data()["Profile Picture Url"],
+        "About": userToAdd.data()["About"]
       });
 
       //add to other user's addedUsers collection
@@ -171,10 +171,11 @@ class DatabaseService {
           .set({
         "User Id": UserSingleton.userSingleton.userDataSnapShot.id,
         "First Name":
-            UserSingleton.userSingleton.userDataSnapShot["First Name"],
-        "Last Name": UserSingleton.userSingleton.userDataSnapShot["Last Name"],
-        "Profile Picture Url":
-            UserSingleton.userSingleton.userDataSnapShot["Profile Picture Url"]
+            UserSingleton.userSingleton.userDataSnapShot.data()["First Name"],
+        "Last Name":
+            UserSingleton.userSingleton.userDataSnapShot.data()["Last Name"],
+        "Profile Picture Url": UserSingleton.userSingleton.userDataSnapShot
+            .data()["Profile Picture Url"]
       });
       UserSingleton.analytics.logEvent(name: "Connected_with_user");
     } catch (e) {}
@@ -214,8 +215,8 @@ class DatabaseService {
 
   Future messageDaniel(
       {String topic, String message, DocumentSnapshot recipientDoc}) async {
-    String firstname = recipientDoc["First Name"];
-    String lastname = recipientDoc["Last Name"];
+    String firstname = recipientDoc.data()["First Name"];
+    String lastname = recipientDoc.data()["Last Name"];
     await messageDanielCollection.add({
       "Topic": topic,
       "Message": message,
@@ -348,7 +349,7 @@ class DatabaseService {
     await scheduleCollection
         .doc(uid)
         .collection(addedWorkOutScheduleSubCollectionName)
-        .doc(doc["Schedule Id"])
+        .doc(doc.data()["Schedule Id"])
         .collection(workOutRoutinesSubCollectionName)
         .doc(doc.id)
         .update({field: value});
@@ -360,7 +361,7 @@ class DatabaseService {
     return await scheduleCollection
         .doc(uid)
         .collection(addedWorkOutScheduleSubCollectionName)
-        .doc(doc["Schedule Id"])
+        .doc(doc.data()["Schedule Id"])
         .collection(workOutRoutinesSubCollectionName)
         .doc(doc.id)
         .get();
@@ -379,7 +380,7 @@ class DatabaseService {
     DaysOfTheWeek dayEnum,
     bool deletingSchedule = false,
   }) async {
-    List<int> days = List<int>.from(doc["Days"]);
+    List<int> days = List<int>.from(doc.data()["Days"]);
 
     if (!deletingSchedule && !days.remove(dayEnum.index)) {
       //if the schedule is being deleted just go ahead and delete the routine
@@ -390,17 +391,18 @@ class DatabaseService {
     if (!deletingSchedule) {
       //messy code, clean up during optimization
       await updateRoutineField(doc: doc, field: "Days", value: days);
+      doc.data()["Days"] = days;
     }
 
     if (deletingSchedule || days.isEmpty) {
-      String mediaURl = doc["MediaURL"];
+      String mediaURl = doc.data()["MediaURL"];
       if (mediaURl != null && mediaURl.isNotEmpty) {
         await deleteMedia(mediaURl);
       }
       await scheduleCollection
           .doc(uid)
           .collection(addedWorkOutScheduleSubCollectionName)
-          .doc(doc["Schedule Id"])
+          .doc(doc.data()["Schedule Id"])
           .collection(workOutRoutinesSubCollectionName)
           .doc(doc.id)
           .delete();
@@ -466,7 +468,8 @@ class DatabaseService {
           targetUserSchedules.docs.isNotEmpty) {
         targetUserSchedules.docs.forEach((element) {
           if (element.id == schedule.id) {
-            errorMessage = userDoc["First Name"] + " already has this schedule";
+            errorMessage =
+                userDoc.data()["First Name"] + " already has this schedule";
           }
         });
       }
@@ -477,10 +480,10 @@ class DatabaseService {
           .collection(addedWorkOutScheduleSubCollectionName)
           .doc(schedule.id)
           .set({
-        "Name": schedule["Name"],
+        "Name": schedule.data()["Name"],
         "Creator Id": uid,
-        "Split": schedule["Split"],
-        "Description": schedule["Description"]
+        "Split": schedule.data()["Split"],
+        "Description": schedule.data()["Description"]
       }, SetOptions(merge: true));
       UserSingleton.analytics.logEvent(name: "Schedule_Shared");
     }
