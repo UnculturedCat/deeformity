@@ -15,8 +15,10 @@ class ScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String name = scheduleDoc["Name"];
-    String description = scheduleDoc["Header"] ?? "No description";
+    Map<dynamic, dynamic> docMap = scheduleDoc.data() as Map;
+    Map<dynamic, dynamic> creatorDocMap = creatorDoc.data() as Map;
+    String name = docMap["Name"];
+    String description = docMap["Header"] ?? "No description";
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(
@@ -25,11 +27,11 @@ class ScheduleCard extends StatelessWidget {
         child: ListTile(
           contentPadding: EdgeInsets.all(20),
           trailing: CircleAvatar(
-            child: creatorDoc["Profile Picture Url"] == null
-                ? Text(creatorDoc["First Name"][0])
+            child: creatorDocMap["Profile Picture Url"] == null
+                ? Text(creatorDocMap["First Name"][0])
                 : null,
-            backgroundImage: creatorDoc["Profile Picture Url"] != null
-                ? NetworkImage(creatorDoc["Profile Picture Url"])
+            backgroundImage: creatorDocMap["Profile Picture Url"] != null
+                ? NetworkImage(creatorDocMap["Profile Picture Url"])
                 : null,
           ),
           title: Column(

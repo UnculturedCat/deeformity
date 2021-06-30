@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 class UserCardCreator extends StatelessWidget {
   final DocumentSnapshot userDoc;
   final bool mark;
+
   UserCardCreator({this.userDoc, this.mark = false});
   @override
   Widget build(BuildContext context) {
+    Map<dynamic, dynamic> docMap = userDoc.data() as Map;
     if (userDoc == null) {
       return Card(
         color: mark == true ? Colors.blue[200] : null,
@@ -30,9 +32,9 @@ class UserCardCreator extends StatelessWidget {
         ),
       );
     }
-    String firstName = userDoc["First Name"];
-    String lastName = userDoc["Last Name"];
-    String userName = userDoc["User Name"] ?? "Private user";
+    String firstName = docMap["First Name"];
+    String lastName = docMap["Last Name"];
+    String userName = docMap["User Name"] ?? "Private user";
     String userFullName = firstName + " " + lastName;
     return Card(
       elevation: 3,
@@ -45,11 +47,11 @@ class UserCardCreator extends StatelessWidget {
       child: Container(
         child: ListTile(
           leading: CircleAvatar(
-            child: userDoc["Profile Picture Url"] == null
-                ? Text(userDoc["First Name"][0])
+            child: docMap["Profile Picture Url"] == null
+                ? Text(docMap["First Name"][0])
                 : null,
-            backgroundImage: userDoc["Profile Picture Url"] != null
-                ? NetworkImage(userDoc["Profile Picture Url"])
+            backgroundImage: docMap["Profile Picture Url"] != null
+                ? NetworkImage(docMap["Profile Picture Url"])
                 : null,
           ),
           title: Column(

@@ -34,7 +34,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
   File _mediaFile;
   Image picture;
   bool createdByYou = true;
-  DocumentSnapshot docSnapshot;
+  Map<dynamic, dynamic> docSnapshot;
   String description;
   final _formKey = GlobalKey<FormState>();
   final _formKeyHeader = GlobalKey<FormState>();
@@ -44,7 +44,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
   @override
   void initState() {
     super.initState();
-    docSnapshot = widget.doc;
+    docSnapshot = widget.doc.data() as Map;
 
     if (widget.doc["Creator Id"] != UserSingleton.userSingleton.userID) {
       getScheduleCreatorCard();
@@ -55,7 +55,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
         .listen((event) {
       if (mounted) {
         setState(() {
-          docSnapshot = event;
+          docSnapshot = event.data() as Map;
           initMedia(); //get latest snapshot from schedule Creator.
         });
       }
@@ -64,7 +64,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
   }
 
   void updateDocument() async {
-    docSnapshot = widget.doc;
+    docSnapshot = widget.doc.data() as Map;
 
     initMedia();
     if (widget.doc["Creator Id"] != UserSingleton.userSingleton.userID) {
@@ -84,7 +84,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
       if (description.isNotEmpty) {
         await DatabaseService(uid: UserSingleton.userSingleton.userID)
             .updateScheduleField(
-                doc: docSnapshot, field: "Description", value: description);
+                doc: widget.doc, field: "Description", value: description);
 
         //log event
         UserSingleton.analytics.logEvent(name: "Schedule_Discription_Edited");
@@ -102,7 +102,7 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
       if (description.isNotEmpty) {
         await DatabaseService(uid: UserSingleton.userSingleton.userID)
             .updateScheduleField(
-                doc: docSnapshot, field: "Header", value: description);
+                doc: widget.doc, field: "Header", value: description);
 
         //log event
         UserSingleton.analytics.logEvent(name: "Schedule_Header_Edited");
@@ -176,13 +176,13 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
     if (done) {
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
           .updateScheduleField(
-              doc: docSnapshot, field: "Mediatype", value: _mediaType.index);
+              doc: widget.doc, field: "Mediatype", value: _mediaType.index);
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
           .updateScheduleField(
-              doc: docSnapshot, field: "MediaURL", value: mediaURL);
+              doc: widget.doc, field: "MediaURL", value: mediaURL);
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
           .updateScheduleField(
-              doc: docSnapshot, field: "MediaPath", value: mediaStoragePath);
+              doc: widget.doc, field: "MediaPath", value: mediaStoragePath);
       //await updateDocumentSnapShot();
       message = "Media upload successful";
     }
@@ -205,13 +205,11 @@ class _AboutSchedulePageState extends State<AboutSchedulePage> {
           .deleteMedia(mediaURL);
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
           .updateScheduleField(
-              doc: docSnapshot,
-              field: "Mediatype",
-              value: MediaType.none.index);
+              doc: widget.doc, field: "Mediatype", value: MediaType.none.index);
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
-          .updateScheduleField(doc: docSnapshot, field: "MediaURL", value: "");
+          .updateScheduleField(doc: widget.doc, field: "MediaURL", value: "");
       await DatabaseService(uid: UserSingleton.userSingleton.userID)
-          .updateScheduleField(doc: docSnapshot, field: "MediaPath", value: "");
+          .updateScheduleField(doc: widget.doc, field: "MediaPath", value: "");
       //await updateDocumentSnapShot();
       message = "Media Delete successful";
       setState(() {
