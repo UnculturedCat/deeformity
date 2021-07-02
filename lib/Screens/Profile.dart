@@ -33,6 +33,7 @@ class ProfilePageState extends State<ProfilePage>
   Pages currentpage = Pages.about;
   ProfilePageState();
   DocumentSnapshot userDoc;
+  Map docMap;
   String aboutUser;
   final ImagePicker _imagePicker = ImagePicker();
   bool editingDescription = false;
@@ -57,6 +58,7 @@ class ProfilePageState extends State<ProfilePage>
           .anyUserData
           .listen((event) {
         userDoc = event;
+        docMap = userDoc.data() as Map;
         addedSchedules = AddedSchedules(UserSingleton.userSingleton.userID);
         if (mounted) {
           setState(() {});
@@ -153,14 +155,14 @@ class ProfilePageState extends State<ProfilePage>
           // _profilePicture = Image.file(_profilePictureFile);
         });
         if (profilePictureFile != null) {
-          if (userDoc["Profile Picture Url"] != null) {
+          if (docMap["Profile Picture Url"] != null) {
             DatabaseService(uid: UserSingleton.userSingleton.userID)
-                .deleteMedia(userDoc["Profile Picture Url"]);
+                .deleteMedia(docMap["Profile Picture Url"]);
           }
           Map<String, String> mediaFields = await DatabaseService(
                   uid: UserSingleton.userSingleton.userID)
               .storeMedia(
-                  profilePictureFile, userDoc["First Name"], MediaType.photo);
+                  profilePictureFile, docMap["First Name"], MediaType.photo);
           await DatabaseService(uid: UserSingleton.userSingleton.userID)
               .updateUserData(
                   field: "Profile Picture Url",
@@ -424,7 +426,7 @@ class ProfilePageState extends State<ProfilePage>
                   backgroundColor: Colors.white,
                   shadowColor: Colors.white24,
                   title: Text(
-                    userDoc["User Name"] ?? "Error Name",
+                    docMap["User Name"] ?? "Error Name",
                     style: TextStyle(color: elementColorWhiteBackground),
                   ),
                 ),
@@ -446,14 +448,13 @@ class ProfilePageState extends State<ProfilePage>
                                 children: [
                                   CircleAvatar(
                                     radius: 40,
-                                    child:
-                                        userDoc["Profile Picture Url"] == null
-                                            ? Text(userDoc["First Name"][0])
-                                            : null,
+                                    child: docMap["Profile Picture Url"] == null
+                                        ? Text(docMap["First Name"][0])
+                                        : null,
                                     backgroundImage:
-                                        userDoc["Profile Picture Url"] != null
+                                        docMap["Profile Picture Url"] != null
                                             ? NetworkImage(
-                                                userDoc["Profile Picture Url"])
+                                                docMap["Profile Picture Url"])
                                             : null,
                                   ),
                                   Positioned(
@@ -479,7 +480,7 @@ class ProfilePageState extends State<ProfilePage>
                                   Row(
                                     children: [
                                       Text(
-                                        userDoc["First Name"] + " ",
+                                        docMap["First Name"] + " ",
                                         style: TextStyle(
                                           color: elementColorWhiteBackground,
                                           fontSize: fontSize,
@@ -487,7 +488,7 @@ class ProfilePageState extends State<ProfilePage>
                                         ),
                                       ),
                                       Text(
-                                        userDoc["Last Name"],
+                                        docMap["Last Name"],
                                         style: TextStyle(
                                           color: elementColorWhiteBackground,
                                           fontSize: fontSize,
@@ -539,7 +540,7 @@ class ProfilePageState extends State<ProfilePage>
                                         maxLines: 3,
                                         minLines: 2,
                                         maxLength: 70,
-                                        initialValue: userDoc["About"] ??
+                                        initialValue: docMap["About"] ??
                                             "Who am I, what am I, Where am I?",
                                         decoration:
                                             textInputDecorationWhite.copyWith(
@@ -560,12 +561,10 @@ class ProfilePageState extends State<ProfilePage>
                               )
                             : Row(
                                 children: [
-                                  userDoc["About"] != null
+                                  docMap["About"] != null
                                       ? Expanded(
                                           child: Text(
-                                              userDoc["About"]
-                                                  .toString()
-                                                  .trim(),
+                                              docMap["About"].toString().trim(),
                                               style: TextStyle(
                                                 color:
                                                     elementColorWhiteBackground,

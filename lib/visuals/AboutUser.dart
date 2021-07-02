@@ -33,6 +33,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
   Image picture;
   bool yourPage = true;
   DocumentSnapshot docSnapshot;
+  Map<dynamic, dynamic> docMap;
   String description;
   final _formKey = GlobalKey<FormState>();
   var media;
@@ -41,6 +42,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
   void initState() {
     super.initState();
     docSnapshot = widget.doc;
+    docMap = widget.doc.data() as Map;
     if (widget.doc.id != UserSingleton.userSingleton.userID) {
       yourPage = false;
     }
@@ -49,6 +51,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
         initMedia();
         setState(() {
           docSnapshot = event;
+          docMap = widget.doc.data() as Map;
         });
       }
     });
@@ -85,11 +88,10 @@ class _AboutUserPageState extends State<AboutUserPage> {
   // }
 
   void initMedia() {
-    if (docSnapshot["MediaURL"] != null && docSnapshot["MediaURL"] != "") {
-      mediaURL = docSnapshot["MediaURL"];
-      int mediaTypeIndex =
-          docSnapshot["Mediatype"] ?? docSnapshot["Media type"];
-      correctVideoAspectRatio = docSnapshot["CorrectVideo"] ?? false;
+    if (docMap["MediaURL"] != null && docMap["MediaURL"] != "") {
+      mediaURL = docMap["MediaURL"];
+      int mediaTypeIndex = docMap["Mediatype"] ?? docMap["Media type"];
+      correctVideoAspectRatio = docMap["CorrectVideo"] ?? false;
       media = null;
       appVideoPlayer = null;
 
@@ -130,7 +132,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
     if (_mediaFile != null) {
       mediaFields =
           await DatabaseService(uid: UserSingleton.userSingleton.userID)
-              .storeMedia(_mediaFile, docSnapshot["Name"], _mediaType);
+              .storeMedia(_mediaFile, docMap["Name"], _mediaType);
       mediaURL = mediaFields["downloadURL"];
       mediaStoragePath = mediaFields["fullPath"];
       done = true;
@@ -631,8 +633,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
                             child: Form(
                               key: _formKey,
                               child: TextFormField(
-                                initialValue:
-                                    docSnapshot["FullBio"] ?? "No Bio",
+                                initialValue: docMap["FullBio"] ?? "No Bio",
                                 maxLines: null,
                                 minLines: 3,
                                 decoration: textInputDecorationWhite.copyWith(
@@ -653,7 +654,7 @@ class _AboutUserPageState extends State<AboutUserPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            docSnapshot["FullBio"] ?? "No Bio",
+                            docMap["FullBio"] ?? "No Bio",
                             style: TextStyle(
                                 fontSize: fontSizeBody,
                                 color: elementColorWhiteBackground,
