@@ -227,6 +227,16 @@ class _ScheduleViewPageState extends State<ScheduleViewPage> {
               openDay(dayEnum, workoutSplit);
             },
           ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.start,
+          //   children:
+          //     [DropdownButton<WorkoutSplits>(
+          //       items: dropDownWorkOutSplits,
+          //       value: WorkoutSplits.arms,
+          //       onChanged: (val) {},
+          //     ),
+          //   ],
+          // ),
           // Container(
           //   padding: EdgeInsets.only(left: 20, right: 20),
           //   child: ElevatedButton(
